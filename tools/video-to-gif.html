@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video to GIF Converter — Free Online Tool | ToolNook</title>
+  <meta name="description" content="Convert video files to animated GIFs right in your browser. Trim, resize, adjust FPS, crop, add text, and control quality. No upload required." />
+  <meta name="keywords" content="video to gif, mp4 to gif, convert video gif, gif maker, gif converter online, video gif" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/video-to-gif.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+  <script src="https://unpkg.com/@ffmpeg/util@0.12.1/dist/umd/util.js"></script>
+  <style>
+    .vtg-wrap{max-width:900px;margin:0 auto;}
+    .vtg-drop{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;cursor:pointer;transition:.2s;background:var(--surface);}
+    .vtg-drop:hover,.vtg-drop.dragover{border-color:var(--primary);background:#eef2ff;}
+    .vtg-drop i{font-size:2.4rem;color:var(--primary);margin-bottom:12px;}
+    .vtg-drop p{margin:4px 0;color:var(--muted);font-size:.9rem;}
+    .vtg-drop .btn-upload{display:inline-block;margin-top:12px;padding:8px 20px;background:var(--primary);color:#fff;border-radius:var(--radius);font-weight:600;font-size:.85rem;}
+    .vtg-editor{display:none;margin-top:20px;}
+    .vtg-editor.active{display:block;}
+    .vtg-preview-area{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+    @media(max-width:700px){.vtg-preview-area{grid-template-columns:1fr;}}
+    .vtg-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;position:relative;}
+    .vtg-panel h3{font-size:.85rem;font-weight:700;margin-bottom:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);}
+    .vtg-video-wrap{position:relative;width:100%;background:#000;border-radius:var(--radius);overflow:hidden;}
+    .vtg-video-wrap video{width:100%;display:block;}
+    .vtg-gif-preview{width:100%;min-height:200px;display:flex;align-items:center;justify-content:center;background:#0f172a;border-radius:var(--radius);overflow:hidden;}
+    .vtg-gif-preview img{max-width:100%;max-height:400px;}
+    .vtg-gif-preview .placeholder{color:#64748b;font-size:.85rem;}
+    /* Timeline */
+    .vtg-timeline{margin:16px 0;position:relative;}
+    .vtg-timeline label{font-size:.78rem;font-weight:600;color:var(--muted);display:block;margin-bottom:6px;}
+    .vtg-range-row{display:flex;align-items:center;gap:10px;}
+    .vtg-range-row input[type=range]{flex:1;}
+    .vtg-range-row .val{min-width:48px;text-align:center;font-size:.78rem;font-weight:600;font-family:var(--mono);}
+    /* Controls grid */
+    .vtg-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    @media(max-width:500px){.vtg-controls{grid-template-columns:1fr;}}
+    .vtg-ctrl{display:flex;flex-direction:column;gap:4px;}
+    .vtg-ctrl label{font-size:.78rem;font-weight:600;color:var(--muted);}
+    .vtg-ctrl input,.vtg-ctrl select{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;background:var(--bg-white);}
+    .vtg-ctrl .hint{font-size:.7rem;color:var(--muted);}
+    /* Text overlay */
+    .vtg-text-overlay{margin-bottom:16px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+    .vtg-text-overlay summary{font-size:.82rem;font-weight:700;cursor:pointer;color:var(--muted);}
+    .vtg-text-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+    @media(max-width:500px){.vtg-text-fields{grid-template-columns:1fr;}}
+    /* Buttons */
+    .vtg-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+    .vtg-btn{padding:10px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .vtg-btn-primary{background:var(--primary);color:#fff;}.vtg-btn-primary:hover{opacity:.9;}
+    .vtg-btn-secondary{background:var(--surface);border:1px solid var(--border);color:var(--text);}.vtg-btn-secondary:hover{border-color:var(--primary);}
+    .vtg-btn:disabled{opacity:.5;cursor:not-allowed;}
+    /* Progress */
+    .vtg-progress{display:none;margin-top:12px;}
+    .vtg-progress.active{display:block;}
+    .vtg-progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+    .vtg-progress-fill{height:100%;background:var(--primary);width:0%;transition:width .3s;}
+    .vtg-progress-text{font-size:.78rem;color:var(--muted);margin-top:4px;text-align:center;}
+    /* Info bar */
+    .vtg-info{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:8px;padding:8px 12px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);}
+    .vtg-info span strong{color:var(--text);}
+    /* Dark mode */
+    [data-theme="dark"] .vtg-drop{background-color:#0f172a;}
+    [data-theme="dark"] .vtg-drop:hover,[data-theme="dark"] .vtg-drop.dragover{background-color:#1e1b4b;}
+    [data-theme="dark"] .vtg-ctrl input,[data-theme="dark"] .vtg-ctrl select{background-color:#1e293b;color:var(--text);border-color:#334155;}
+    [data-theme="dark"] .vtg-panel{background-color:#0f172a;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converters</a> › Video to GIF</div>
+      <h1><i class="fa-solid fa-film"></i> Video to GIF Converter</h1>
+      <p class="tool-desc">Convert any video to an animated GIF with full control over timing, size, speed, quality, cropping, and text overlay — entirely in your browser.</p>
+    </div>
+
+    <div class="vtg-wrap">
+      <!-- Drop zone -->
+      <div class="vtg-drop" id="dropZone">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <p><strong>Drop a video file here</strong></p>
+        <p>or</p>
+        <span class="btn-upload">Choose File</span>
+        <p style="margin-top:8px;font-size:.75rem;">MP4, WebM, MOV, AVI, MKV — max 500 MB</p>
+        <input type="file" id="fileInput" accept="video/*" hidden />
+      </div>
+
+      <!-- Editor (shown after file loaded) -->
+      <div class="vtg-editor" id="editor">
+        <div class="vtg-preview-area">
+          <!-- Source video -->
+          <div class="vtg-panel">
+            <h3><i class="fa-solid fa-video"></i> Source Video</h3>
+            <div class="vtg-video-wrap">
+              <video id="srcVideo" muted playsinline></video>
+            </div>
+            <div class="vtg-info" id="videoInfo"></div>
+          </div>
+          <!-- GIF preview -->
+          <div class="vtg-panel">
+            <h3><i class="fa-solid fa-image"></i> GIF Preview</h3>
+            <div class="vtg-gif-preview" id="gifPreview">
+              <span class="placeholder">GIF will appear here after conversion</span>
+            </div>
+            <div class="vtg-info" id="gifInfo" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Timeline trim -->
+        <div class="vtg-panel">
+          <h3><i class="fa-solid fa-scissors"></i> Trim</h3>
+          <div class="vtg-timeline">
+            <label>Start Time</label>
+            <div class="vtg-range-row">
+              <input type="range" id="trimStart" min="0" max="100" step="0.01" value="0" />
+              <span class="val" id="trimStartVal">0.00s</span>
+            </div>
+          </div>
+          <div class="vtg-timeline">
+            <label>End Time</label>
+            <div class="vtg-range-row">
+              <input type="range" id="trimEnd" min="0" max="100" step="0.01" value="100" />
+              <span class="val" id="trimEndVal">—</span>
+            </div>
+          </div>
+          <div class="vtg-timeline">
+            <label>Playback Speed</label>
+            <div class="vtg-range-row">
+              <input type="range" id="speed" min="0.25" max="4" step="0.25" value="1" />
+              <span class="val" id="speedVal">1×</span>
+            </div>
+          </div>
+          <div style="margin-top:8px;">
+            <button class="vtg-btn vtg-btn-secondary" id="previewBtn" style="font-size:.78rem;padding:6px 14px;"><i class="fa-solid fa-play"></i> Preview Trim</button>
+          </div>
+        </div>
+
+        <!-- Settings grid -->
+        <div class="vtg-panel" style="margin-top:16px;">
+          <h3><i class="fa-solid fa-sliders"></i> Settings</h3>
+          <div class="vtg-controls">
+            <div class="vtg-ctrl">
+              <label>Output Width (px)</label>
+              <input type="number" id="outWidth" min="50" max="1920" value="480" />
+              <span class="hint">Height scales proportionally</span>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Frame Rate (FPS)</label>
+              <select id="fps">
+                <option value="5">5 FPS — Small file</option>
+                <option value="8">8 FPS</option>
+                <option value="10" selected>10 FPS — Balanced</option>
+                <option value="12">12 FPS</option>
+                <option value="15">15 FPS — Smooth</option>
+                <option value="20">20 FPS</option>
+                <option value="24">24 FPS</option>
+                <option value="30">30 FPS — Cinematic</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Quality</label>
+              <select id="quality">
+                <option value="low">Low — Smallest size</option>
+                <option value="medium" selected>Medium — Balanced</option>
+                <option value="high">High — Best quality</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Max Colors</label>
+              <select id="colors">
+                <option value="32">32 — Tiny file</option>
+                <option value="64">64</option>
+                <option value="128">128</option>
+                <option value="256" selected>256 — Full palette</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Dithering</label>
+              <select id="dither">
+                <option value="none">None — Flat bands</option>
+                <option value="bayer3" selected>Bayer 3 — Good default</option>
+                <option value="bayer5">Bayer 5 — Smoother</option>
+                <option value="floyd">Floyd-Steinberg — Finest</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Loop</label>
+              <select id="loop">
+                <option value="0" selected>Loop forever</option>
+                <option value="1">Play once</option>
+                <option value="2">Loop twice</option>
+                <option value="3">Loop 3 times</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Reverse</label>
+              <select id="reverse">
+                <option value="no" selected>Normal</option>
+                <option value="yes">Reversed</option>
+                <option value="boomerang">Boomerang (forward + reverse)</option>
+              </select>
+            </div>
+            <div class="vtg-ctrl">
+              <label>Crop</label>
+              <select id="cropMode">
+                <option value="none" selected>No crop</option>
+                <option value="1:1">1:1 Square</option>
+                <option value="4:3">4:3</option>
+                <option value="16:9">16:9</option>
+                <option value="9:16">9:16 Portrait</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text overlay -->
+        <details class="vtg-text-overlay">
+          <summary><i class="fa-solid fa-font"></i> Text Overlay (optional)</summary>
+          <div class="vtg-text-fields">
+            <div class="vtg-ctrl">
+              <label>Text</label>
+              <input type="text" id="overlayText" placeholder="Your text here..." maxlength="100" />
+            </div>
+            <div class="vtg-ctrl">
+              <label>Font Size</label>
+              <input type="number" id="overlaySize" min="8" max="120" value="24" />
+            </div>
+            <div class="vtg-ctrl">
+              <label>Color</label>
+              <input type="color" id="overlayColor" value="#ffffff" />
+            </div>
+            <div class="vtg-ctrl">
+              <label>Position</label>
+              <select id="overlayPos">
+                <option value="top">Top center</option>
+                <option value="center">Center</option>
+                <option value="bottom" selected>Bottom center</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <!-- Actions -->
+        <div class="vtg-actions">
+          <button class="vtg-btn vtg-btn-primary" id="convertBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> Convert to GIF</button>
+          <button class="vtg-btn vtg-btn-secondary" id="downloadBtn" disabled><i class="fa-solid fa-download"></i> Download GIF</button>
+          <button class="vtg-btn vtg-btn-secondary" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> New Video</button>
+        </div>
+
+        <!-- Progress -->
+        <div class="vtg-progress" id="progress">
+          <div class="vtg-progress-bar"><div class="vtg-progress-fill" id="progressFill"></div></div>
+          <div class="vtg-progress-text" id="progressText">Initializing...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Video to GIF Converter</h2>
+      <p>This tool converts video files to animated GIFs entirely in your browser using FFmpeg WebAssembly. No video data is uploaded — everything is processed locally on your device.</p>
+      <h3>Features</h3>
+      <ul>
+        <li><strong>Trim:</strong> Set precise start and end times to capture the perfect moment</li>
+        <li><strong>Resize:</strong> Control output width — height scales proportionally</li>
+        <li><strong>Frame Rate:</strong> Choose from 5–30 FPS for size vs. smoothness trade-offs</li>
+        <li><strong>Quality & Colors:</strong> Adjust palette size and dithering for optimal results</li>
+        <li><strong>Crop:</strong> Square, 4:3, 16:9, and portrait aspect ratios</li>
+        <li><strong>Speed:</strong> Slow down to 0.25× or speed up to 4×</li>
+        <li><strong>Reverse & Boomerang:</strong> Play backwards or create seamless loops</li>
+        <li><strong>Text Overlay:</strong> Add captions with custom size, color, and position</li>
+      </ul>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+(function() {
+  const { FFmpeg } = FFmpegWASM;
+  const { fetchFile, toBlobURL } = FFmpegUtil;
+  const ffmpeg = new FFmpeg();
+  let loaded = false;
+  let videoFile = null;
+  let videoDuration = 0;
+  let gifBlob = null;
+  let videoW = 0, videoH = 0;
+
+  /* DOM refs */
+  const dropZone    = document.getElementById('dropZone');
+  const fileInput   = document.getElementById('fileInput');
+  const editor      = document.getElementById('editor');
+  const srcVideo    = document.getElementById('srcVideo');
+  const videoInfo   = document.getElementById('videoInfo');
+  const gifPreview  = document.getElementById('gifPreview');
+  const gifInfo     = document.getElementById('gifInfo');
+  const trimStart   = document.getElementById('trimStart');
+  const trimEnd     = document.getElementById('trimEnd');
+  const trimStartVal= document.getElementById('trimStartVal');
+  const trimEndVal  = document.getElementById('trimEndVal');
+  const speedSlider = document.getElementById('speed');
+  const speedVal    = document.getElementById('speedVal');
+  const previewBtn  = document.getElementById('previewBtn');
+  const convertBtn  = document.getElementById('convertBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const resetBtn    = document.getElementById('resetBtn');
+  const progress    = document.getElementById('progress');
+  const progressFill= document.getElementById('progressFill');
+  const progressText= document.getElementById('progressText');
+
+  /* ── Load FFmpeg ── */
+  async function loadFFmpeg() {
+    if (loaded) return;
+    progressShow('Loading FFmpeg (first time may take a moment)...');
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    await ffmpeg.load({
+      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    });
+    loaded = true;
+    progressHide();
+  }
+
+  /* ── Drop zone ── */
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|m4v|ogv)$/i)) {
+      alert('Please select a video file.'); return;
+    }
+    if (file.size > 500 * 1024 * 1024) { alert('File too large (max 500 MB).'); return; }
+    videoFile = file;
+    const url = URL.createObjectURL(file);
+    srcVideo.src = url;
+    srcVideo.onloadedmetadata = () => {
+      videoDuration = srcVideo.duration;
+      videoW = srcVideo.videoWidth;
+      videoH = srcVideo.videoHeight;
+      trimStart.max = videoDuration;
+      trimEnd.max = videoDuration;
+      trimStart.value = 0;
+      trimEnd.value = videoDuration;
+      trimStartVal.textContent = '0.00s';
+      trimEndVal.textContent = fmtTime(videoDuration);
+      document.getElementById('outWidth').value = Math.min(480, videoW);
+      videoInfo.innerHTML = `<span>Duration: <strong>${fmtTime(videoDuration)}</strong></span>` +
+        `<span>Resolution: <strong>${videoW}×${videoH}</strong></span>` +
+        `<span>Size: <strong>${fmtBytes(file.size)}</strong></span>` +
+        `<span>Type: <strong>${file.type || file.name.split('.').pop()}</strong></span>`;
+      srcVideo.play();
+    };
+    dropZone.style.display = 'none';
+    editor.classList.add('active');
+    gifPreview.innerHTML = '<span class="placeholder">GIF will appear here after conversion</span>';
+    gifInfo.style.display = 'none';
+    downloadBtn.disabled = true;
+    gifBlob = null;
+  }
+
+  /* ── Trim sliders ── */
+  trimStart.addEventListener('input', () => {
+    let v = parseFloat(trimStart.value);
+    if (v >= parseFloat(trimEnd.value)) { v = parseFloat(trimEnd.value) - 0.1; trimStart.value = v; }
+    trimStartVal.textContent = fmtTime(v);
+    srcVideo.currentTime = v;
+  });
+  trimEnd.addEventListener('input', () => {
+    let v = parseFloat(trimEnd.value);
+    if (v <= parseFloat(trimStart.value)) { v = parseFloat(trimStart.value) + 0.1; trimEnd.value = v; }
+    trimEndVal.textContent = fmtTime(v);
+    srcVideo.currentTime = v;
+  });
+  speedSlider.addEventListener('input', () => {
+    speedVal.textContent = speedSlider.value + '×';
+  });
+
+  /* ── Preview trim ── */
+  previewBtn.addEventListener('click', () => {
+    srcVideo.currentTime = parseFloat(trimStart.value);
+    srcVideo.playbackRate = parseFloat(speedSlider.value);
+    srcVideo.play();
+    const endTime = parseFloat(trimEnd.value);
+    const checkEnd = () => {
+      if (srcVideo.currentTime >= endTime) { srcVideo.pause(); return; }
+      requestAnimationFrame(checkEnd);
+    };
+    checkEnd();
+  });
+
+  /* ── Convert ── */
+  convertBtn.addEventListener('click', async () => {
+    if (!videoFile) return;
+    convertBtn.disabled = true;
+    try {
+      await loadFFmpeg();
+      progressShow('Processing video...');
+
+      const startT = parseFloat(trimStart.value);
+      const endT = parseFloat(trimEnd.value);
+      const dur = endT - startT;
+      const fps = document.getElementById('fps').value;
+      const outW = parseInt(document.getElementById('outWidth').value) || 480;
+      const qualityMap = { low: 10, medium: 20, high: 30 };
+      const statsMode = qualityMap[document.getElementById('quality').value] || 20;
+      const colors = document.getElementById('colors').value;
+      const ditherOpt = document.getElementById('dither').value;
+      const loopVal = document.getElementById('loop').value;
+      const reverseMode = document.getElementById('reverse').value;
+      const cropMode = document.getElementById('cropMode').value;
+      const speed = parseFloat(speedSlider.value);
+
+      // Text overlay
+      const overlayText = document.getElementById('overlayText').value.trim();
+      const overlaySize = document.getElementById('overlaySize').value;
+      const overlayColor = document.getElementById('overlayColor').value;
+      const overlayPos = document.getElementById('overlayPos').value;
+
+      // Write video file
+      await ffmpeg.writeFile('input.vid', await fetchFile(videoFile));
+
+      // Build filter chain
+      let filters = [];
+
+      // Trim
+      filters.push(`trim=start=${startT}:end=${endT},setpts=PTS-STARTPTS`);
+
+      // Speed
+      if (speed !== 1) {
+        filters.push(`setpts=${(1 / speed).toFixed(4)}*PTS`);
+      }
+
+      // Crop
+      if (cropMode !== 'none') {
+        const [cw, ch] = cropMode.split(':').map(Number);
+        const ratio = cw / ch;
+        const srcRatio = videoW / videoH;
+        if (srcRatio > ratio) {
+          const cropW = Math.round(videoH * ratio);
+          filters.push(`crop=${cropW}:${videoH}`);
+        } else {
+          const cropH = Math.round(videoW / ratio);
+          filters.push(`crop=${videoW}:${cropH}`);
+        }
+      }
+
+      // Scale
+      filters.push(`scale=${outW}:-1:flags=lanczos`);
+
+      // Reverse / Boomerang
+      if (reverseMode === 'yes') {
+        filters.push('reverse');
+      } else if (reverseMode === 'boomerang') {
+        // split into forward and reversed, concat
+        filters.push('split[a][b];[a]null[fwd];[b]reverse[rev];[fwd][rev]concat=n=2:v=1:a=0');
+      }
+
+      // Text overlay
+      if (overlayText) {
+        const yPos = overlayPos === 'top' ? '20' : overlayPos === 'center' ? '(h-text_h)/2' : 'h-text_h-20';
+        const escapedText = overlayText.replace(/'/g, "\\'").replace(/:/g, "\\:");
+        filters.push(`drawtext=text='${escapedText}':fontsize=${overlaySize}:fontcolor=${overlayColor}:x=(w-text_w)/2:y=${yPos}:borderw=2:bordercolor=black`);
+      }
+
+      // FPS
+      filters.push(`fps=${fps}`);
+
+      // Build the palettegen + paletteuse approach for best quality
+      const ditherMap = { none: 'none', bayer3: 'bayer:bayer_scale=3', bayer5: 'bayer:bayer_scale=5', floyd: 'floyd_steinberg' };
+      const ditherStr = ditherMap[ditherOpt] || 'bayer:bayer_scale=3';
+
+      // Check if we used the boomerang split (complex filtergraph)
+      const isComplex = reverseMode === 'boomerang';
+
+      // For boomerang we need a different approach
+      let filterChain;
+      if (isComplex) {
+        // Two-pass: first make the trimmed/processed video, then palettegen
+        const preFilters = [];
+        preFilters.push(`trim=start=${startT}:end=${endT},setpts=PTS-STARTPTS`);
+        if (speed !== 1) preFilters.push(`setpts=${(1 / speed).toFixed(4)}*PTS`);
+        if (cropMode !== 'none') {
+          const [cw, ch] = cropMode.split(':').map(Number);
+          const ratio = cw / ch;
+          if (videoW / videoH > ratio) {
+            preFilters.push(`crop=${Math.round(videoH * ratio)}:${videoH}`);
+          } else {
+            preFilters.push(`crop=${videoW}:${Math.round(videoW / ratio)}`);
+          }
+        }
+        preFilters.push(`scale=${outW}:-1:flags=lanczos`);
+        if (overlayText) {
+          const yPos = overlayPos === 'top' ? '20' : overlayPos === 'center' ? '(h-text_h)/2' : 'h-text_h-20';
+          const escapedText = overlayText.replace(/'/g, "\\'").replace(/:/g, "\\:");
+          preFilters.push(`drawtext=text='${escapedText}':fontsize=${overlaySize}:fontcolor=${overlayColor}:x=(w-text_w)/2:y=${yPos}:borderw=2:bordercolor=black`);
+        }
+        preFilters.push(`fps=${fps}`);
+        preFilters.push('split[a][b];[a]null[fwd];[b]reverse[rev];[fwd][rev]concat=n=2:v=1:a=0');
+
+        // Step 1: make intermediate
+        progressShow('Step 1/3: Processing video...');
+        await ffmpeg.exec(['-i', 'input.vid', '-vf', preFilters.join(','), '-an', 'temp.mp4']);
+
+        // Step 2: palette
+        progressShow('Step 2/3: Generating palette...');
+        await ffmpeg.exec(['-i', 'temp.mp4', '-vf', `palettegen=max_colors=${colors}:stats_mode=diff`, '-y', 'palette.png']);
+
+        // Step 3: final gif
+        progressShow('Step 3/3: Creating GIF...');
+        await ffmpeg.exec(['-i', 'temp.mp4', '-i', 'palette.png', '-lavfi', `paletteuse=dither=${ditherStr}`, '-loop', loopVal, '-y', 'output.gif']);
+      } else {
+        // Standard two-pass with simple filterchain
+        const vf = filters.join(',');
+
+        progressShow('Step 1/2: Generating palette...');
+        await ffmpeg.exec(['-i', 'input.vid', '-vf', vf + `,palettegen=max_colors=${colors}:stats_mode=diff`, '-y', 'palette.png']);
+
+        progressShow('Step 2/2: Creating GIF...');
+        await ffmpeg.exec(['-i', 'input.vid', '-i', 'palette.png', '-lavfi', vf + `[x];[x][1:v]paletteuse=dither=${ditherStr}`, '-loop', loopVal, '-y', 'output.gif']);
+      }
+
+      // Read output
+      const data = await ffmpeg.readFile('output.gif');
+      gifBlob = new Blob([data.buffer], { type: 'image/gif' });
+      const gifUrl = URL.createObjectURL(gifBlob);
+
+      gifPreview.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = gifUrl;
+      gifPreview.appendChild(img);
+
+      gifInfo.style.display = '';
+      gifInfo.innerHTML = `<span>Size: <strong>${fmtBytes(gifBlob.size)}</strong></span>` +
+        `<span>Width: <strong>${outW}px</strong></span>` +
+        `<span>FPS: <strong>${fps}</strong></span>` +
+        `<span>Duration: <strong>${fmtTime(dur / speed)}</strong></span>`;
+
+      downloadBtn.disabled = false;
+      progressHide();
+    } catch (err) {
+      console.error(err);
+      progressText.textContent = 'Error: ' + err.message;
+    } finally {
+      convertBtn.disabled = false;
+    }
+  });
+
+  /* ── Download ── */
+  downloadBtn.addEventListener('click', () => {
+    if (!gifBlob) return;
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(gifBlob);
+    a.download = (videoFile.name.replace(/\.[^.]+$/, '') || 'video') + '.gif';
+    a.click();
+  });
+
+  /* ── Reset ── */
+  resetBtn.addEventListener('click', () => {
+    srcVideo.pause(); srcVideo.src = '';
+    videoFile = null; gifBlob = null; videoDuration = 0;
+    editor.classList.remove('active');
+    dropZone.style.display = '';
+    fileInput.value = '';
+    downloadBtn.disabled = true;
+    gifPreview.innerHTML = '<span class="placeholder">GIF will appear here after conversion</span>';
+    gifInfo.style.display = 'none';
+    progressHide();
+  });
+
+  /* ── Progress helpers ── */
+  ffmpeg.on('progress', ({ progress: p }) => {
+    const pct = Math.round(Math.max(0, Math.min(1, p)) * 100);
+    progressFill.style.width = pct + '%';
+  });
+
+  function progressShow(msg) {
+    progress.classList.add('active');
+    progressText.textContent = msg;
+    progressFill.style.width = '0%';
+  }
+  function progressHide() {
+    progress.classList.remove('active');
+  }
+
+  /* ── Utility ── */
+  function fmtTime(s) { return s < 60 ? s.toFixed(2) + 's' : Math.floor(s / 60) + ':' + ('0' + Math.floor(s % 60)).slice(-2); }
+  function fmtBytes(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; return (b / 1048576).toFixed(2) + ' MB'; }
+})();
+</script>
+</body>
+</html>

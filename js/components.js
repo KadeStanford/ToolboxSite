@@ -101,6 +101,7 @@ const TN_TOOLS = [
   { name: 'Markdown to HTML',         slug: 'markdown-to-html',      category: 'converter',  icon: '<i class="fa-brands fa-html5"></i>', desc: 'Convert Markdown to HTML in real-time' },
   { name: 'Image to PDF',             slug: 'image-to-pdf',          category: 'converter',  icon: '<i class="fa-solid fa-file-pdf"></i>', desc: 'Combine images into a PDF document' },
   { name: 'PDF to Image',             slug: 'pdf-to-image',          category: 'converter',  icon: '<i class="fa-solid fa-image"></i>', desc: 'Extract images from PDF pages' },
+  { name: 'Video to GIF',              slug: 'video-to-gif',          category: 'converter',  icon: '<i class="fa-solid fa-film"></i>', desc: 'Convert video to GIF with full customization' },
   // ── SEO & Web Tools ──
   { name: 'Meta Tag Analyzer',        slug: 'meta-tag-analyzer',     category: 'seo',        icon: '<i class="fa-solid fa-magnifying-glass-chart"></i>', desc: 'Analyze & score HTML meta tags' },
   { name: 'Robots.txt Generator',     slug: 'robots-txt-generator',  category: 'seo',        icon: '<i class="fa-solid fa-robot"></i>', desc: 'Build robots.txt with presets' },
@@ -532,6 +533,20 @@ function initSearch() {
     document.querySelectorAll('.tool-card').forEach(card => {
       const text = card.textContent.toLowerCase();
       card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+    // Hide category sections with no visible cards
+    document.querySelectorAll('.category-section').forEach(section => {
+      const visibleCards = section.querySelectorAll('.tool-card:not([style*="display: none"])');
+      section.style.display = (q && visibleCards.length === 0) ? 'none' : '';
+    });
+    // Hide inline ads next to hidden sections
+    document.querySelectorAll('.ad-banner.ad-inline').forEach(ad => {
+      if (!q) { ad.style.display = ''; return; }
+      const prev = ad.previousElementSibling;
+      const next = ad.nextElementSibling;
+      const prevHidden = prev && prev.style.display === 'none';
+      const nextHidden = next && next.style.display === 'none';
+      ad.style.display = (prevHidden || nextHidden) ? 'none' : '';
     });
   });
 }

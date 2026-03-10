@@ -50,11 +50,9 @@
 <section class="hero">
   <h1>Your Free Online <span class="highlight">Toolkit</span></h1>
   <p>140+ browser-based tools for developers, writers, and everyone else. No signup. No data sent to servers. Just tools that work.</p>
-  <div class="hero-badges">
-    <span class="hero-badge"><i class="fa-solid fa-check"></i> 100% Free</span>
-    <span class="hero-badge"><i class="fa-solid fa-check"></i> No Signup</span>
-    <span class="hero-badge"><i class="fa-solid fa-check"></i> Works Offline</span>
-    <span class="hero-badge"><i class="fa-solid fa-check"></i> No Data Collected</span>
+  <div class="hero-counter">
+    <span class="hero-counter-label">Tools Used</span>
+    <div class="flip-counter" id="flipCounter"></div>
   </div>
   <div class="search-bar" role="search">
     <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -618,6 +616,11 @@
         <h3>Epoch Timestamp Converter</h3>
         <p>Convert Unix epoch timestamps to human-readable dates.</p>
       </a>
+      <a href="/tools/video-to-gif.html" class="tool-card">
+        <span class="tool-card-icon"><i class="fa-solid fa-film"></i></span>
+        <h3>Video to GIF</h3>
+        <p>Convert video to animated GIF with trim, resize, speed, crop & text overlay.</p>
+      </a>
     </div>
   </section>
 
@@ -997,5 +1000,123 @@
 
 <script src="/js/utils.js"></script>
 <script src="/js/components.js"></script>
+<script>
+/* ── Flip Counter ── */
+(function() {
+  const STORAGE_KEY = 'toolnook_tools_used';
+  const container = document.getElementById('flipCounter');
+  if (!container) return;
+
+  // Get or init count from localStorage
+  let count = parseInt(localStorage.getItem(STORAGE_KEY)) || 0;
+  // Increment on every visit
+  count++;
+  localStorage.setItem(STORAGE_KEY, count);
+
+  // Seed a base so it looks substantial
+  const BASE = 48372;
+  let displayCount = BASE + count;
+  let currentDigits = [];
+
+  function formatWithCommas(n) {
+    return n.toLocaleString('en-US');
+  }
+
+  function buildDigits(numStr) {
+    container.innerHTML = '';
+    currentDigits = [];
+    for (let i = 0; i < numStr.length; i++) {
+      const ch = numStr[i];
+      if (ch === ',') {
+        const comma = document.createElement('span');
+        comma.className = 'flip-comma';
+        comma.textContent = ',';
+        container.appendChild(comma);
+        currentDigits.push({ type: 'comma', el: comma });
+      } else {
+        const digit = document.createElement('div');
+        digit.className = 'flip-digit';
+        digit.innerHTML =
+          '<div class="top"><span>' + ch + '</span></div>' +
+          '<div class="bottom"><span>' + ch + '</span></div>';
+        container.appendChild(digit);
+        currentDigits.push({ type: 'digit', el: digit, value: ch });
+      }
+    }
+  }
+
+  function flipTo(newNum) {
+    const newStr = formatWithCommas(newNum);
+    const oldStr = formatWithCommas(displayCount);
+
+    // If length changed, rebuild
+    if (newStr.length !== oldStr.length) {
+      displayCount = newNum;
+      buildDigits(newStr);
+      return;
+    }
+
+    let digitIdx = 0;
+    for (let i = 0; i < newStr.length; i++) {
+      if (newStr[i] === ',') continue;
+      const entry = currentDigits.filter(d => d.type === 'digit')[digitIdx];
+      digitIdx++;
+      if (!entry) continue;
+      const oldVal = entry.value;
+      const newVal = newStr[i];
+      if (oldVal === newVal) continue;
+
+      // Animate flip
+      const el = entry.el;
+      entry.value = newVal;
+
+      // Add flap elements
+      const flapTop = document.createElement('div');
+      flapTop.className = 'flap flap-top';
+      flapTop.innerHTML = '<span>' + oldVal + '</span>';
+
+      const flapBottom = document.createElement('div');
+      flapBottom.className = 'flap flap-bottom';
+      flapBottom.innerHTML = '<span>' + newVal + '</span>';
+
+      // Set the new value underneath
+      el.querySelector('.top span').textContent = newVal;
+      el.querySelector('.bottom span').textContent = newVal;
+
+      // But show old on top flap initially
+      el.appendChild(flapTop);
+      el.appendChild(flapBottom);
+
+      // Start flip
+      el.classList.add('flipping');
+
+      // Cleanup after animation
+      setTimeout(() => {
+        el.classList.remove('flipping');
+        if (flapTop.parentNode) flapTop.remove();
+        if (flapBottom.parentNode) flapBottom.remove();
+      }, 700);
+    }
+    displayCount = newNum;
+  }
+
+  // Initial render
+  buildDigits(formatWithCommas(displayCount));
+
+  // Simulate live updates — random increment every 3-8 seconds
+  function scheduleNext() {
+    const delay = 3000 + Math.random() * 5000;
+    setTimeout(() => {
+      const increment = Math.floor(Math.random() * 3) + 1;
+      displayCount += increment;
+      count += increment;
+      localStorage.setItem(STORAGE_KEY, count);
+      flipTo(displayCount);
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+})();
+</script>
 </body>
 </html>
