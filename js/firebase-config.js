@@ -49,13 +49,14 @@
 // =========================================================
 
 const TN_FIREBASE_CONFIG = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey:            "AIzaSyBLP5e2cMoH2FQGQWmLIpF8FzkWTU9zijs",
+  authDomain:        "toolnook-f3861.firebaseapp.com",
+  projectId:         "toolnook-f3861",
+  storageBucket:     "toolnook-f3861.firebasestorage.app",
+  messagingSenderId: "1014360607464",
+  appId:             "1:1014360607464:web:cbd3220a2de1e9f46d575d",
+  measurementId:     "G-4VCJE92Z2J"
 };
 
 // ⚠️  Change to true ONLY after replacing ALL values above with real ones
-const TN_FIREBASE_ENABLED = false;
+const TN_FIREBASE_ENABLED = true;
