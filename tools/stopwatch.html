@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stopwatch — Lap Timer & Split Times | ToolNook</title>
+  <meta name="description" content="Free online stopwatch with lap times, split timer, and millisecond precision. Start, stop, lap, and reset." />
+  <meta name="keywords" content="online stopwatch, lap timer, split time, stopwatch with laps, timer, milliseconds" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/stopwatch.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .sw-display{text-align:center;padding:30px 0;}
+    .sw-time{font-size:4rem;font-weight:800;font-family:'Courier New',monospace;letter-spacing:2px;color:var(--text);}
+    .sw-ms{color:var(--primary);font-size:2.5rem;}
+    .sw-btns{display:flex;gap:12px;justify-content:center;margin-top:20px;}
+    .sw-btn{width:80px;height:80px;border-radius:50%;border:3px solid;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+    .sw-btn:active{transform:scale(.95);}
+    .sw-btn.start{border-color:#22c55e;background:#dcfce7;color:#16a34a;}
+    .sw-btn.start:hover{background:#22c55e;color:#fff;}
+    .sw-btn.stop{border-color:#ef4444;background:#fee2e2;color:#dc2626;}
+    .sw-btn.stop:hover{background:#ef4444;color:#fff;}
+    .sw-btn.lap{border-color:var(--primary);background:#eff6ff;color:var(--primary);}
+    .sw-btn.lap:hover{background:var(--primary);color:#fff;}
+    .sw-btn.reset{border-color:#6b7280;background:#f3f4f6;color:#6b7280;}
+    .sw-btn.reset:hover{background:#6b7280;color:#fff;}
+    .sw-btn:disabled{opacity:.4;cursor:default;transform:none;}
+    .laps-table{width:100%;margin-top:24px;border-collapse:collapse;}
+    .laps-table th{font-size:.72rem;text-transform:uppercase;color:var(--text-muted);padding:8px;border-bottom:2px solid var(--border);text-align:left;}
+    .laps-table td{padding:8px;border-bottom:1px solid var(--border);font-size:.86rem;font-family:'Courier New',monospace;}
+    .laps-table tr:first-child td{font-weight:700;color:var(--primary);}
+    .lap-best{color:#16a34a!important;}
+    .lap-worst{color:#dc2626!important;}
+    .laps-header{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+    .laps-header h3{font-size:.88rem;}
+    .laps-stats{display:flex;gap:16px;font-size:.78rem;}
+    .laps-stats span{background:#f3f4f6;padding:4px 10px;border-radius:20px;font-weight:600;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Stopwatch</div>
+      <h1>Stopwatch</h1>
+      <p>Precision stopwatch with lap times. Press Space to start/stop and L for lap.</p>
+    </div>
+    <div class="tool-container">
+      <div class="sw-display">
+        <div class="sw-time" id="display">00:00:00<span class="sw-ms">.000</span></div>
+      </div>
+      <div class="sw-btns">
+        <button class="sw-btn start" id="btnStart" onclick="startStop()">Start</button>
+        <button class="sw-btn lap" id="btnLap" onclick="lap()" disabled>Lap</button>
+        <button class="sw-btn reset" id="btnReset" onclick="reset()" disabled>Reset</button>
+      </div>
+      <div class="laps-header" id="lapsHeader" style="display:none;">
+        <h3>Laps</h3>
+        <div class="laps-stats" id="lapStats"></div>
+      </div>
+      <table class="laps-table" id="lapsTable" style="display:none;">
+        <thead><tr><th>#</th><th>Lap Time</th><th>Split Time</th></tr></thead>
+        <tbody id="lapsBody"></tbody>
+      </table>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Online Stopwatch</h2>
+      <p>This precision stopwatch runs in your browser with millisecond accuracy. Use laps to track split times. Keyboard shortcuts: Space to start/stop, L for lap, R to reset.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('stopwatch');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('stopwatch','utility');
+});
+
+let running=false,startTime=0,elapsed=0,rafId=null,laps=[];
+
+function formatTime(ms){
+  const h=Math.floor(ms/3600000);
+  const m=Math.floor((ms%3600000)/60000);
+  const s=Math.floor((ms%60000)/1000);
+  const ml=ms%1000;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}<span class="sw-ms">.${String(ml).padStart(3,'0')}</span>`;
+}
+function formatPlain(ms){
+  const h=Math.floor(ms/3600000);
+  const m=Math.floor((ms%3600000)/60000);
+  const s=Math.floor((ms%60000)/1000);
+  const ml=ms%1000;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ml).padStart(3,'0')}`;
+}
+
+function update(){
+  const now=performance.now();
+  const total=elapsed+(now-startTime);
+  document.getElementById('display').innerHTML=formatTime(Math.floor(total));
+  rafId=requestAnimationFrame(update);
+}
+
+function startStop(){
+  if(!running){
+    running=true;
+    startTime=performance.now();
+    update();
+    document.getElementById('btnStart').textContent='Stop';
+    document.getElementById('btnStart').className='sw-btn stop';
+    document.getElementById('btnLap').disabled=false;
+    document.getElementById('btnReset').disabled=true;
+  }else{
+    running=false;
+    cancelAnimationFrame(rafId);
+    elapsed+=performance.now()-startTime;
+    document.getElementById('btnStart').textContent='Start';
+    document.getElementById('btnStart').className='sw-btn start';
+    document.getElementById('btnLap').disabled=true;
+    document.getElementById('btnReset').disabled=false;
+  }
+}
+
+function lap(){
+  if(!running)return;
+  const total=elapsed+(performance.now()-startTime);
+  const prevTotal=laps.length?laps[laps.length-1].total:0;
+  const lapTime=total-prevTotal;
+  laps.push({total:Math.floor(total),lap:Math.floor(lapTime)});
+  renderLaps();
+}
+
+function reset(){
+  running=false;
+  cancelAnimationFrame(rafId);
+  elapsed=0;
+  laps=[];
+  document.getElementById('display').innerHTML=formatTime(0);
+  document.getElementById('btnStart').textContent='Start';
+  document.getElementById('btnStart').className='sw-btn start';
+  document.getElementById('btnLap').disabled=true;
+  document.getElementById('btnReset').disabled=true;
+  document.getElementById('lapsTable').style.display='none';
+  document.getElementById('lapsHeader').style.display='none';
+}
+
+function renderLaps(){
+  if(!laps.length)return;
+  document.getElementById('lapsTable').style.display='';
+  document.getElementById('lapsHeader').style.display='';
+  const lapTimes=laps.map(l=>l.lap);
+  const best=Math.min(...lapTimes);
+  const worst=Math.max(...lapTimes);
+  const avg=Math.floor(lapTimes.reduce((a,b)=>a+b,0)/lapTimes.length);
+  document.getElementById('lapStats').innerHTML=`<span>Best: ${formatPlain(best)}</span><span>Worst: ${formatPlain(worst)}</span><span>Avg: ${formatPlain(avg)}</span>`;
+  const rows=[...laps].reverse().map((l,i)=>{
+    const num=laps.length-i;
+    let cls='';
+    if(laps.length>1){
+      if(l.lap===best)cls='lap-best';
+      else if(l.lap===worst)cls='lap-worst';
+    }
+    return `<tr><td>${num}</td><td class="${cls}">${formatPlain(l.lap)}</td><td>${formatPlain(l.total)}</td></tr>`;
+  }).join('');
+  document.getElementById('lapsBody').innerHTML=rows;
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.code==='Space'){e.preventDefault();startStop();}
+  if(e.code==='KeyL')lap();
+  if(e.code==='KeyR')reset();
+});
+</script>
+</body>
+</html>

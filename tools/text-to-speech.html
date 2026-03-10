@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text to Speech — Listen to Any Text | ToolNook</title>
+  <meta name="description" content="Convert text to speech using your browser's built-in voices. Adjust speed, pitch, and choose from multiple voices." />
+  <meta name="keywords" content="text to speech, TTS, read text aloud, speech synthesis, browser TTS" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/text-to-speech.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .tts-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .tts-top { background:linear-gradient(135deg,#6366f1,#8b5cf6); padding:24px; display:flex; align-items:center; gap:16px; }
+    .tts-icon { width:60px; height:60px; background:rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+    .tts-status { color:#fff; }
+    .tts-status h3 { margin:0; font-size:1.05rem; }
+    .tts-status p { margin:4px 0 0; font-size:.82rem; opacity:.8; }
+    .tts-body { padding:20px; }
+    .tts-body textarea { width:100%; min-height:140px; border:2px solid var(--border); border-radius:var(--radius); padding:14px; font-size:.9rem; resize:vertical; font-family:inherit; }
+    .tts-body textarea:focus { border-color:#6366f1; outline:none; }
+    .char-count { text-align:right; font-size:.73rem; color:var(--text-muted); margin-top:4px; }
+    .controls-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+    .ctrl-group label { display:block; font-size:.76rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; margin-bottom:5px; }
+    .ctrl-group select, .ctrl-group input[type=range] { width:100%; border:2px solid var(--border); border-radius:var(--radius); padding:8px; font-size:.84rem; }
+    .range-wrap { display:flex; align-items:center; gap:8px; }
+    .range-wrap input { flex:1; }
+    .range-val { font-weight:700; font-size:.84rem; color:var(--primary); min-width:32px; text-align:center; }
+    .btn-row { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .btn-speak { background:#6366f1; color:#fff; border:none; padding:12px 28px; border-radius:var(--radius); font-weight:700; font-size:.9rem; cursor:pointer; display:flex; align-items:center; gap:8px; transition:.15s; }
+    .btn-speak:hover { background:#4f46e5; }
+    .btn-speak:disabled { opacity:.5; cursor:not-allowed; }
+    .btn-stop { background:#ef4444; color:#fff; border:none; padding:12px 20px; border-radius:var(--radius); font-weight:600; cursor:pointer; transition:.15s; }
+    .btn-stop:hover { background:#dc2626; }
+    .btn-pause { background:#f59e0b; color:#fff; border:none; padding:12px 20px; border-radius:var(--radius); font-weight:600; cursor:pointer; transition:.15s; }
+    .visualizer { height:40px; margin:16px 0 0; display:flex; align-items:end; gap:3px; justify-content:center; }
+    .viz-bar { width:4px; background:#6366f1; border-radius:2px; transition:height .1s; }
+    @media(max-width:600px) { .controls-grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text</a> › Text to Speech</div>
+      <h1>Text to Speech</h1>
+      <p>Convert any text into natural-sounding speech using your browser's built-in voices.</p>
+    </div>
+    <div class="tool-container">
+      <div class="tts-card">
+        <div class="tts-top">
+          <div class="tts-icon">🔊</div>
+          <div class="tts-status">
+            <h3 id="status-text">Ready to Speak</h3>
+            <p id="status-sub">Enter text and click "Speak"</p>
+          </div>
+        </div>
+        <div class="tts-body">
+          <textarea id="tts-input" placeholder="Type or paste text you want to hear spoken aloud..."></textarea>
+          <div class="char-count"><span id="chars">0</span> characters</div>
+          <div class="controls-grid">
+            <div class="ctrl-group">
+              <label>Voice</label>
+              <select id="voice-sel"></select>
+            </div>
+            <div class="ctrl-group">
+              <label>Language</label>
+              <select id="lang-sel"><option value="">All Languages</option></select>
+            </div>
+            <div class="ctrl-group">
+              <label>Speed</label>
+              <div class="range-wrap">
+                <input type="range" id="rate" min="0.25" max="3" step="0.25" value="1" />
+                <span class="range-val" id="rate-val">1x</span>
+              </div>
+            </div>
+            <div class="ctrl-group">
+              <label>Pitch</label>
+              <div class="range-wrap">
+                <input type="range" id="pitch" min="0" max="2" step="0.1" value="1" />
+                <span class="range-val" id="pitch-val">1</span>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-speak" id="btn-speak" onclick="speak()">▶ Speak</button>
+            <button class="btn-pause" onclick="pauseResume()" id="btn-pause" style="display:none">⏸ Pause</button>
+            <button class="btn-stop" onclick="stopSpeech()" id="btn-stop" style="display:none">■ Stop</button>
+          </div>
+          <div class="visualizer" id="visualizer"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Free Browser-Based Text to Speech</h2>
+      <p>This Text to Speech tool uses the Web Speech API built into modern browsers. No data is sent to any server — everything is processed locally on your device.</p>
+      <h3>Features</h3>
+      <ul>
+        <li>Multiple voices and languages depending on your browser and OS</li>
+        <li>Adjustable playback speed (0.25x to 3x)</li>
+        <li>Pitch control for voice customization</li>
+        <li>Pause, resume, and stop controls</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('text-to-speech');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('text-to-speech','text');
+});
+
+const synth = window.speechSynthesis;
+let voices = [];
+let vizInterval;
+
+document.getElementById('tts-input').addEventListener('input', function() {
+  document.getElementById('chars').textContent = this.value.length;
+});
+document.getElementById('rate').addEventListener('input', function() {
+  document.getElementById('rate-val').textContent = this.value + 'x';
+});
+document.getElementById('pitch').addEventListener('input', function() {
+  document.getElementById('pitch-val').textContent = this.value;
+});
+
+function loadVoices() {
+  voices = synth.getVoices();
+  const voiceSel = document.getElementById('voice-sel');
+  const langSel = document.getElementById('lang-sel');
+  const langs = new Set();
+  voiceSel.innerHTML = '';
+  voices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = v.name + ' (' + v.lang + ')' + (v.default ? ' ★' : '');
+    voiceSel.appendChild(opt);
+    langs.add(v.lang);
+  });
+  langs.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; langSel.appendChild(o); });
+}
+
+loadVoices();
+if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+
+document.getElementById('lang-sel').addEventListener('change', function() {
+  const lang = this.value;
+  const voiceSel = document.getElementById('voice-sel');
+  voiceSel.innerHTML = '';
+  voices.forEach((v, i) => {
+    if (!lang || v.lang === lang) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = v.name + ' (' + v.lang + ')';
+      voiceSel.appendChild(opt);
+    }
+  });
+});
+
+function speak() {
+  const text = document.getElementById('tts-input').value.trim();
+  if (!text) return showToast('Please enter some text');
+  synth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  const vi = document.getElementById('voice-sel').value;
+  if (voices[vi]) utter.voice = voices[vi];
+  utter.rate = parseFloat(document.getElementById('rate').value);
+  utter.pitch = parseFloat(document.getElementById('pitch').value);
+  utter.onstart = () => {
+    document.getElementById('status-text').textContent = 'Speaking...';
+    document.getElementById('status-sub').textContent = text.slice(0, 60) + (text.length > 60 ? '...' : '');
+    document.getElementById('btn-pause').style.display = '';
+    document.getElementById('btn-stop').style.display = '';
+    startViz();
+  };
+  utter.onend = () => {
+    document.getElementById('status-text').textContent = 'Finished';
+    document.getElementById('status-sub').textContent = 'Ready for more text';
+    document.getElementById('btn-pause').style.display = 'none';
+    document.getElementById('btn-stop').style.display = 'none';
+    stopViz();
+  };
+  synth.speak(utter);
+}
+
+function pauseResume() {
+  if (synth.paused) {
+    synth.resume();
+    document.getElementById('btn-pause').textContent = '⏸ Pause';
+    document.getElementById('status-text').textContent = 'Speaking...';
+    startViz();
+  } else {
+    synth.pause();
+    document.getElementById('btn-pause').textContent = '▶ Resume';
+    document.getElementById('status-text').textContent = 'Paused';
+    stopViz();
+  }
+}
+
+function stopSpeech() {
+  synth.cancel();
+  document.getElementById('status-text').textContent = 'Stopped';
+  document.getElementById('status-sub').textContent = 'Ready to speak';
+  document.getElementById('btn-pause').style.display = 'none';
+  document.getElementById('btn-stop').style.display = 'none';
+  stopViz();
+}
+
+function startViz() {
+  const viz = document.getElementById('visualizer');
+  viz.innerHTML = '';
+  for (let i = 0; i < 20; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'viz-bar';
+    bar.style.height = '4px';
+    viz.appendChild(bar);
+  }
+  vizInterval = setInterval(() => {
+    viz.querySelectorAll('.viz-bar').forEach(b => {
+      b.style.height = (4 + Math.random() * 30) + 'px';
+    });
+  }, 100);
+}
+
+function stopViz() {
+  clearInterval(vizInterval);
+  const viz = document.getElementById('visualizer');
+  viz.querySelectorAll('.viz-bar').forEach(b => { b.style.height = '4px'; });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro Timer — Focus & Productivity Timer | ToolNook</title>
+  <meta name="description" content="Boost productivity with the Pomodoro technique. 25-minute focus sessions with short and long breaks." />
+  <meta name="keywords" content="pomodoro timer, focus timer, productivity timer, pomodoro technique, study timer" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/pomodoro-timer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .pomo-wrap{text-align:center;max-width:440px;margin:0 auto;}
+    .mode-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:24px;}
+    .mode-tab{padding:10px 22px;border:2px solid var(--border);border-radius:var(--radius);font-size:.84rem;cursor:pointer;background:#fff;font-weight:600;transition:all .15s;}
+    .mode-tab.active.focus{border-color:#ef4444;background:#ef4444;color:#fff;}
+    .mode-tab.active.short{border-color:#22c55e;background:#22c55e;color:#fff;}
+    .mode-tab.active.long{border-color:#3b82f6;background:#3b82f6;color:#fff;}
+    .ring-container{position:relative;width:260px;height:260px;margin:0 auto 24px;}
+    .ring-bg,.ring-fg{position:absolute;top:0;left:0;}
+    .ring-svg{transform:rotate(-90deg);}
+    .timer-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+    .timer-digits{font-size:3.2rem;font-weight:800;font-family:'Courier New',monospace;}
+    .timer-label{font-size:.82rem;color:var(--text-muted);margin-top:2px;}
+    .pomo-btns{display:flex;gap:12px;justify-content:center;margin-bottom:20px;}
+    .pomo-btn{padding:12px 28px;border-radius:var(--radius-lg);font-size:.92rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+    .pomo-btn:active{transform:scale(.96);}
+    .pomo-btn.primary{background:var(--primary);color:#fff;}
+    .pomo-btn.primary:hover{opacity:.9;}
+    .pomo-btn.secondary{background:#f3f4f6;color:var(--text);}
+    .pomo-btn.secondary:hover{background:#e5e7eb;}
+    .session-track{display:flex;gap:8px;justify-content:center;margin:16px 0;}
+    .dot{width:14px;height:14px;border-radius:50%;background:#e5e7eb;transition:background .3s;}
+    .dot.done{background:#22c55e;}
+    .dot.current{background:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.2);}
+    .settings-panel{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-top:20px;text-align:left;}
+    .settings-panel h3{font-size:.86rem;margin-bottom:12px;}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;font-size:.84rem;}
+    .setting-row input{width:70px;padding:6px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);font-size:.88rem;font-weight:600;}
+    .setting-row input:focus{border-color:var(--primary);outline:none;}
+    .setting-row label{font-weight:600;}
+    .stats-row{display:flex;gap:12px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+    .stat-badge{background:#f3f4f6;padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Pomodoro Timer</div>
+      <h1>Pomodoro Timer</h1>
+      <p>Stay focused with the Pomodoro technique. Work in intervals, take breaks, repeat.</p>
+    </div>
+    <div class="tool-container">
+      <div class="pomo-wrap">
+        <div class="mode-tabs">
+          <div class="mode-tab active focus" id="tabFocus" onclick="setMode('focus')">🎯 Focus</div>
+          <div class="mode-tab short" id="tabShort" onclick="setMode('short')">☕ Short Break</div>
+          <div class="mode-tab long" id="tabLong" onclick="setMode('long')">🌴 Long Break</div>
+        </div>
+        <div class="ring-container">
+          <svg class="ring-svg" width="260" height="260">
+            <circle cx="130" cy="130" r="115" fill="none" stroke="#e5e7eb" stroke-width="10"/>
+            <circle id="progressRing" cx="130" cy="130" r="115" fill="none" stroke="#ef4444" stroke-width="10" stroke-linecap="round"/>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-digits" id="timerDisplay">25:00</div>
+            <div class="timer-label" id="timerLabel">Focus Time</div>
+          </div>
+        </div>
+        <div class="pomo-btns">
+          <button class="pomo-btn primary" id="btnMain" onclick="toggleTimer()">▶ Start</button>
+          <button class="pomo-btn secondary" onclick="resetTimer()">↺ Reset</button>
+        </div>
+        <div class="session-track" id="sessionTrack"></div>
+        <div class="stats-row" id="statsRow"></div>
+
+        <div class="settings-panel">
+          <h3>⚙️ Settings</h3>
+          <div class="setting-row"><label>Focus (min)</label><input id="sFocus" type="number" value="25" min="1" max="120" onchange="applySettings()"></div>
+          <div class="setting-row"><label>Short Break (min)</label><input id="sShort" type="number" value="5" min="1" max="30" onchange="applySettings()"></div>
+          <div class="setting-row"><label>Long Break (min)</label><input id="sLong" type="number" value="15" min="1" max="60" onchange="applySettings()"></div>
+          <div class="setting-row"><label>Sessions before long break</label><input id="sCount" type="number" value="4" min="2" max="10" onchange="applySettings()"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>The Pomodoro Technique</h2>
+      <p>Developed by Francesco Cirillo, the Pomodoro Technique uses a timer to break work into intervals (traditionally 25 minutes) separated by short breaks. After four intervals, take a longer break. This promotes sustained focus and prevents burnout.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('pomodoro-timer');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('pomodoro-timer','utility');
+  applySettings();
+  renderDots();
+  updateStats();
+});
+
+const circumference=2*Math.PI*115;
+document.getElementById('progressRing').style.strokeDasharray=circumference;
+
+let config={focus:25,short:5,long:15,count:4};
+let mode='focus', running=false, timeLeft=0, totalTime=0, intervalId=null;
+let completedSessions=0, totalFocusTime=0;
+const colors={focus:'#ef4444',short:'#22c55e',long:'#3b82f6'};
+const labels={focus:'Focus Time',short:'Short Break',long:'Long Break'};
+
+function applySettings(){
+  config.focus=parseInt(document.getElementById('sFocus').value)||25;
+  config.short=parseInt(document.getElementById('sShort').value)||5;
+  config.long=parseInt(document.getElementById('sLong').value)||15;
+  config.count=parseInt(document.getElementById('sCount').value)||4;
+  if(!running)setMode(mode);
+}
+
+function setMode(m){
+  if(running)stopTimer();
+  mode=m;
+  totalTime=config[mode]*60;
+  timeLeft=totalTime;
+  updateDisplay();
+  updateRing(1);
+  document.getElementById('progressRing').style.stroke=colors[mode];
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab'+m.charAt(0).toUpperCase()+m.slice(1)).classList.add('active');
+  document.getElementById('timerLabel').textContent=labels[mode];
+}
+
+function toggleTimer(){
+  running?stopTimer():startTimer();
+}
+function startTimer(){
+  if(timeLeft<=0)return;
+  running=true;
+  document.getElementById('btnMain').textContent='⏸ Pause';
+  intervalId=setInterval(()=>{
+    timeLeft--;
+    updateDisplay();
+    updateRing(timeLeft/totalTime);
+    if(timeLeft<=0){ timerComplete(); }
+  },1000);
+}
+function stopTimer(){
+  running=false;
+  clearInterval(intervalId);
+  document.getElementById('btnMain').textContent='▶ Start';
+}
+function resetTimer(){
+  stopTimer();
+  setMode(mode);
+}
+
+function timerComplete(){
+  stopTimer();
+  if(mode==='focus'){
+    completedSessions++;
+    totalFocusTime+=config.focus;
+    renderDots();
+    updateStats();
+    try{new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQQAAAAAAA==').play();}catch(e){}
+    if(completedSessions%config.count===0) setMode('long');
+    else setMode('short');
+    showToast('Focus session complete! Take a break 🎉');
+  }else{
+    setMode('focus');
+    showToast('Break over! Time to focus 🎯');
+  }
+}
+
+function updateDisplay(){
+  const m=Math.floor(timeLeft/60);
+  const s=timeLeft%60;
+  document.getElementById('timerDisplay').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.title=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} — Pomodoro | ToolNook`;
+}
+function updateRing(pct){
+  document.getElementById('progressRing').style.strokeDashoffset=circumference*(1-Math.max(0,pct));
+}
+function renderDots(){
+  const total=config.count;
+  const done=completedSessions%config.count;
+  let html='';
+  for(let i=0;i<total;i++){
+    if(i<done) html+=`<div class="dot done"></div>`;
+    else if(i===done&&mode==='focus') html+=`<div class="dot current"></div>`;
+    else html+=`<div class="dot"></div>`;
+  }
+  document.getElementById('sessionTrack').innerHTML=html;
+}
+function updateStats(){
+  document.getElementById('statsRow').innerHTML=`<span class="stat-badge">🎯 ${completedSessions} sessions</span><span class="stat-badge">⏱ ${totalFocusTime} min focused</span>`;
+}
+</script>
+</body>
+</html>

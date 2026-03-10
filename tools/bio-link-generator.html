@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bio Link Generator — Create a Custom Link-in-Bio Page | ToolNook</title>
+  <meta name="description" content="Create a custom link-in-bio page with your links, social icons, and branding. Download the HTML or copy the shareable page." />
+  <meta name="keywords" content="bio link generator, link in bio, linktree alternative, bio page builder, social links page" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/bio-link-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .bio-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;}
+    @media(max-width:800px){.bio-grid{grid-template-columns:1fr;}}
+    .form-panel{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:18px;max-height:720px;overflow-y:auto;}
+    .form-panel h3{font-size:.88rem;margin-bottom:12px;}
+    .fg{margin-bottom:12px;}
+    .fg label{display:block;font-weight:600;font-size:.76rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;}
+    .fg input,.fg textarea,.fg select{width:100%;padding:9px 12px;border:2px solid var(--border);border-radius:var(--radius);font-size:.84rem;}
+    .fg input:focus,.fg textarea:focus{border-color:var(--primary);outline:none;}
+    .link-item{background:#f9fafb;border:1px solid var(--border);border-radius:var(--radius);padding:10px;margin-bottom:8px;position:relative;}
+    .link-item .link-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+    .link-item input{padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.8rem;width:100%;}
+    .link-item input:focus{border-color:var(--primary);outline:none;}
+    .link-rm{position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;font-size:.9rem;color:#ef4444;}
+    .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+    .theme-swatch{height:36px;border-radius:var(--radius);cursor:pointer;border:3px solid transparent;transition:border-color .15s;}
+    .theme-swatch.active{border-color:var(--text);}
+    .preview-frame{background:#f3f4f6;border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;justify-content:center;align-items:flex-start;min-height:500px;}
+    .bio-page{width:100%;max-width:380px;border-radius:20px;overflow:hidden;min-height:400px;padding:30px 20px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;}
+    .bio-avatar{width:90px;height:90px;border-radius:50%;margin:0 auto 12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:2.2rem;border:3px solid rgba(255,255,255,.4);}
+    .bio-name{font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+    .bio-desc{font-size:.82rem;opacity:.85;margin-bottom:20px;}
+    .bio-link-btn{display:block;padding:13px 16px;margin-bottom:10px;border-radius:10px;text-decoration:none;font-weight:600;font-size:.88rem;transition:transform .15s,opacity .15s;}
+    .bio-link-btn:hover{transform:scale(1.02);opacity:.9;}
+    .export-btns{display:flex;gap:8px;margin-top:14px;}
+    hr.sep{border:none;border-top:1px solid var(--border);margin:14px 0;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#social-media-tools">Social Media</a> › Bio Link Generator</div>
+      <h1>Bio Link Generator</h1>
+      <p>Build a beautiful link-in-bio page. Add your links, choose a theme, and download the HTML.</p>
+    </div>
+    <div class="tool-container">
+      <div class="bio-grid">
+        <div class="form-panel">
+          <h3>👤 Profile</h3>
+          <div class="fg"><label>Display Name</label><input id="bName" placeholder="Your Name" value="Your Name" oninput="render()"></div>
+          <div class="fg"><label>Bio / Tagline</label><input id="bBio" placeholder="Developer, Creator, Dreamer" value="Developer · Creator · Dreamer ✨" oninput="render()"></div>
+          <div class="fg"><label>Avatar Emoji</label><input id="bAvatar" placeholder="😎" value="😎" maxlength="4" oninput="render()"></div>
+
+          <hr class="sep">
+          <h3>🎨 Theme</h3>
+          <div class="theme-grid" id="themeGrid"></div>
+
+          <hr class="sep">
+          <h3>🔗 Links</h3>
+          <div id="linkList"></div>
+          <button class="btn btn-secondary btn-sm" onclick="addLink()">+ Add Link</button>
+
+          <div class="export-btns">
+            <button class="btn btn-primary" onclick="downloadHTML()">⬇ Download HTML</button>
+            <button class="btn btn-secondary" onclick="copyHTML()">📋 Copy HTML</button>
+          </div>
+        </div>
+        <div class="preview-frame"><div class="bio-page" id="bioPreview"></div></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>What is a Link-in-Bio Page?</h2>
+      <p>A link-in-bio page is a single landing page that houses all your important links. It's commonly used on Instagram, TikTok, and Twitter where you can only share one link in your profile. This tool lets you create one for free.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('bio-link-generator');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('bio-link-generator','social');
+  buildThemes();
+  addLink('My Website','https://example.com');
+  addLink('Twitter / X','https://twitter.com');
+  addLink('GitHub','https://github.com');
+  render();
+});
+
+const THEMES=[
+  {name:'Ocean',bg:'linear-gradient(135deg,#667eea,#764ba2)',text:'#fff',btn:'rgba(255,255,255,.18)',btnText:'#fff'},
+  {name:'Sunset',bg:'linear-gradient(135deg,#f093fb,#f5576c)',text:'#fff',btn:'rgba(255,255,255,.2)',btnText:'#fff'},
+  {name:'Forest',bg:'linear-gradient(135deg,#11998e,#38ef7d)',text:'#fff',btn:'rgba(255,255,255,.2)',btnText:'#fff'},
+  {name:'Dark',bg:'linear-gradient(135deg,#0f0c29,#302b63,#24243e)',text:'#fff',btn:'rgba(255,255,255,.12)',btnText:'#fff'},
+  {name:'Light',bg:'#f8f9fa',text:'#333',btn:'#fff',btnText:'#333',btnBorder:'#ddd'},
+  {name:'Sky',bg:'linear-gradient(135deg,#89f7fe,#66a6ff)',text:'#fff',btn:'rgba(255,255,255,.25)',btnText:'#fff'},
+  {name:'Coral',bg:'linear-gradient(135deg,#ff9a9e,#fecfef)',text:'#333',btn:'rgba(255,255,255,.6)',btnText:'#333'},
+  {name:'Midnight',bg:'#0a0a0a',text:'#fff',btn:'#1a1a2e',btnText:'#fff',btnBorder:'#333'},
+];
+let activeTheme=THEMES[0];
+
+function buildThemes(){
+  document.getElementById('themeGrid').innerHTML=THEMES.map((t,i)=>
+    `<div class="theme-swatch${i===0?' active':''}" style="background:${t.bg}" onclick="selectTheme(${i},this)" title="${t.name}"></div>`
+  ).join('');
+}
+function selectTheme(i,el){
+  activeTheme=THEMES[i];
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+let links=[];
+function addLink(title,url){
+  links.push({title:title||'',url:url||''});
+  renderLinks();
+  render();
+}
+function removeLink(i){
+  links.splice(i,1);
+  renderLinks();
+  render();
+}
+function renderLinks(){
+  document.getElementById('linkList').innerHTML=links.map((l,i)=>
+    `<div class="link-item"><button class="link-rm" onclick="removeLink(${i})">✕</button><div class="link-row"><input placeholder="Label" value="${escapeHtml(l.title)}" oninput="links[${i}].title=this.value;render()"><input placeholder="https://..." value="${escapeHtml(l.url)}" oninput="links[${i}].url=this.value;render()"></div></div>`
+  ).join('');
+}
+
+function render(){
+  const name=document.getElementById('bName').value||'Your Name';
+  const bio=document.getElementById('bBio').value||'';
+  const avatar=document.getElementById('bAvatar').value||'😎';
+  const t=activeTheme;
+  const bp=document.getElementById('bioPreview');
+  bp.style.background=t.bg;
+  bp.style.color=t.text;
+  let html=`<div class="bio-avatar">${avatar}</div>`;
+  html+=`<div class="bio-name">${escapeHtml(name)}</div>`;
+  if(bio)html+=`<div class="bio-desc">${escapeHtml(bio)}</div>`;
+  links.forEach(l=>{
+    if(!l.title&&!l.url)return;
+    const border=t.btnBorder?`border:1px solid ${t.btnBorder};`:'';
+    html+=`<a class="bio-link-btn" href="${escapeHtml(l.url||'#')}" target="_blank" rel="noopener" style="background:${t.btn};color:${t.btnText};${border}">${escapeHtml(l.title||'Untitled')}</a>`;
+  });
+  bp.innerHTML=html;
+}
+
+function generateFullHTML(){
+  const name=document.getElementById('bName').value||'Your Name';
+  const bio=document.getElementById('bBio').value||'';
+  const avatar=document.getElementById('bAvatar').value||'😎';
+  const t=activeTheme;
+  let linkHTML=links.filter(l=>l.title||l.url).map(l=>{
+    const border=t.btnBorder?`border:1px solid ${t.btnBorder};`:'';
+    return `    <a href="${escapeHtml(l.url||'#')}" target="_blank" rel="noopener" style="display:block;padding:14px 18px;margin-bottom:10px;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;background:${t.btn};color:${t.btnText};${border}transition:opacity .15s;">${escapeHtml(l.title||'Untitled')}</a>`;
+  }).join('\n');
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>${escapeHtml(name)} — Links</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:${t.bg};color:${t.text};font-family:-apple-system,BlinkMacSystemFont,sans-serif;}
+.container{width:100%;max-width:400px;padding:40px 20px;text-align:center;}
+.avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;border:3px solid rgba(255,255,255,.3);}
+.name{font-size:1.3rem;font-weight:700;margin-bottom:6px;}
+.bio{font-size:.9rem;opacity:.85;margin-bottom:24px;}
+a:hover{opacity:.85;transform:scale(1.01);}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="avatar">${avatar}</div>
+  <div class="name">${escapeHtml(name)}</div>
+  <div class="bio">${escapeHtml(bio)}</div>
+${linkHTML}
+</div>
+</body>
+</html>`;
+}
+function downloadHTML(){
+  const blob=new Blob([generateFullHTML()],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='bio-links.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('HTML downloaded!');
+}
+function copyHTML(){
+  navigator.clipboard.writeText(generateFullHTML());
+  showToast('HTML copied!');
+}
+</script>
+</body>
+</html>

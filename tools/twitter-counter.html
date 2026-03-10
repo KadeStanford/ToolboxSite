@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twitter/X Character Counter — Post Length Checker | ToolNook</title>
+  <meta name="description" content="Count characters for Twitter/X posts. See remaining characters, detect URLs, mentions, and hashtags in real-time." />
+  <meta name="keywords" content="twitter character counter, tweet length, x character counter, tweet counter, 280 characters" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/twitter-counter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .tweet-box { position:relative; }
+    .tweet-input { width:100%; min-height:160px; padding:16px; border:2px solid var(--border); border-radius:var(--radius-lg); font-size:1rem; line-height:1.6; resize:vertical; transition:border-color .2s; }
+    .tweet-input:focus { border-color:var(--primary); outline:none; }
+    .tweet-input.over { border-color:#ef4444; background:#fff5f5; }
+    .counter-bar { display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+    .ring-wrap { position:relative; width:42px; height:42px; }
+    .ring-svg { transform:rotate(-90deg); }
+    .ring-bg { fill:none; stroke:#e5e7eb; stroke-width:3; }
+    .ring-fg { fill:none; stroke:var(--primary); stroke-width:3; stroke-linecap:round; transition:stroke-dashoffset .15s, stroke .15s; }
+    .ring-fg.warn { stroke:#f59e0b; }
+    .ring-fg.over { stroke:#ef4444; }
+    .ring-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:.65rem; font-weight:700; }
+    .ring-text.over { color:#ef4444; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-top:16px; }
+    .stat-card { background:#f9fafb; border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
+    .stat-val { font-size:1.3rem; font-weight:700; color:var(--primary); }
+    .stat-label { font-size:.72rem; color:var(--text-muted); text-transform:uppercase; margin-top:2px; }
+    .entities { margin-top:16px; }
+    .entity-group { margin-bottom:12px; }
+    .entity-title { font-weight:600; font-size:.82rem; margin-bottom:6px; }
+    .tag { display:inline-block; background:var(--primary); color:#fff; padding:3px 10px; border-radius:20px; font-size:.76rem; margin:2px 4px 2px 0; }
+    .tag.mention { background:#8b5cf6; }
+    .tag.url { background:#059669; }
+    .tips { background:#f0f9ff; border:1px solid #bae6fd; border-radius:var(--radius); padding:14px; margin-top:16px; font-size:.82rem; }
+    .tips strong { color:var(--primary); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#social-media-tools">Social Media</a> › Twitter/X Counter</div>
+      <h1>Twitter/X Character Counter</h1>
+      <p>Compose your post and track character count, mentions, hashtags, and URLs in real-time.</p>
+    </div>
+    <div class="tool-container">
+      <div class="tweet-box">
+        <textarea class="tweet-input" id="tweetInput" placeholder="What's happening?" oninput="analyze()"></textarea>
+      </div>
+      <div class="counter-bar">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="clearTweet()">Clear</button>
+          <button class="btn btn-secondary btn-sm" onclick="copyTweet()">Copy</button>
+        </div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" width="42" height="42"><circle class="ring-bg" cx="21" cy="21" r="17"/><circle class="ring-fg" id="ring" cx="21" cy="21" r="17"/></svg>
+          <span class="ring-text" id="ringText">280</span>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="sChars">0</div><div class="stat-label">Characters</div></div>
+        <div class="stat-card"><div class="stat-val" id="sWords">0</div><div class="stat-label">Words</div></div>
+        <div class="stat-card"><div class="stat-val" id="sHash">0</div><div class="stat-label">Hashtags</div></div>
+        <div class="stat-card"><div class="stat-val" id="sMent">0</div><div class="stat-label">Mentions</div></div>
+        <div class="stat-card"><div class="stat-val" id="sUrls">0</div><div class="stat-label">URLs</div></div>
+        <div class="stat-card"><div class="stat-val" id="sTwLen">0</div><div class="stat-label">Tweet Length</div></div>
+      </div>
+      <div class="entities" id="entities"></div>
+      <div class="tips">
+        <strong>Tips:</strong> URLs always count as 23 characters on Twitter/X regardless of actual length. Mentions and hashtags count as their full character length. The max is 280 characters.
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Twitter/X Character Limits</h2>
+      <p>Twitter (now X) has a 280-character limit for standard posts. Premium subscribers may have higher limits. URLs are always shortened to 23 characters (t.co links). This tool helps you craft the perfect post.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('twitter-counter');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('twitter-counter','social');
+  analyze();
+});
+
+const MAX=280, URL_LEN=23;
+const circumference=2*Math.PI*17;
+document.getElementById('ring').style.strokeDasharray=circumference;
+
+function analyze(){
+  const text=document.getElementById('tweetInput').value;
+  const urlRe=/https?:\/\/[^\s]+/gi;
+  const mentionRe=/@\w{1,15}/g;
+  const hashRe=/#\w+/g;
+  const urls=(text.match(urlRe)||[]);
+  const mentions=(text.match(mentionRe)||[]);
+  const hashtags=(text.match(hashRe)||[]);
+  // Twitter counts URLs as 23 chars each
+  let tweetLen=text.length;
+  urls.forEach(u=>{ tweetLen=tweetLen - u.length + URL_LEN; });
+  const remaining=MAX-tweetLen;
+  const words=text.trim()?text.trim().split(/\s+/).length:0;
+  document.getElementById('sChars').textContent=text.length;
+  document.getElementById('sWords').textContent=words;
+  document.getElementById('sHash').textContent=hashtags.length;
+  document.getElementById('sMent').textContent=mentions.length;
+  document.getElementById('sUrls').textContent=urls.length;
+  document.getElementById('sTwLen').textContent=tweetLen;
+  // Ring
+  const pct=Math.min(tweetLen/MAX,1);
+  const offset=circumference*(1-pct);
+  const ring=document.getElementById('ring');
+  const ringText=document.getElementById('ringText');
+  ring.style.strokeDashoffset=offset;
+  ring.classList.remove('warn','over');
+  ringText.classList.remove('over');
+  document.getElementById('tweetInput').classList.remove('over');
+  if(remaining<0){ ring.classList.add('over'); ringText.classList.add('over'); document.getElementById('tweetInput').classList.add('over'); }
+  else if(remaining<20){ ring.classList.add('warn'); }
+  ringText.textContent=remaining;
+  // Entities
+  let html='';
+  if(hashtags.length){ html+=`<div class="entity-group"><div class="entity-title">Hashtags</div>${hashtags.map(h=>`<span class="tag">${escapeHtml(h)}</span>`).join('')}</div>`; }
+  if(mentions.length){ html+=`<div class="entity-group"><div class="entity-title">Mentions</div>${mentions.map(m=>`<span class="tag mention">${escapeHtml(m)}</span>`).join('')}</div>`; }
+  if(urls.length){ html+=`<div class="entity-group"><div class="entity-title">URLs (23 chars each)</div>${urls.map(u=>`<span class="tag url">${escapeHtml(u.length>40?u.slice(0,37)+'...':u)}</span>`).join('')}</div>`; }
+  document.getElementById('entities').innerHTML=html;
+}
+function clearTweet(){ document.getElementById('tweetInput').value=''; analyze(); }
+function copyTweet(){ navigator.clipboard.writeText(document.getElementById('tweetInput').value); showToast('Copied!'); }
+</script>
+</body>
+</html>

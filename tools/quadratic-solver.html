@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadratic Equation Solver — Step-by-Step Solutions | ToolNook</title>
+  <meta name="description" content="Solve quadratic equations (ax² + bx + c = 0) with step-by-step solutions. Find roots, discriminant, vertex, and graph the parabola." />
+  <meta name="keywords" content="quadratic equation solver, quadratic formula, solve ax2+bx+c, find roots, discriminant calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/quadratic-solver.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .eq-display{text-align:center;font-size:1.5rem;font-weight:700;padding:18px;background:#f8fafc;border-radius:var(--radius-lg);margin-bottom:16px;border:2px solid var(--border);}
+    .eq-display span{color:var(--primary);}
+    .coeff-row{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+    .coeff-group{text-align:center;}
+    .coeff-group label{display:block;font-size:.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;}
+    .coeff-group input{width:90px;padding:10px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);font-size:1.1rem;font-weight:600;}
+    .coeff-group input:focus{border-color:var(--primary);outline:none;}
+    .results-area{margin-top:20px;}
+    .result-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;}
+    .r-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:14px;text-align:center;}
+    .r-card .r-label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-bottom:4px;}
+    .r-card .r-val{font-size:1.15rem;font-weight:700;color:var(--primary);}
+    .r-card.real{border-color:#86efac;background:#f0fdf4;}
+    .r-card.complex{border-color:#fca5a5;background:#fef2f2;}
+    .steps-box{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:18px;}
+    .steps-box h3{font-size:.88rem;margin-bottom:12px;}
+    .step{margin-bottom:12px;padding-left:14px;border-left:3px solid var(--primary);font-size:.86rem;line-height:1.6;}
+    .step .step-num{font-weight:700;color:var(--primary);margin-right:4px;}
+    .step .math{font-family:'Courier New',monospace;background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:.82rem;}
+    .graph-container{margin-top:16px;text-align:center;}
+    .graph-container canvas{border:2px solid var(--border);border-radius:var(--radius-lg);max-width:100%;}
+    .nature-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.76rem;font-weight:600;margin-left:8px;}
+    .nature-badge.real2{background:#dcfce7;color:#16a34a;}
+    .nature-badge.real1{background:#fef3c7;color:#92400e;}
+    .nature-badge.complex{background:#fee2e2;color:#dc2626;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#math-tools">Math</a> › Quadratic Solver</div>
+      <h1>Quadratic Equation Solver</h1>
+      <p>Solve ax² + bx + c = 0 with step-by-step solutions, discriminant analysis, and graph visualization.</p>
+    </div>
+    <div class="tool-container">
+      <div class="eq-display" id="eqDisplay"><span>a</span>x² + <span>b</span>x + <span>c</span> = 0</div>
+      <div class="coeff-row">
+        <div class="coeff-group"><label>a</label><input id="ca" type="number" value="1" oninput="solve()"></div>
+        <div style="font-size:1.4rem;font-weight:700;padding-top:18px;">x² +</div>
+        <div class="coeff-group"><label>b</label><input id="cb" type="number" value="-5" oninput="solve()"></div>
+        <div style="font-size:1.4rem;font-weight:700;padding-top:18px;">x +</div>
+        <div class="coeff-group"><label>c</label><input id="cc" type="number" value="6" oninput="solve()"></div>
+        <div style="font-size:1.4rem;font-weight:700;padding-top:18px;">= 0</div>
+      </div>
+      <div style="text-align:center;margin-bottom:10px;">
+        <button class="btn btn-primary" onclick="solve()">Solve</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('ca').value=1;document.getElementById('cb').value=0;document.getElementById('cc').value=0;solve();">Reset</button>
+      </div>
+      <div class="results-area" id="results"></div>
+      <div class="graph-container"><canvas id="graph" width="500" height="340"></canvas></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>The Quadratic Formula</h2>
+      <p>The quadratic formula x = (-b ± √(b²-4ac)) / 2a solves any equation of the form ax² + bx + c = 0. The discriminant (b²-4ac) determines the nature of the roots: positive means two real roots, zero means one repeated root, negative means two complex roots.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('quadratic-solver');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('quadratic-solver','math');
+  solve();
+});
+
+function fmt(n){return Number.isInteger(n)?n.toString():n.toFixed(6).replace(/\.?0+$/,'');}
+
+function solve(){
+  const a=parseFloat(document.getElementById('ca').value)||0;
+  const b=parseFloat(document.getElementById('cb').value)||0;
+  const c=parseFloat(document.getElementById('cc').value)||0;
+
+  // Update display
+  const sign=n=>n>=0?'+ '+fmt(Math.abs(n)):'− '+fmt(Math.abs(n));
+  document.getElementById('eqDisplay').innerHTML=`<span>${fmt(a)}</span>x² ${sign(b).replace(/^([+−])/,'<span>$1</span>')} x ${sign(c).replace(/^([+−])/,'<span>$1</span>')} = 0`;
+
+  if(a===0){
+    document.getElementById('results').innerHTML=`<div class="r-card"><div class="r-label">Not Quadratic</div><div class="r-val">a cannot be 0</div></div>`;
+    return;
+  }
+
+  const disc=b*b-4*a*c;
+  const vertex_x=-b/(2*a);
+  const vertex_y=a*vertex_x*vertex_x+b*vertex_x+c;
+
+  let nature, badge, root1, root2, cardsHTML='', stepsHTML='';
+
+  stepsHTML+=`<div class="step"><span class="step-num">1.</span> Equation: <span class="math">${fmt(a)}x² + ${fmt(b)}x + ${fmt(c)} = 0</span></div>`;
+  stepsHTML+=`<div class="step"><span class="step-num">2.</span> Discriminant: <span class="math">Δ = b² − 4ac = ${fmt(b)}² − 4(${fmt(a)})(${fmt(c)}) = ${fmt(disc)}</span></div>`;
+
+  if(disc>0){
+    nature='Two distinct real roots';
+    badge='<span class="nature-badge real2">2 Real Roots</span>';
+    root1=(-b+Math.sqrt(disc))/(2*a);
+    root2=(-b-Math.sqrt(disc))/(2*a);
+    stepsHTML+=`<div class="step"><span class="step-num">3.</span> Δ > 0 → Two real roots</div>`;
+    stepsHTML+=`<div class="step"><span class="step-num">4.</span> x₁ = (−b + √Δ) / 2a = <span class="math">(${fmt(-b)} + ${fmt(Math.sqrt(disc))}) / ${fmt(2*a)} = ${fmt(root1)}</span></div>`;
+    stepsHTML+=`<div class="step"><span class="step-num">5.</span> x₂ = (−b − √Δ) / 2a = <span class="math">(${fmt(-b)} − ${fmt(Math.sqrt(disc))}) / ${fmt(2*a)} = ${fmt(root2)}</span></div>`;
+    cardsHTML=`<div class="r-card real"><div class="r-label">Root x₁</div><div class="r-val">${fmt(root1)}</div></div>`;
+    cardsHTML+=`<div class="r-card real"><div class="r-label">Root x₂</div><div class="r-val">${fmt(root2)}</div></div>`;
+  }else if(disc===0){
+    nature='One repeated real root';
+    badge='<span class="nature-badge real1">1 Real Root</span>';
+    root1=root2=-b/(2*a);
+    stepsHTML+=`<div class="step"><span class="step-num">3.</span> Δ = 0 → One repeated root</div>`;
+    stepsHTML+=`<div class="step"><span class="step-num">4.</span> x = −b / 2a = <span class="math">${fmt(-b)} / ${fmt(2*a)} = ${fmt(root1)}</span></div>`;
+    cardsHTML=`<div class="r-card real"><div class="r-label">Root (repeated)</div><div class="r-val">${fmt(root1)}</div></div>`;
+  }else{
+    nature='Two complex conjugate roots';
+    badge='<span class="nature-badge complex">Complex Roots</span>';
+    const realPart=-b/(2*a);
+    const imagPart=Math.sqrt(-disc)/(2*a);
+    stepsHTML+=`<div class="step"><span class="step-num">3.</span> Δ < 0 → Two complex roots</div>`;
+    stepsHTML+=`<div class="step"><span class="step-num">4.</span> x = (−b ± i√|Δ|) / 2a = <span class="math">${fmt(realPart)} ± ${fmt(imagPart)}i</span></div>`;
+    cardsHTML=`<div class="r-card complex"><div class="r-label">Root x₁</div><div class="r-val">${fmt(realPart)} + ${fmt(imagPart)}i</div></div>`;
+    cardsHTML+=`<div class="r-card complex"><div class="r-label">Root x₂</div><div class="r-val">${fmt(realPart)} − ${fmt(imagPart)}i</div></div>`;
+  }
+
+  cardsHTML+=`<div class="r-card"><div class="r-label">Discriminant</div><div class="r-val">${fmt(disc)}</div></div>`;
+  cardsHTML+=`<div class="r-card"><div class="r-label">Vertex</div><div class="r-val">(${fmt(vertex_x)}, ${fmt(vertex_y)})</div></div>`;
+  cardsHTML+=`<div class="r-card"><div class="r-label">Axis of Symmetry</div><div class="r-val">x = ${fmt(vertex_x)}</div></div>`;
+  cardsHTML+=`<div class="r-card"><div class="r-label">Opens</div><div class="r-val">${a>0?'↑ Upward':'↓ Downward'}</div></div>`;
+
+  stepsHTML+=`<div class="step"><span class="step-num">${disc>=0?'6':'5'}.</span> Vertex: <span class="math">(${fmt(vertex_x)}, ${fmt(vertex_y)})</span></div>`;
+
+  document.getElementById('results').innerHTML=`<div style="margin-bottom:12px;font-weight:600;">${nature} ${badge}</div><div class="result-cards">${cardsHTML}</div><div class="steps-box"><h3>Step-by-Step Solution</h3>${stepsHTML}</div>`;
+
+  drawGraph(a,b,c,disc>0?[root1,root2]:disc===0?[root1]:[],vertex_x,vertex_y);
+}
+
+function drawGraph(a,b,c,roots,vx,vy){
+  const canvas=document.getElementById('graph');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#fafafa';ctx.fillRect(0,0,W,H);
+
+  // Determine range
+  let xMin=vx-6,xMax=vx+6;
+  if(roots.length){xMin=Math.min(...roots)-3;xMax=Math.max(...roots)+3;}
+  const range=xMax-xMin;
+  xMin-=range*0.1;xMax+=range*0.1;
+
+  const f=x=>a*x*x+b*x+c;
+  let yMin=Infinity,yMax=-Infinity;
+  for(let px=0;px<W;px++){
+    const x=xMin+(px/W)*(xMax-xMin);
+    const y=f(x);
+    if(y<yMin)yMin=y;if(y>yMax)yMax=y;
+  }
+  const yRange=yMax-yMin||1;
+  yMin-=yRange*0.15;yMax+=yRange*0.15;
+
+  const toX=x=>(x-xMin)/(xMax-xMin)*W;
+  const toY=y=>H-(y-yMin)/(yMax-yMin)*H;
+
+  // Grid
+  ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;
+  for(let i=Math.ceil(xMin);i<=Math.floor(xMax);i++){
+    const px=toX(i);ctx.beginPath();ctx.moveTo(px,0);ctx.lineTo(px,H);ctx.stroke();
+  }
+  for(let i=Math.ceil(yMin);i<=Math.floor(yMax);i++){
+    const py=toY(i);ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(W,py);ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle='#9ca3af';ctx.lineWidth=1.5;
+  if(yMin<=0&&yMax>=0){const ay=toY(0);ctx.beginPath();ctx.moveTo(0,ay);ctx.lineTo(W,ay);ctx.stroke();}
+  if(xMin<=0&&xMax>=0){const ax=toX(0);ctx.beginPath();ctx.moveTo(ax,0);ctx.lineTo(ax,H);ctx.stroke();}
+
+  // Parabola
+  ctx.strokeStyle='#4f46e5';ctx.lineWidth=2.5;ctx.beginPath();
+  for(let px=0;px<W;px++){
+    const x=xMin+(px/W)*(xMax-xMin);
+    const y=f(x);
+    const py=toY(y);
+    px===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Roots
+  ctx.fillStyle='#dc2626';
+  roots.forEach(r=>{
+    ctx.beginPath();ctx.arc(toX(r),toY(0),5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#333';ctx.font='bold 11px sans-serif';ctx.fillText(fmt(r),toX(r)+7,toY(0)-8);ctx.fillStyle='#dc2626';
+  });
+
+  // Vertex
+  ctx.fillStyle='#059669';ctx.beginPath();ctx.arc(toX(vx),toY(vy),5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#333';ctx.font='bold 11px sans-serif';ctx.fillText(`V(${fmt(vx)},${fmt(vy)})`,toX(vx)+7,toY(vy)-8);
+}
+</script>
+</body>
+</html>

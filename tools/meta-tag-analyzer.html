@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meta Tag Analyzer — Check Website Meta Tags | ToolNook</title>
+  <meta name="description" content="Analyze and validate meta tags from any URL or HTML. Check title, description, Open Graph, Twitter Cards, and more." />
+  <meta name="keywords" content="meta tag analyzer, SEO checker, meta tag validator, open graph checker, twitter card validator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/meta-tag-analyzer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .input-section textarea { width:100%; min-height:160px; font-family:'Courier New',monospace; font-size:.82rem; border:2px solid var(--border); border-radius:var(--radius); padding:14px; resize:vertical; }
+    .input-section textarea:focus { border-color:var(--primary); outline:none; }
+    .act-row { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; }
+    .results-grid { display:grid; gap:14px; margin:16px 0; }
+    .result-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .card-head { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .card-icon { width:32px; height:32px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:.9rem; }
+    .card-icon.basic { background:#dbeafe; }
+    .card-icon.og { background:#fce7f3; }
+    .card-icon.tw { background:#cffafe; }
+    .card-icon.tech { background:#f3e8ff; }
+    .card-title { font-weight:700; font-size:.88rem; }
+    .card-status { margin-left:auto; font-size:.68rem; padding:3px 10px; border-radius:12px; font-weight:700; }
+    .status-good { background:#dcfce7; color:#15803d; }
+    .status-warn { background:#fef3c7; color:#92400e; }
+    .status-bad { background:#fee2e2; color:#dc2626; }
+    .card-body { padding:14px 16px; }
+    .tag-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid #f5f5f5; }
+    .tag-row:last-child { border:none; }
+    .tag-name { font-weight:600; font-size:.78rem; color:var(--text-muted); min-width:120px; flex-shrink:0; text-transform:uppercase; }
+    .tag-val { font-size:.84rem; word-break:break-word; flex:1; }
+    .tag-val.empty { color:#dc2626; font-style:italic; }
+    .tag-len { font-size:.68rem; padding:2px 6px; background:#f1f5f9; border-radius:8px; color:var(--text-muted); white-space:nowrap; }
+    .score-bar { display:flex; align-items:center; gap:12px; padding:16px; background:linear-gradient(135deg,#0f172a,#1e293b); border-radius:var(--radius-lg); margin:14px 0; }
+    .score-circle { width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:800; color:#fff; flex-shrink:0; }
+    .score-good { background:#10b981; }
+    .score-warn { background:#f59e0b; }
+    .score-bad { background:#ef4444; }
+    .score-text h3 { color:#fff; margin:0; font-size:.92rem; }
+    .score-text p { color:#94a3b8; margin:4px 0 0; font-size:.78rem; }
+    .preview-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:14px; margin:14px 0; }
+    .preview-title { font-size:.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
+    .google-preview { max-width:600px; }
+    .gp-title { color:#1a0dab; font-size:1.1rem; font-weight:400; cursor:pointer; }
+    .gp-url { color:#006621; font-size:.82rem; margin:2px 0; }
+    .gp-desc { color:#545454; font-size:.84rem; line-height:1.4; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#seo-tools">SEO</a> › Meta Tag Analyzer</div>
+      <h1>Meta Tag Analyzer</h1>
+      <p>Paste your HTML source code to analyze meta tags, Open Graph, and Twitter Card data.</p>
+    </div>
+    <div class="tool-container">
+      <div class="input-section">
+        <textarea id="html-input" placeholder='Paste your HTML source code here...&#10;&#10;Tip: Right-click any webpage → "View Page Source" → Copy all → Paste here'></textarea>
+      </div>
+      <div class="act-row">
+        <button class="btn btn-primary" onclick="analyze()">🔍 Analyze Meta Tags</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('html-input').value='';document.getElementById('results').innerHTML='';">Clear</button>
+      </div>
+      <div id="results"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Why Check Meta Tags?</h2>
+      <p>Meta tags are critical for SEO and social sharing. They tell search engines and social platforms what your page is about, how to display it, and what image to use when shared.</p>
+      <h3>What We Check</h3>
+      <ul>
+        <li><strong>Basic SEO</strong> — Title, description, robots, canonical URL</li>
+        <li><strong>Open Graph</strong> — Facebook/LinkedIn sharing properties</li>
+        <li><strong>Twitter Cards</strong> — Twitter-specific preview data</li>
+        <li><strong>Technical</strong> — Charset, viewport, language, favicon</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('meta-tag-analyzer');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('meta-tag-analyzer','seo');
+});
+
+function getMeta(doc, name) {
+  const el = doc.querySelector(`meta[name="${name}"], meta[property="${name}"]`);
+  return el ? (el.getAttribute('content') || '') : '';
+}
+
+function analyze() {
+  const html = document.getElementById('html-input').value.trim();
+  if (!html) return showToast('Please paste HTML source code');
+  
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  
+  const title = doc.querySelector('title')?.textContent || '';
+  const desc = getMeta(doc, 'description');
+  const robots = getMeta(doc, 'robots');
+  const canonical = doc.querySelector('link[rel="canonical"]')?.href || '';
+  const charset = doc.querySelector('meta[charset]')?.getAttribute('charset') || '';
+  const viewport = getMeta(doc, 'viewport');
+  const lang = doc.documentElement.lang || '';
+  
+  const ogTitle = getMeta(doc, 'og:title');
+  const ogDesc = getMeta(doc, 'og:description');
+  const ogImage = getMeta(doc, 'og:image');
+  const ogUrl = getMeta(doc, 'og:url');
+  const ogType = getMeta(doc, 'og:type');
+  const ogSiteName = getMeta(doc, 'og:site_name');
+  
+  const twCard = getMeta(doc, 'twitter:card');
+  const twTitle = getMeta(doc, 'twitter:title');
+  const twDesc = getMeta(doc, 'twitter:description');
+  const twImage = getMeta(doc, 'twitter:image');
+  const twSite = getMeta(doc, 'twitter:site');
+  
+  // Score
+  let score = 0;
+  const checks = [
+    [title, 10], [desc, 10], [canonical, 5], [viewport, 5], [charset, 5],
+    [ogTitle, 8], [ogDesc, 8], [ogImage, 8], [ogUrl, 5], [ogType, 3],
+    [twCard, 5], [twTitle, 5], [twDesc, 5], [twImage, 5],
+    [title.length >= 30 && title.length <= 60, 5],
+    [desc.length >= 120 && desc.length <= 160, 5],
+    [lang, 3]
+  ];
+  checks.forEach(([val, pts]) => { if (val) score += pts; });
+  
+  const cls = score >= 80 ? 'good' : score >= 50 ? 'warn' : 'bad';
+  const msg = score >= 80 ? 'Great meta tag setup!' : score >= 50 ? 'Some improvements needed' : 'Many important tags are missing';
+  
+  function tagRow(name, val, ideal) {
+    const len = val ? val.length : 0;
+    const lenBadge = val ? `<span class="tag-len">${len} chars${ideal ? (len >= ideal[0] && len <= ideal[1] ? ' ✓' : ' ⚠') : ''}</span>` : '';
+    return `<div class="tag-row"><span class="tag-name">${name}</span><span class="tag-val ${val?'':'empty'}">${val || 'Not set'}</span>${lenBadge}</div>`;
+  }
+  
+  function cardStatus(items) {
+    const filled = items.filter(Boolean).length;
+    const pct = filled / items.length;
+    return pct >= 0.8 ? 'good' : pct >= 0.5 ? 'warn' : 'bad';
+  }
+  
+  const results = document.getElementById('results');
+  results.innerHTML = `
+    <div class="score-bar">
+      <div class="score-circle score-${cls}">${score}</div>
+      <div class="score-text"><h3>Meta Tag Score: ${score}/100</h3><p>${msg}</p></div>
+    </div>
+    
+    <div class="preview-card">
+      <div class="preview-title">Google Search Preview</div>
+      <div class="google-preview">
+        <div class="gp-title">${escapeHtml(title || 'No title set')}</div>
+        <div class="gp-url">${escapeHtml(canonical || 'https://example.com')}</div>
+        <div class="gp-desc">${escapeHtml(desc || 'No description set')}</div>
+      </div>
+    </div>
+    
+    <div class="results-grid">
+      <div class="result-card">
+        <div class="card-head"><div class="card-icon basic">🔍</div><span class="card-title">Basic SEO</span><span class="card-status status-${cardStatus([title,desc,canonical,viewport])}">${cardStatus([title,desc,canonical,viewport])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-body">
+          ${tagRow('Title',title,[30,60])}
+          ${tagRow('Description',desc,[120,160])}
+          ${tagRow('Robots',robots)}
+          ${tagRow('Canonical',canonical)}
+          ${tagRow('Keywords',getMeta(doc,'keywords'))}
+        </div>
+      </div>
+      
+      <div class="result-card">
+        <div class="card-head"><div class="card-icon og">📱</div><span class="card-title">Open Graph</span><span class="card-status status-${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])}">${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-body">
+          ${tagRow('og:title',ogTitle)}
+          ${tagRow('og:description',ogDesc)}
+          ${tagRow('og:image',ogImage)}
+          ${tagRow('og:url',ogUrl)}
+          ${tagRow('og:type',ogType)}
+          ${tagRow('og:site_name',ogSiteName)}
+        </div>
+      </div>
+      
+      <div class="result-card">
+        <div class="card-head"><div class="card-icon tw">🐦</div><span class="card-title">Twitter Cards</span><span class="card-status status-${cardStatus([twCard,twTitle,twDesc,twImage])}">${cardStatus([twCard,twTitle,twDesc,twImage])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-body">
+          ${tagRow('twitter:card',twCard)}
+          ${tagRow('twitter:title',twTitle)}
+          ${tagRow('twitter:description',twDesc)}
+          ${tagRow('twitter:image',twImage)}
+          ${tagRow('twitter:site',twSite)}
+        </div>
+      </div>
+      
+      <div class="result-card">
+        <div class="card-head"><div class="card-icon tech">⚙️</div><span class="card-title">Technical</span></div>
+        <div class="card-body">
+          ${tagRow('Charset',charset)}
+          ${tagRow('Viewport',viewport)}
+          ${tagRow('Language',lang)}
+          ${tagRow('Author',getMeta(doc,'author'))}
+        </div>
+      </div>
+    </div>`;
+}
+
+function loadSample() {
+  document.getElementById('html-input').value = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Awesome Website — Build Something Amazing</title>
+  <meta name="description" content="Welcome to My Awesome Website. We help developers build amazing web applications with modern tools and best practices.">
+  <meta name="keywords" content="web development, tools, coding, programming">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="John Developer">
+  <link rel="canonical" href="https://myawesome.site/">
+  <meta property="og:title" content="My Awesome Website">
+  <meta property="og:description" content="Build Something Amazing with modern web tools">
+  <meta property="og:image" content="https://myawesome.site/og-image.jpg">
+  <meta property="og:url" content="https://myawesome.site/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="My Awesome Website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="My Awesome Website">
+  <meta name="twitter:description" content="Build Something Amazing">
+  <meta name="twitter:image" content="https://myawesome.site/twitter-card.jpg">
+  <meta name="twitter:site" content="@myawesomesite">
+</head>
+<body></body>
+</html>`;
+  analyze();
+}
+</script>
+</body>
+</html>

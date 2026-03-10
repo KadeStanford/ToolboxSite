@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji Picker & Search — Find Any Emoji | ToolNook</title>
+  <meta name="description" content="Browse and search thousands of emojis by name or category. Click to copy any emoji instantly." />
+  <meta name="keywords" content="emoji picker, emoji search, copy emoji, emoji list, emoji keyboard, unicode emoji" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/emoji-picker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .search-bar { position:relative; margin-bottom:16px; }
+    .search-bar input { width:100%; padding:14px 14px 14px 44px; border:2px solid var(--border); border-radius:var(--radius-lg); font-size:.95rem; }
+    .search-bar input:focus { border-color:#f59e0b; outline:none; box-shadow:0 0 0 3px rgba(245,158,11,.15); }
+    .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:1.1rem; }
+    .cat-pills { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .cat-pill { padding:6px 14px; border:2px solid var(--border); background:#fff; border-radius:20px; font-size:.78rem; font-weight:600; cursor:pointer; transition:.15s; display:flex; align-items:center; gap:5px; }
+    .cat-pill:hover { border-color:#f59e0b; background:#fffbeb; }
+    .cat-pill.active { background:#f59e0b; color:#fff; border-color:#f59e0b; }
+    .emoji-section { margin-bottom:20px; }
+    .emoji-section h3 { font-size:.84rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin:0 0 8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .emoji-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(48px,1fr)); gap:4px; }
+    .emoji-btn { width:48px; height:48px; border:none; background:#f8fafc; border-radius:var(--radius); font-size:1.5rem; cursor:pointer; transition:.1s; display:flex; align-items:center; justify-content:center; }
+    .emoji-btn:hover { background:#fef3c7; transform:scale(1.2); }
+    .emoji-btn:active { transform:scale(0.95); }
+    .selected-area { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:14px; min-height:50px; margin-bottom:14px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .selected-area .emoji-picked { font-size:1.8rem; cursor:pointer; transition:.1s; }
+    .selected-area .emoji-picked:hover { transform:scale(1.2); }
+    .sel-actions { display:flex; gap:8px; margin-bottom:20px; }
+    .result-count { font-size:.78rem; color:var(--text-muted); margin-bottom:10px; }
+    .no-results { text-align:center; padding:40px; color:var(--text-muted); }
+    .no-results .big { font-size:3rem; margin-bottom:10px; }
+    .preview-tooltip { position:fixed; background:#1e293b; color:#fff; padding:8px 14px; border-radius:var(--radius); font-size:.78rem; pointer-events:none; z-index:1000; display:none; box-shadow:0 4px 12px rgba(0,0,0,.2); }
+    .preview-tooltip .big-emoji { font-size:2rem; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text</a> › Emoji Picker</div>
+      <h1>Emoji Picker & Search 😊</h1>
+      <p>Browse categories or search by name. Click any emoji to add it, then copy all at once!</p>
+    </div>
+    <div class="tool-container">
+      <div class="selected-area" id="selected">
+        <span style="color:var(--text-muted);font-size:.84rem;" id="sel-placeholder">Click emojis below to collect them here...</span>
+      </div>
+      <div class="sel-actions">
+        <button class="btn btn-primary" onclick="copySelected()">Copy All</button>
+        <button class="btn btn-secondary" onclick="clearSelected()">Clear</button>
+      </div>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search" placeholder="Search emojis... (e.g. heart, smile, star)" />
+      </div>
+      <div class="cat-pills" id="cat-pills"></div>
+      <div class="result-count" id="result-count"></div>
+      <div id="emoji-list"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Find the Perfect Emoji</h2>
+      <p>Browse thousands of emojis organized by category, or use the search bar to find exactly what you need. Click to collect, then copy all your selections at once.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<div class="preview-tooltip" id="tooltip"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('emoji-picker');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('emoji-picker','text');
+});
+
+const EMOJIS = {
+  "Smileys":[..."😀😃😄😁😆😅🤣😂🙂🙃😉😊😇🥰😍🤩😘😗☺😚😙🥲😋😛😜🤪😝🤑🤗🤭🤫🤔🫡🤐🤨😐😑😶🫥😏😒🙄😬🤥🌚🌝🌞😌😔😪🤤😴😷🤒🤕🤢🤮🤧🥵🥶🥴😵🤯🤠🥳🥸😎🤓🧐😕🫤😟🙁☹😮😯😲😳🥺🥹😦😧😨😰😥😢😭😱😖😣😞😓😩😫🥱😤😡😠🤬😈👿💀☠💩🤡👹👺👻👽👾🤖"],
+  "Gestures":[..."👋🤚🖐✋🖖🫱🫲🫳🫴👌🤌🤏✌🤞🫰🤟🤘🤙👈👉👆🖕👇☝🫵👍👎✊👊🤛🤜👏🫶🙌👐🤲🤝🙏✍💅🤳💪🦾🦿🦵🦶👂🦻👃"],
+  "People":[..."👶🧒👦👧🧑👱👨🧔👩🧓👴👵🙍🙎🙅🙆💁🙋🧏🙇🤦🤷👮🕵💂🥷👷🫅🤴👸👳👲🧕🤵👰🤰🫃🫄🤱👼🎅🤶🦸🦹🧙🧚🧛🧜🧝🧞🧟💆💇🚶🧍🧎🏃💃🕺"],
+  "Animals":[..."🐶🐱🐭🐹🐰🦊🐻🐼🐻‍❄🐨🐯🦁🐮🐷🐸🐵🙈🙉🙊🐒🐔🐧🐦🐤🦆🦅🦉🦇🐺🐗🐴🦄🐝🪱🐛🦋🐌🐞🐜🪰🪲🪳🦟🦗🕷🦂🐢🐍🦎🦖🦕🐙🦑🦐🦞🦀🐡🐠🐟🐬🐳🐋🦈🦭🐊🐅🐆🦓🦍🦧🦣🐘🦛🦏🐪🐫🦒🦘🦬🐃🐂🐄🐎🐖🐏🐑🦙🐐🦌🐕🐩🦮🐈🐓🦃🦤🦚🦜🦢🦩🕊🐇🦝🦨🦡🦫🦦🦥🐁🐀🐿🦔🐾🐉🐲"],
+  "Food":[..."🍏🍎🍐🍊🍋🍌🍉🍇🍓🫐🍈🍒🍑🥭🍍🥥🥝🍅🍆🥑🥦🥬🥒🌶🫑🌽🥕🫒🧄🧅🥔🍠🥐🥯🍞🥖🥨🧀🥚🍳🧈🥞🧇🥓🥩🍗🍖🦴🌭🍔🍟🍕🫓🥪🥙🧆🌮🌯🫔🥗🥘🫕🥫🍝🍜🍲🍛🍣🍱🥟🦪🍤🍙🍚🍘🍥🥠🥮🍢🍡🍧🍨🍦🥧🧁🍰🎂🍮🍭🍬🍫🍿🍩🍪🌰🥜🍯🥛🍼🫖☕🍵🧃🥤🧋🍶🍺🍻🥂🍷🥃🍸🍹🧉🍾🧊"],
+  "Travel":[..."🚗🚕🚙🚌🚎🏎🚓🚑🚒🚐🛻🚚🚛🚜🏍🛵🚲🛴🛹🛼🚏🛣🛤🛞⛽🛑🚦🚧⚓🛟⛵🛶🚤🛳⛴🛥🚢✈🛩🛫🛬🪂💺🚁🚟🚠🚡🛰🚀🛸🏠🏡🏢🏣🏤🏥🏦🏨🏩🏪🏫🏬🏭🏯🏰💒🗼🗽⛪🕌🛕🕍⛩🕋⛲⛺🏕🌁🌃🌆🌇🌉♨🎠🎡🎢🎪🗿"],
+  "Activities":[..."⚽🏀🏈⚾🥎🎾🏐🏉🥏🎱🏓🏸🏒🥍🏏🪃🥅⛳🏹🎣🤿🥊🥋🎿⛷🏂🪂🏋🤸⛹🤺🏇🧘🏄🏊🤽🚣🧗🚵🚴🏆🥇🥈🥉🏅🎖🏵🎗🎫🎟🎪🎭🎨🎬🎤🎧🎼🎹🥁🪘🎷🎺🎸🪕🎻🪗🎲♟🎯🎳🎮🎰🧩"],
+  "Objects":[..."⌚📱📲💻⌨🖥🖨🖱🖲🕹🗜💽💾💿📀📼📷📸📹🎥📽🎞📞☎📟📠📺📻🎙🎚🎛🧭⏱⏲⏰🕰⌛⏳📡🔋🪫🔌💡🔦🕯🪔🧯🛢💸💵💴💶💷🪙💰💳💎⚖🪜🧰🪛🔧🔩⚙🪤🧲🔫💣🪓🔪🗡🛡🪖🔮💈⚗🔭🔬🕳🩹🩺💊💉🩻🧬🦠🧫🧪🌡🧹🪠🧺🧻🚽🚰🚿🛁🛀🪥🪒🧽🪣🧴🔑🗝🚪🪑🛋🛏🛌🧸🪆🖼🪞🪟🛍🛒🎁🎈🎏🎀🪄🪅🎊🎉🎎🏮🎐🧧✉📩📨📧💌📥📦📫📪📬📭📮🗳"],
+  "Symbols":[..."❤🧡💛💚💙💜🖤🤍🤎💔❣💕💞💓💗💖💘💝❤‍🔥❤‍🩹♈♉♊♋♌♍♎♏♐♑♒♓⛎🔀🔁🔂▶⏩⏭⏯◀⏪⏮🔼⏫🔽⏬⏸⏹⏺⏏♾💠🔘🔴🟠🟡🟢🔵🟣⚫⚪🟤🔺🔻🔸🔹🔶🔷💬💭🗯♠♣♥♦🃏🀄🎴✅❌❎➕➖➗❓❔‼⁉⚠📛🔰♻🔱⭐🌟💫✨⚡🔥💥☄🌈☮✝☪🕉☸✡🔯🕎☯☦🛐⛎🆔⚛🉑☢☣📴📳🈶🈚🈸🈺🈷✴🆚💮🉐㊙㊗🈴🈵🈹🈲🅰🅱🆎🆑🅾🆘"],
+  "Flags":[..."🏳🏴🏁🚩🏳‍🌈🏳‍⚧🇺🇸🇬🇧🇨🇦🇦🇺🇫🇷🇩🇪🇮🇹🇪🇸🇯🇵🇰🇷🇨🇳🇮🇳🇧🇷🇲🇽🇷🇺🇿🇦🇳🇱🇸🇪🇳🇴🇩🇰🇫🇮🇵🇱🇦🇹🇨🇭🇧🇪🇮🇪🇵🇹🇬🇷🇹🇷🇦🇷🇨🇴🇨🇱🇵🇪🇪🇬🇳🇬🇰🇪🇹🇭🇻🇳🇵🇭🇮🇩🇲🇾🇸🇬🇳🇿🇮🇱🇸🇦🇦🇪🇶🇦"]
+};
+
+let selected = [];
+let currentCat = 'all';
+
+function renderCatPills() {
+  const cats = ['all', ...Object.keys(EMOJIS)];
+  document.getElementById('cat-pills').innerHTML = cats.map(c => {
+    const icon = c === 'all' ? '🎯' : EMOJIS[c] ? EMOJIS[c][0] : '';
+    return `<button class="cat-pill ${c===currentCat?'active':''}" onclick="setCat('${c}')">${icon} ${c}</button>`;
+  }).join('');
+}
+
+function setCat(c) { currentCat = c; renderCatPills(); renderEmojis(); }
+
+function renderEmojis() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const container = document.getElementById('emoji-list');
+  let total = 0;
+  let html = '';
+
+  const cats = currentCat === 'all' ? Object.keys(EMOJIS) : [currentCat];
+  cats.forEach(cat => {
+    if (!EMOJIS[cat]) return;
+    const emojis = EMOJIS[cat].filter(e => !q || cat.toLowerCase().includes(q) || e.includes(q));
+    if (!emojis.length) return;
+    total += emojis.length;
+    html += `<div class="emoji-section"><h3>${cat}</h3><div class="emoji-grid">`;
+    emojis.forEach(e => {
+      html += `<button class="emoji-btn" onclick="pick('${e}')" title="${cat}">${e}</button>`;
+    });
+    html += `</div></div>`;
+  });
+
+  document.getElementById('result-count').textContent = total + ' emojis shown';
+  if (!html) {
+    container.innerHTML = `<div class="no-results"><div class="big">🔍</div><p>No emojis found for "${q}"</p></div>`;
+  } else {
+    container.innerHTML = html;
+  }
+}
+
+function pick(emoji) {
+  selected.push(emoji);
+  renderSelected();
+  showToast('Added ' + emoji);
+}
+
+function renderSelected() {
+  const el = document.getElementById('selected');
+  if (!selected.length) {
+    el.innerHTML = '<span style="color:var(--text-muted);font-size:.84rem;" id="sel-placeholder">Click emojis below to collect them here...</span>';
+    return;
+  }
+  el.innerHTML = selected.map((e, i) =>
+    `<span class="emoji-picked" onclick="removeSelected(${i})" title="Click to remove">${e}</span>`
+  ).join('');
+}
+
+function removeSelected(i) { selected.splice(i, 1); renderSelected(); }
+
+function copySelected() {
+  if (!selected.length) return showToast('No emojis selected');
+  navigator.clipboard.writeText(selected.join('')).then(() => showToast('Copied ' + selected.length + ' emojis!'));
+}
+
+function clearSelected() { selected = []; renderSelected(); }
+
+document.getElementById('search').addEventListener('input', renderEmojis);
+
+renderCatPills();
+renderEmojis();
+</script>
+</body>
+</html>

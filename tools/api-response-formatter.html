@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Response Formatter — Pretty Print API Responses | ToolNook</title>
+  <meta name="description" content="Paste raw API responses and get beautifully formatted, syntax-highlighted output. Supports JSON, XML, and headers." />
+  <meta name="keywords" content="API response formatter, pretty print JSON, format API response, JSON beautifier, API debugging tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/api-response-formatter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .format-tabs { display:flex; gap:0; margin-bottom:14px; }
+    .fmt-tab { padding:10px 20px; font-weight:600; font-size:.84rem; border:2px solid var(--border); background:#fff; cursor:pointer; transition:.15s; }
+    .fmt-tab:first-child { border-radius:var(--radius) 0 0 var(--radius); }
+    .fmt-tab:last-child { border-radius:0 var(--radius) var(--radius) 0; }
+    .fmt-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .input-area textarea { font-family:'Courier New',monospace; font-size:.84rem; min-height:200px; resize:vertical; width:100%; border:2px solid var(--border); border-radius:var(--radius); padding:14px; }
+    .input-area textarea:focus { border-color:var(--primary); outline:none; }
+    .output-wrap { background:#1e293b; border-radius:var(--radius-lg); overflow:hidden; margin-top:14px; }
+    .output-header { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:#0f172a; }
+    .output-header span { color:#94a3b8; font-size:.78rem; font-weight:600; }
+    .output-header button { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); color:#e2e8f0; border-radius:var(--radius); padding:4px 12px; cursor:pointer; font-size:.76rem; }
+    .output-header button:hover { background:rgba(255,255,255,.2); }
+    .output-body { padding:16px; overflow-x:auto; max-height:500px; overflow-y:auto; }
+    .output-body pre { margin:0; font-family:'Courier New',monospace; font-size:.84rem; line-height:1.6; color:#e2e8f0; white-space:pre-wrap; word-break:break-word; }
+    .json-key { color:#7dd3fc; }
+    .json-str { color:#86efac; }
+    .json-num { color:#fbbf24; }
+    .json-bool { color:#c084fc; }
+    .json-null { color:#f87171; }
+    .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin:14px 0; }
+    .meta-item { background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px; }
+    .meta-label { font-size:.68rem; text-transform:uppercase; color:var(--text-muted); font-weight:600; }
+    .meta-val { font-family:monospace; font-weight:700; font-size:.9rem; color:var(--text); margin-top:2px; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer</a> › API Response Formatter</div>
+      <h1>API Response Formatter</h1>
+      <p>Paste raw API responses to get beautifully formatted, syntax-highlighted output with metadata analysis.</p>
+    </div>
+    <div class="tool-container">
+      <div class="format-tabs">
+        <button class="fmt-tab active" onclick="setFmt('json')">JSON</button>
+        <button class="fmt-tab" onclick="setFmt('xml')">XML</button>
+        <button class="fmt-tab" onclick="setFmt('headers')">Headers</button>
+      </div>
+      <div class="input-area">
+        <textarea id="input" placeholder='Paste your API response here...&#10;&#10;Example: {"status":"ok","data":[{"id":1,"name":"Alice"}]}'></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="format()">Format & Highlight</button>
+        <button class="btn btn-secondary" onclick="minify()">Minify</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('input').value='';document.getElementById('output-pre').textContent='';document.getElementById('meta').innerHTML='';">Clear</button>
+      </div>
+      <div class="meta-grid" id="meta"></div>
+      <div class="output-wrap">
+        <div class="output-header">
+          <span>Formatted Output</span>
+          <button onclick="copyOutput()">Copy</button>
+        </div>
+        <div class="output-body"><pre id="output-pre"></pre></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Why Format API Responses?</h2>
+      <ul>
+        <li><strong>Readability</strong> — Transform minified JSON into readable, indented output</li>
+        <li><strong>Debugging</strong> — Quickly identify data structure and nested objects</li>
+        <li><strong>Syntax highlighting</strong> — Color-coded keys, strings, numbers, and booleans</li>
+        <li><strong>Metadata</strong> — See size, nesting depth, and key count at a glance</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('api-response-formatter');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('api-response-formatter','developer');
+});
+
+let currentFmt = 'json';
+let lastFormatted = '';
+
+function setFmt(f) {
+  currentFmt = f;
+  document.querySelectorAll('.fmt-tab').forEach((t,i) => t.classList.toggle('active',
+    (f==='json'&&i===0)||(f==='xml'&&i===1)||(f==='headers'&&i===2)));
+  const ph = { json:'Paste JSON here...', xml:'Paste XML here...', headers:'Paste HTTP headers here...' };
+  document.getElementById('input').placeholder = ph[f];
+}
+
+function format() {
+  const raw = document.getElementById('input').value.trim();
+  if (!raw) return showToast('Please paste some content');
+  const pre = document.getElementById('output-pre');
+  const meta = document.getElementById('meta');
+
+  if (currentFmt === 'json') {
+    try {
+      const obj = JSON.parse(raw);
+      const pretty = JSON.stringify(obj, null, 2);
+      lastFormatted = pretty;
+      pre.innerHTML = highlightJSON(pretty);
+      const depth = getDepth(obj);
+      const keys = countKeys(obj);
+      meta.innerHTML = `
+        <div class="meta-item"><div class="meta-label">Type</div><div class="meta-val">${Array.isArray(obj)?'Array':'Object'}</div></div>
+        <div class="meta-item"><div class="meta-label">Size</div><div class="meta-val">${formatBytes(raw.length)}</div></div>
+        <div class="meta-item"><div class="meta-label">Keys</div><div class="meta-val">${keys}</div></div>
+        <div class="meta-item"><div class="meta-label">Depth</div><div class="meta-val">${depth} levels</div></div>
+        ${Array.isArray(obj)?`<div class="meta-item"><div class="meta-label">Items</div><div class="meta-val">${obj.length}</div></div>`:''}`;
+    } catch(e) {
+      pre.textContent = 'JSON Parse Error: ' + e.message;
+      meta.innerHTML = '';
+    }
+  } else if (currentFmt === 'xml') {
+    try {
+      lastFormatted = formatXML(raw);
+      pre.textContent = lastFormatted;
+      meta.innerHTML = `<div class="meta-item"><div class="meta-label">Size</div><div class="meta-val">${formatBytes(raw.length)}</div></div>`;
+    } catch(e) { pre.textContent = 'Invalid XML'; }
+  } else {
+    const lines = raw.split('\n').filter(l => l.trim());
+    lastFormatted = lines.map(l => l.trim()).join('\n');
+    pre.innerHTML = lines.map(l => {
+      const [key, ...rest] = l.split(':');
+      return rest.length ? `<span class="json-key">${escapeHtml(key.trim())}</span>: <span class="json-str">${escapeHtml(rest.join(':').trim())}</span>` : escapeHtml(l);
+    }).join('\n');
+    meta.innerHTML = `<div class="meta-item"><div class="meta-label">Headers</div><div class="meta-val">${lines.length}</div></div>`;
+  }
+}
+
+function minify() {
+  const raw = document.getElementById('input').value.trim();
+  if (!raw) return;
+  try {
+    const obj = JSON.parse(raw);
+    const min = JSON.stringify(obj);
+    lastFormatted = min;
+    document.getElementById('output-pre').textContent = min;
+    showToast('Minified! ' + formatBytes(min.length));
+  } catch { showToast('Cannot minify — invalid JSON'); }
+}
+
+function highlightJSON(str) {
+  return str.replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span class="json-key">$1</span>:')
+    .replace(/:\s*("(?:\\.|[^"\\])*")/g, ': <span class="json-str">$1</span>')
+    .replace(/:\s*(\d+\.?\d*)/g, ': <span class="json-num">$1</span>')
+    .replace(/:\s*(true|false)/g, ': <span class="json-bool">$1</span>')
+    .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>');
+}
+
+function formatXML(xml) {
+  let formatted = '', indent = '';
+  xml.split(/>\s*</).forEach(node => {
+    if (node.match(/^\/\w/)) indent = indent.slice(2);
+    formatted += indent + '<' + node + '>\n';
+    if (node.match(/^<?\w[^>]*[^/]$/) && !node.startsWith('?')) indent += '  ';
+  });
+  return formatted.replace(/(<\/?)/g, '$1').trim().replace(/^</, '<').replace(/>$/, '>');
+}
+
+function getDepth(obj, d=0) {
+  if (typeof obj !== 'object' || obj === null) return d;
+  return Math.max(...Object.values(obj).map(v => getDepth(v, d+1)), d);
+}
+
+function countKeys(obj) {
+  if (typeof obj !== 'object' || obj === null) return 0;
+  let count = Object.keys(obj).length;
+  for (const v of Object.values(obj)) count += countKeys(v);
+  return count;
+}
+
+function copyOutput() {
+  if (!lastFormatted) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(lastFormatted).then(() => showToast('Copied!'));
+}
+
+function loadSample() {
+  document.getElementById('input').value = JSON.stringify({
+    status: "success", code: 200,
+    data: {
+      users: [
+        { id: 1, name: "Alice", email: "alice@example.com", roles: ["admin","editor"], active: true },
+        { id: 2, name: "Bob", email: "bob@example.com", roles: ["viewer"], active: false }
+      ],
+      pagination: { page: 1, perPage: 20, total: 2 }
+    },
+    meta: { requestId: "abc-123-def", timestamp: new Date().toISOString() }
+  });
+  format();
+}
+</script>
+</body>
+</html>

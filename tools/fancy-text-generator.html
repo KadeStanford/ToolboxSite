@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fancy Text Generator — Stylish Unicode Fonts | ToolNook</title>
+  <meta name="description" content="Transform plain text into fancy unicode styles — bold, italic, cursive, gothic, bubble, and more. Copy and paste anywhere." />
+  <meta name="keywords" content="fancy text generator, unicode text, stylish fonts, cool text, bold italic text, gothic text" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/fancy-text-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .input-section { margin-bottom:20px; }
+    .input-section textarea { width:100%; min-height:80px; border:2px solid var(--border); border-radius:var(--radius); padding:14px; font-size:1.05rem; font-family:inherit; resize:vertical; }
+    .input-section textarea:focus { border-color:#ec4899; outline:none; }
+    .styles-grid { display:grid; gap:10px; }
+    .style-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:.15s; cursor:pointer; }
+    .style-card:hover { border-color:#ec4899; transform:translateY(-1px); box-shadow:0 4px 12px rgba(236,72,153,.12); }
+    .style-card.copied { border-color:#10b981; }
+    .style-top { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; }
+    .style-name { font-weight:700; font-size:.78rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:.04em; }
+    .copy-tag { font-size:.68rem; padding:3px 10px; background:#f1f5f9; border-radius:12px; color:var(--text-muted); font-weight:600; }
+    .style-card.copied .copy-tag { background:#d1fae5; color:#059669; }
+    .style-preview { padding:0 16px 14px; font-size:1.2rem; line-height:1.5; word-break:break-word; max-height:60px; overflow:hidden; }
+    .fav-styles { display:flex; flex-wrap:wrap; gap:6px; margin:16px 0; }
+    .fav-btn { padding:6px 14px; border:2px solid var(--border); background:#fff; border-radius:20px; font-size:.78rem; font-weight:600; cursor:pointer; transition:.15s; }
+    .fav-btn:hover { border-color:#ec4899; background:#fdf2f8; }
+    .fav-btn.active { background:#ec4899; color:#fff; border-color:#ec4899; }
+    .count-badge { display:inline-block; background:linear-gradient(135deg,#ec4899,#f43f5e); color:#fff; padding:4px 12px; border-radius:12px; font-size:.73rem; font-weight:700; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text</a> › Fancy Text Generator</div>
+      <h1>Fancy Text Generator ✨</h1>
+      <p>Type your text and choose from dozens of unicode font styles. Click any style to copy!</p>
+    </div>
+    <div class="tool-container">
+      <div class="input-section">
+        <textarea id="input" placeholder="Type something cool...">ToolNook</textarea>
+      </div>
+      <div class="fav-styles" id="filter-btns"></div>
+      <div style="margin-bottom:10px;color:var(--text-muted);font-size:.82rem;">Click any style to copy <span class="count-badge" id="style-count">0 styles</span></div>
+      <div class="styles-grid" id="styles-grid"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>About Fancy Text</h2>
+      <p>Fancy Text Generator converts your text into stylish Unicode characters. These aren't fonts — they're actual Unicode symbols that work everywhere: social media bios, usernames, chat messages, and more.</p>
+      <h3>How it works</h3>
+      <p>Unicode includes mathematical symbols, enclosed characters, and special alphabets. This tool maps standard Latin letters to their Unicode equivalents in various styles.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('fancy-text-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('fancy-text-generator','text');
+});
+
+const STYLES = [
+  { name:'Bold',cat:'basic',map:s=>mapChars(s,0x1D400,0x1D41A)},
+  { name:'Italic',cat:'basic',map:s=>mapChars(s,0x1D434,0x1D44E)},
+  { name:'Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D468,0x1D482)},
+  { name:'Script',cat:'fancy',map:s=>mapChars(s,0x1D49C,0x1D4B6)},
+  { name:'Bold Script',cat:'fancy',map:s=>mapChars(s,0x1D4D0,0x1D4EA)},
+  { name:'Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D504,0x1D51E)},
+  { name:'Bold Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D56C,0x1D586)},
+  { name:'Double-Struck',cat:'fancy',map:s=>mapChars(s,0x1D538,0x1D552)},
+  { name:'Sans-Serif',cat:'basic',map:s=>mapChars(s,0x1D5A0,0x1D5BA)},
+  { name:'Sans Bold',cat:'basic',map:s=>mapChars(s,0x1D5D4,0x1D5EE)},
+  { name:'Sans Italic',cat:'basic',map:s=>mapChars(s,0x1D608,0x1D622)},
+  { name:'Sans Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D63C,0x1D656)},
+  { name:'Monospace',cat:'basic',map:s=>mapChars(s,0x1D670,0x1D68A)},
+  { name:'Circled',cat:'enclosed',map:s=>mapEnclosed(s,0x24B6,0x24D0)},
+  { name:'Negative Circled',cat:'enclosed',map:s=>mapNeg(s)},
+  { name:'Squared',cat:'enclosed',map:s=>mapSquared(s,0x1F130)},
+  { name:'Fullwidth',cat:'wide',map:s=>mapFullwidth(s)},
+  { name:'Upside Down',cat:'fun',map:s=>flipText(s)},
+  { name:'Strikethrough',cat:'deco',map:s=>[...s].map(c=>c+'\u0336').join('')},
+  { name:'Underline',cat:'deco',map:s=>[...s].map(c=>c+'\u0332').join('')},
+  { name:'Wavy',cat:'deco',map:s=>[...s].map(c=>c+'\u0330').join('')},
+  { name:'Dotted',cat:'deco',map:s=>[...s].map(c=>c+'\u0307').join('')},
+  { name:'Sparkles',cat:'fun',map:s=>'✨ '+s+' ✨'},
+  { name:'Stars',cat:'fun',map:s=>'★·.·´¯`·.·★ '+s+' ★·.·´¯`·.·★'},
+  { name:'Flowers',cat:'fun',map:s=>'❀ '+s+' ❀'},
+  { name:'Hearts',cat:'fun',map:s=>'♥ '+[...s].join(' ♥ ')+' ♥'},
+  { name:'Lenny',cat:'fun',map:s=>'( ͡° ͜ʖ ͡°) '+s+' ( ͡° ͜ʖ ͡°)'},
+  { name:'Aesthetic',cat:'wide',map:s=>[...s].join(' ')},
+];
+
+const CATS = ['all','basic','fancy','gothic','enclosed','wide','deco','fun'];
+
+function mapChars(s, upperStart, lowerStart) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(upperStart + (code - 65));
+    if (code >= 97 && code <= 122) return String.fromCodePoint(lowerStart + (code - 97));
+    return c;
+  }).join('');
+}
+
+function mapEnclosed(s, upperStart, lowerStart) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(upperStart + (code - 65));
+    if (code >= 97 && code <= 122) return String.fromCodePoint(lowerStart + (code - 97));
+    return c;
+  }).join('');
+}
+
+function mapNeg(s) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(0x1F150 + (code - 65));
+    if (code >= 97 && code <= 122) return String.fromCodePoint(0x1F150 + (code - 97));
+    return c;
+  }).join('');
+}
+
+function mapSquared(s, start) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(start + (code - 65));
+    if (code >= 97 && code <= 122) return String.fromCodePoint(start + (code - 97));
+    return c;
+  }).join('');
+}
+
+function mapFullwidth(s) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 33 && code <= 126) return String.fromCodePoint(code + 0xFEE0);
+    if (code === 32) return '\u3000';
+    return c;
+  }).join('');
+}
+
+const FLIP_MAP = {'a':'ɐ','b':'q','c':'ɔ','d':'p','e':'ǝ','f':'ɟ','g':'ƃ','h':'ɥ','i':'ᴉ','j':'ɾ','k':'ʞ','l':'l','m':'ɯ','n':'u','o':'o','p':'d','q':'b','r':'ɹ','s':'s','t':'ʇ','u':'n','v':'ʌ','w':'ʍ','x':'x','y':'ʎ','z':'z','A':'∀','B':'q','C':'Ɔ','D':'p','E':'Ǝ','F':'Ⅎ','G':'פ','H':'H','I':'I','J':'ſ','K':'ʞ','L':'˥','M':'W','N':'N','O':'O','P':'Ԁ','Q':'Q','R':'ɹ','S':'S','T':'┴','U':'∩','V':'Λ','W':'M','X':'X','Y':'⅄','Z':'Z','1':'Ɩ','2':'ᄅ','3':'Ɛ','4':'ㄣ','5':'ϛ','6':'9','7':'ㄥ','8':'8','9':'6','0':'0','.':'˙',',':'\'','\'':',','"':',,','`':',','?':'¿','!':'¡','(':')',')':'(','[':']',']':'[','{':'}','}':'{','<':'>','>':'<','&':'⅋','_':'‾'};
+function flipText(s) { return [...s].reverse().map(c => FLIP_MAP[c] || c).join(''); }
+
+let currentCat = 'all';
+
+function renderFilters() {
+  const container = document.getElementById('filter-btns');
+  container.innerHTML = CATS.map(c =>
+    `<button class="fav-btn ${c===currentCat?'active':''}" onclick="filterCat('${c}')">${c.charAt(0).toUpperCase()+c.slice(1)}</button>`
+  ).join('');
+}
+
+function filterCat(c) { currentCat = c; renderFilters(); renderStyles(); }
+
+function renderStyles() {
+  const text = document.getElementById('input').value || 'ToolNook';
+  const grid = document.getElementById('styles-grid');
+  const filtered = STYLES.filter(s => currentCat === 'all' || s.cat === currentCat);
+  document.getElementById('style-count').textContent = filtered.length + ' styles';
+  grid.innerHTML = filtered.map((s, i) => {
+    const converted = s.map(text);
+    return `<div class="style-card" onclick="copyStyle(this, ${i})" data-text="${converted.replace(/"/g,'&quot;')}">
+      <div class="style-top"><span class="style-name">${s.name}</span><span class="copy-tag">Click to copy</span></div>
+      <div class="style-preview">${converted}</div>
+    </div>`;
+  }).join('');
+}
+
+function copyStyle(el, idx) {
+  const text = el.getAttribute('data-text');
+  navigator.clipboard.writeText(text).then(() => {
+    el.classList.add('copied');
+    el.querySelector('.copy-tag').textContent = '✓ Copied!';
+    showToast('Copied!');
+    setTimeout(() => {
+      el.classList.remove('copied');
+      el.querySelector('.copy-tag').textContent = 'Click to copy';
+    }, 1500);
+  });
+}
+
+document.getElementById('input').addEventListener('input', renderStyles);
+renderFilters();
+renderStyles();
+</script>
+</body>
+</html>

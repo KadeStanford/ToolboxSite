@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Address Lookup — Geolocation & Network Info | ToolNook</title>
+  <meta name="description" content="Look up IP address information including geolocation, ISP, timezone, and network details using free public APIs." />
+  <meta name="keywords" content="IP lookup, IP address, geolocation, ISP lookup, IP info, what is my IP" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/ip-lookup.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .lookup-bar { display:flex; gap:8px; margin-bottom:14px; }
+    .lookup-bar input { flex:1; padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:.92rem; font-family:'Courier New',monospace; }
+    .lookup-bar input:focus { border-color:var(--primary); outline:none; }
+    @media(max-width:500px) { .lookup-bar { flex-direction:column; } }
+    .your-ip { padding:14px 18px; background:linear-gradient(135deg,#0f172a,#1e293b); border-radius:var(--radius-lg); display:flex; align-items:center; gap:14px; margin-bottom:16px; cursor:pointer; transition:transform .1s; }
+    .your-ip:hover { transform:scale(1.01); }
+    .your-ip-icon { font-size:1.4rem; }
+    .your-ip-text { color:#94a3b8; font-size:.78rem; }
+    .your-ip-addr { color:#fff; font-size:1.1rem; font-weight:800; font-family:'Courier New',monospace; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; margin:16px 0; }
+    .info-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .info-head { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .info-icon { width:32px; height:32px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+    .ico-loc { background:#dbeafe; }
+    .ico-net { background:#dcfce7; }
+    .ico-time { background:#fef3c7; }
+    .ico-misc { background:#f3e8ff; }
+    .info-title { font-weight:700; font-size:.88rem; }
+    .info-body { padding:14px 16px; }
+    .info-row { display:flex; justify-content:space-between; align-items:flex-start; padding:6px 0; border-bottom:1px solid #f5f5f5; font-size:.84rem; }
+    .info-row:last-child { border:none; }
+    .info-key { color:var(--text-muted); font-weight:600; font-size:.78rem; min-width:100px; }
+    .info-val { text-align:right; word-break:break-all; }
+    .loading { text-align:center; padding:40px; color:var(--text-muted); }
+    .loading .spinner { display:inline-block; width:28px; height:28px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .error-box { padding:14px 18px; background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius); color:#dc2626; margin:14px 0; }
+    .map-placeholder { width:100%; height:200px; background:#e5e7eb; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; color:#6b7280; font-size:.9rem; margin-top:10px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#security-tools">Security</a> › IP Lookup</div>
+      <h1>IP Address Lookup</h1>
+      <p>Get geolocation, ISP, and network details for any IP address.</p>
+    </div>
+    <div class="tool-container">
+      <div class="your-ip" id="my-ip" onclick="lookupMyIP()" title="Click to look up your IP">
+        <span class="your-ip-icon">🌐</span>
+        <div><div class="your-ip-text">Your IP Address</div><div class="your-ip-addr" id="my-ip-addr">Detecting...</div></div>
+      </div>
+      <div class="lookup-bar">
+        <input type="text" id="ip-input" placeholder="Enter an IP address (e.g., 8.8.8.8)" onkeydown="if(event.key==='Enter')lookup()">
+        <button class="btn btn-primary" onclick="lookup()">🔍 Look Up</button>
+      </div>
+      <div id="results"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>About IP Lookup</h2>
+      <p>An IP address is a unique identifier assigned to every device connected to the internet. IP geolocation can determine the approximate physical location, ISP, and other metadata associated with an IP.</p>
+      <h3>What You Can Learn</h3>
+      <ul>
+        <li><strong>Location</strong> — Country, region, city, coordinates</li>
+        <li><strong>Network</strong> — ISP, organization, AS number</li>
+        <li><strong>Timezone</strong> — UTC offset and timezone name</li>
+        <li><strong>Type</strong> — Whether it's a proxy, VPN, or mobile connection</li>
+      </ul>
+      <p><strong>Privacy Note:</strong> IP geolocation is approximate and typically accurate to the city level. It does not reveal your exact address.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('ip-lookup');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('ip-lookup','security');
+  detectMyIP();
+});
+
+async function detectMyIP() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const data = await res.json();
+    document.getElementById('my-ip-addr').textContent = data.ip;
+  } catch {
+    document.getElementById('my-ip-addr').textContent = 'Could not detect';
+  }
+}
+
+function lookupMyIP() {
+  const ip = document.getElementById('my-ip-addr').textContent;
+  if (ip && ip !== 'Detecting...' && ip !== 'Could not detect') {
+    document.getElementById('ip-input').value = ip;
+    lookup();
+  }
+}
+
+async function lookup() {
+  const ip = document.getElementById('ip-input').value.trim();
+  if (!ip) return showToast('Enter an IP address');
+  
+  // Basic IP validation
+  const ipv4 = /^(\d{1,3}\.){3}\d{1,3}$/;
+  const ipv6 = /^[0-9a-fA-F:]+$/;
+  if (!ipv4.test(ip) && !ipv6.test(ip)) return showToast('Enter a valid IP address');
+
+  const results = document.getElementById('results');
+  results.innerHTML = '<div class="loading"><div class="spinner"></div><p>Looking up IP information...</p></div>';
+
+  try {
+    const res = await fetch(`https://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,message,continent,country,countryCode,region,regionName,city,zip,lat,lon,timezone,offset,isp,org,as,asname,mobile,proxy,hosting,query`);
+    const d = await res.json();
+    
+    if (d.status === 'fail') {
+      results.innerHTML = `<div class="error-box">⚠ ${escapeHtml(d.message || 'Lookup failed')}</div>`;
+      return;
+    }
+
+    const flag = d.countryCode ? String.fromCodePoint(...[...d.countryCode.toUpperCase()].map(c => c.charCodeAt(0) + 127397)) : '';
+    const utcOffset = d.offset ? `UTC${d.offset >= 0 ? '+' : ''}${Math.floor(d.offset/3600)}:${String(Math.abs(d.offset%3600)/60).padStart(2,'0')}` : '';
+
+    results.innerHTML = `
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-head"><div class="info-icon ico-loc">📍</div><span class="info-title">Location</span></div>
+          <div class="info-body">
+            <div class="info-row"><span class="info-key">IP Address</span><span class="info-val">${escapeHtml(d.query)}</span></div>
+            <div class="info-row"><span class="info-key">Country</span><span class="info-val">${flag} ${escapeHtml(d.country||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Region</span><span class="info-val">${escapeHtml(d.regionName||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">City</span><span class="info-val">${escapeHtml(d.city||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">ZIP Code</span><span class="info-val">${escapeHtml(d.zip||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Coordinates</span><span class="info-val">${d.lat}, ${d.lon}</span></div>
+            <div class="info-row"><span class="info-key">Continent</span><span class="info-val">${escapeHtml(d.continent||'N/A')}</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-head"><div class="info-icon ico-net">🔌</div><span class="info-title">Network</span></div>
+          <div class="info-body">
+            <div class="info-row"><span class="info-key">ISP</span><span class="info-val">${escapeHtml(d.isp||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Organization</span><span class="info-val">${escapeHtml(d.org||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">AS Number</span><span class="info-val">${escapeHtml(d.as||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">AS Name</span><span class="info-val">${escapeHtml(d.asname||'N/A')}</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-head"><div class="info-icon ico-time">🕐</div><span class="info-title">Timezone</span></div>
+          <div class="info-body">
+            <div class="info-row"><span class="info-key">Timezone</span><span class="info-val">${escapeHtml(d.timezone||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">UTC Offset</span><span class="info-val">${utcOffset}</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-head"><div class="info-icon ico-misc">🔒</div><span class="info-title">Connection Type</span></div>
+          <div class="info-body">
+            <div class="info-row"><span class="info-key">Mobile</span><span class="info-val">${d.mobile?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">Proxy/VPN</span><span class="info-val">${d.proxy?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">Hosting/DC</span><span class="info-val">${d.hosting?'Yes':'No'}</span></div>
+          </div>
+        </div>
+      </div>`;
+  } catch(e) {
+    results.innerHTML = `<div class="error-box">⚠ Failed to look up IP. Please try again.</div>`;
+  }
+}
+</script>
+</body>
+</html>

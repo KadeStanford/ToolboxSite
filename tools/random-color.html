@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Color Generator — Palettes & Color Codes | ToolNook</title>
+  <meta name="description" content="Generate random colors with HEX, RGB, and HSL codes. Build palettes, copy color values, and explore harmonies." />
+  <meta name="keywords" content="random color generator, color palette, hex color, rgb color, hsl color, color picker" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/random-color.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .color-hero{border-radius:var(--radius-lg);padding:40px 20px;text-align:center;transition:background .4s;cursor:pointer;position:relative;margin-bottom:20px;overflow:hidden;}
+    .color-hero::after{content:'Click or press Space to generate';position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.72rem;color:rgba(255,255,255,.7);font-weight:600;}
+    .hero-hex{font-size:3rem;font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.3);letter-spacing:2px;}
+    .hero-codes{display:flex;gap:12px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
+    .hero-code{background:rgba(255,255,255,.2);backdrop-filter:blur(8px);color:#fff;padding:6px 14px;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.3);transition:all .15s;}
+    .hero-code:hover{background:rgba(255,255,255,.35);}
+    .gen-btn{padding:12px 32px;font-size:1rem;font-weight:700;border:none;border-radius:50px;background:#fff;color:#333;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.15);transition:all .2s;margin-top:16px;}
+    .gen-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2);}
+    .section-title{font-size:.92rem;font-weight:700;margin:20px 0 10px;display:flex;align-items:center;gap:6px;}
+    .palette-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px;}
+    .pal-swatch{height:80px;border-radius:var(--radius-lg);cursor:pointer;position:relative;transition:transform .15s;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;}
+    .pal-swatch:hover{transform:scale(1.05);}
+    .pal-swatch .sw-hex{font-size:.72rem;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);background:rgba(0,0,0,.25);padding:2px 8px;border-radius:10px;}
+    .harmony-section{margin-top:16px;}
+    .harmony-group{margin-bottom:14px;}
+    .harmony-label{font-size:.78rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;}
+    .harmony-row{display:flex;gap:6px;}
+    .harm-swatch{width:50px;height:50px;border-radius:var(--radius);cursor:pointer;border:2px solid var(--border);transition:transform .15s;}
+    .harm-swatch:hover{transform:scale(1.1);}
+    .history-section{margin-top:16px;}
+    .history-row{display:flex;gap:4px;flex-wrap:wrap;}
+    .hist-swatch{width:32px;height:32px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+    .hist-swatch:hover{border-color:var(--primary);transform:scale(1.15);}
+    .lock-row{display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap;}
+    .lock-btn{padding:6px 14px;font-size:.78rem;font-weight:600;border:2px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;transition:all .15s;}
+    .lock-btn:hover,.lock-btn.active{border-color:var(--primary);background:var(--primary);color:#fff;}
+    .copied-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;z-index:9999;animation:flashIn .5s forwards;}
+    @keyframes flashIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.8);}30%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Random Color</div>
+      <h1>🎨 Random Color Generator</h1>
+      <p>Generate random colors, build palettes, and explore color harmonies. Click any color to copy its code.</p>
+    </div>
+    <div class="tool-container">
+      <div class="color-hero" id="colorHero">
+        <div class="hero-hex" id="heroHex">#000000</div>
+        <div class="hero-codes" id="heroCodes"></div>
+        <button class="gen-btn" id="genBtn">🎲 Generate Color</button>
+      </div>
+
+      <div class="section-title">🎨 Random Palette</div>
+      <div class="palette-row" id="paletteRow"></div>
+      <div style="text-align:center;"><button class="gen-btn" id="palBtn" style="font-size:.85rem;padding:8px 22px;">🔄 New Palette</button></div>
+
+      <div class="section-title">🌈 Color Harmonies</div>
+      <div class="harmony-section" id="harmonySection"></div>
+
+      <div class="section-title">📋 History</div>
+      <div class="history-row" id="historyRow"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>About Color Systems</h2>
+      <p>Colors are represented in multiple formats: <strong>HEX</strong> (#FF5733), <strong>RGB</strong> (255, 87, 51), and <strong>HSL</strong> (11°, 100%, 60%). Color harmonies like complementary, triadic, and analogous help create visually pleasing palettes by using mathematical relationships on the color wheel.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('random-color');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('random-color','utility');
+
+  let currentColor={r:0,g:0,b:0};
+  let history=[];
+
+  function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+  function randColor(){return{r:randInt(0,255),g:randInt(0,255),b:randInt(0,255)};}
+  function toHex(c){return '#'+[c.r,c.g,c.b].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase();}
+  function toRGB(c){return `rgb(${c.r}, ${c.g}, ${c.b})`;}
+  function rgbToHSL(c){
+    const r=c.r/255,g=c.g/255,b=c.b/255;
+    const max=Math.max(r,g,b),min=Math.min(r,g,b);
+    let h,s,l=(max+min)/2;
+    if(max===min){h=s=0;}else{
+      const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
+      switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break;}
+    }
+    return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};
+  }
+  function hslToRGB(h,s,l){
+    s/=100;l/=100;
+    const a=s*Math.min(l,1-l);
+    const f=n=>{const k=(n+h/30)%12;return l-a*Math.max(Math.min(k-3,9-k,1),-1);};
+    return{r:Math.round(f(0)*255),g:Math.round(f(8)*255),b:Math.round(f(4)*255)};
+  }
+  function toHSL(c){const h=rgbToHSL(c);return `hsl(${h.h}°, ${h.s}%, ${h.l}%)`;}
+  function luma(c){return(0.299*c.r+0.587*c.g+0.114*c.b)/255;}
+
+  function copyToClip(text){
+    navigator.clipboard.writeText(text).then(()=>{
+      const flash=document.createElement('div');
+      flash.className='copied-flash';
+      flash.textContent='Copied: '+text;
+      document.body.appendChild(flash);
+      setTimeout(()=>flash.remove(),600);
+    });
+  }
+
+  function setHero(c){
+    currentColor=c;
+    const hex=toHex(c);
+    const hero=document.getElementById('colorHero');
+    hero.style.background=hex;
+    document.getElementById('heroHex').textContent=hex;
+    const codes=document.getElementById('heroCodes');
+    codes.innerHTML=[hex,toRGB(c),toHSL(c)].map(v=>`<span class="hero-code" data-val="${v}">${v}</span>`).join('');
+    codes.querySelectorAll('.hero-code').forEach(el=>{
+      el.addEventListener('click',e=>{e.stopPropagation();copyToClip(el.dataset.val);});
+    });
+    // History
+    if(!history.find(h=>toHex(h)===hex)){
+      history.unshift(c);
+      if(history.length>30)history.pop();
+    }
+    renderHistory();
+    renderHarmonies(c);
+  }
+
+  function renderPalette(){
+    const row=document.getElementById('paletteRow');
+    row.innerHTML='';
+    for(let i=0;i<5;i++){
+      const c=randColor();
+      const hex=toHex(c);
+      const div=document.createElement('div');
+      div.className='pal-swatch';
+      div.style.background=hex;
+      div.innerHTML=`<span class="sw-hex">${hex}</span>`;
+      div.addEventListener('click',()=>{copyToClip(hex);setHero(c);});
+      row.appendChild(div);
+    }
+  }
+
+  function renderHarmonies(c){
+    const hsl=rgbToHSL(c);
+    const harmonies=[
+      {name:'Complementary',angles:[(hsl.h+180)%360]},
+      {name:'Analogous',angles:[(hsl.h+30)%360,(hsl.h+330)%360]},
+      {name:'Triadic',angles:[(hsl.h+120)%360,(hsl.h+240)%360]},
+      {name:'Split-Complementary',angles:[(hsl.h+150)%360,(hsl.h+210)%360]},
+      {name:'Tetradic',angles:[(hsl.h+90)%360,(hsl.h+180)%360,(hsl.h+270)%360]},
+    ];
+    const section=document.getElementById('harmonySection');
+    section.innerHTML=harmonies.map(h=>{
+      const swatches=[c,...h.angles.map(a=>hslToRGB(a,hsl.s,hsl.l))];
+      return `<div class="harmony-group"><div class="harmony-label">${h.name}</div><div class="harmony-row">${swatches.map(s=>{
+        const hex=toHex(s);
+        return `<div class="harm-swatch" style="background:${hex}" title="${hex}" onclick="navigator.clipboard.writeText('${hex}')"></div>`;
+      }).join('')}</div></div>`;
+    }).join('');
+  }
+
+  function renderHistory(){
+    document.getElementById('historyRow').innerHTML=history.map(c=>{
+      const hex=toHex(c);
+      return `<div class="hist-swatch" style="background:${hex}" title="${hex}"></div>`;
+    }).join('');
+    document.querySelectorAll('.hist-swatch').forEach((el,i)=>{
+      el.addEventListener('click',()=>{copyToClip(toHex(history[i]));setHero(history[i]);});
+    });
+  }
+
+  function generate(){
+    setHero(randColor());
+  }
+
+  document.getElementById('genBtn').addEventListener('click',e=>{e.stopPropagation();generate();});
+  document.getElementById('colorHero').addEventListener('click',generate);
+  document.getElementById('palBtn').addEventListener('click',renderPalette);
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&e.target===document.body){e.preventDefault();generate();}});
+
+  generate();
+  renderPalette();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whitespace Remover — Clean Invisible Characters | ToolNook</title>
+  <meta name="description" content="Detect and remove invisible characters, extra whitespace, zero-width characters, and hidden unicode from your text." />
+  <meta name="keywords" content="whitespace remover, invisible character detector, zero width character, hidden text cleaner, remove extra spaces" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/whitespace-remover.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .ws-panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .ws-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .panel-head { padding:12px 16px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .panel-dot { width:10px; height:10px; border-radius:50%; }
+    .dot-input { background:#ef4444; }
+    .dot-output { background:#10b981; }
+    .panel-title { font-weight:700; font-size:.82rem; }
+    .panel-badge { margin-left:auto; font-size:.68rem; padding:2px 8px; background:#f1f5f9; border-radius:10px; color:var(--text-muted); font-weight:600; }
+    .ws-panel textarea { width:100%; min-height:180px; border:none; padding:14px; font-family:'Courier New',monospace; font-size:.86rem; resize:vertical; }
+    .ws-panel textarea:focus { outline:none; }
+    .found-list { padding:14px; max-height:200px; overflow-y:auto; background:#fafafa; }
+    .found-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:.82rem; }
+    .found-item:last-child { border:none; }
+    .found-char { width:32px; height:24px; background:#fee2e2; border:1px solid #fecaca; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:700; color:#dc2626; }
+    .found-name { flex:1; }
+    .found-count { font-weight:700; color:#dc2626; font-size:.78rem; }
+    .options-row { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
+    .opt-check { display:flex; align-items:center; gap:6px; padding:8px 14px; background:#fff; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; font-size:.82rem; transition:.15s; }
+    .opt-check:hover { border-color:var(--primary); }
+    .opt-check input { accent-color:var(--primary); }
+    .stats-bar { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+    .stat-chip { padding:6px 14px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; font-size:.78rem; font-weight:600; color:#15803d; }
+    .stat-chip.danger { background:#fef2f2; border-color:#fecaca; color:#dc2626; }
+    .actions { display:flex; gap:8px; margin:16px 0; flex-wrap:wrap; }
+    @media(max-width:700px) { .ws-panels { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text</a> › Whitespace Remover</div>
+      <h1>Whitespace Remover</h1>
+      <p>Detect and remove invisible characters, extra spaces, zero-width joiners, and other hidden unicode characters.</p>
+    </div>
+    <div class="tool-container">
+      <div class="options-row">
+        <label class="opt-check"><input type="checkbox" id="opt-multi" checked /> Collapse multiple spaces</label>
+        <label class="opt-check"><input type="checkbox" id="opt-trim" checked /> Trim lines</label>
+        <label class="opt-check"><input type="checkbox" id="opt-zwc" checked /> Remove zero-width chars</label>
+        <label class="opt-check"><input type="checkbox" id="opt-blank" checked /> Remove blank lines</label>
+        <label class="opt-check"><input type="checkbox" id="opt-tabs" /> Convert tabs to spaces</label>
+        <label class="opt-check"><input type="checkbox" id="opt-nbsp" checked /> Remove non-breaking spaces</label>
+      </div>
+      <div class="ws-panels">
+        <div class="ws-panel">
+          <div class="panel-head">
+            <span class="panel-dot dot-input"></span>
+            <span class="panel-title">Input Text</span>
+            <span class="panel-badge" id="in-count">0 chars</span>
+          </div>
+          <textarea id="input" placeholder="Paste text with hidden characters here..."></textarea>
+        </div>
+        <div class="ws-panel">
+          <div class="panel-head">
+            <span class="panel-dot dot-output"></span>
+            <span class="panel-title">Cleaned Output</span>
+            <span class="panel-badge" id="out-count">0 chars</span>
+          </div>
+          <textarea id="output" readonly placeholder="Cleaned text will appear here..."></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="clean()">🧹 Clean Text</button>
+        <button class="btn btn-secondary" onclick="analyze()">🔍 Analyze Only</button>
+        <button class="btn btn-secondary" onclick="copyOutput()">📋 Copy Output</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+      </div>
+      <div class="stats-bar" id="stats"></div>
+      <div id="found-section" style="display:none;">
+        <h3 style="font-size:.88rem;margin:16px 0 8px;">Hidden Characters Found</h3>
+        <div class="found-list" id="found-list"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Why Remove Invisible Characters?</h2>
+      <p>Invisible characters can cause bugs in code, break string comparisons, and hide malicious content. Common culprits include zero-width spaces (U+200B), non-breaking spaces (U+00A0), and zero-width joiners (U+200D).</p>
+      <h3>What This Tool Detects</h3>
+      <ul>
+        <li>Zero-width spaces, joiners, and non-joiners</li>
+        <li>Non-breaking spaces and narrow no-break spaces</li>
+        <li>Soft hyphens and word joiners</li>
+        <li>Left-to-right and right-to-left marks</li>
+        <li>Extra whitespace and blank lines</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('whitespace-remover');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('whitespace-remover','text');
+});
+
+const INVISIBLE = [
+  { char:'\u200B', code:'U+200B', name:'Zero Width Space' },
+  { char:'\u200C', code:'U+200C', name:'Zero Width Non-Joiner' },
+  { char:'\u200D', code:'U+200D', name:'Zero Width Joiner' },
+  { char:'\u200E', code:'U+200E', name:'Left-to-Right Mark' },
+  { char:'\u200F', code:'U+200F', name:'Right-to-Left Mark' },
+  { char:'\u00A0', code:'U+00A0', name:'Non-Breaking Space' },
+  { char:'\u00AD', code:'U+00AD', name:'Soft Hyphen' },
+  { char:'\u2028', code:'U+2028', name:'Line Separator' },
+  { char:'\u2029', code:'U+2029', name:'Paragraph Separator' },
+  { char:'\uFEFF', code:'U+FEFF', name:'BOM / Zero Width No-Break' },
+  { char:'\u2060', code:'U+2060', name:'Word Joiner' },
+  { char:'\u2061', code:'U+2061', name:'Function Application' },
+  { char:'\u202A', code:'U+202A', name:'LTR Embedding' },
+  { char:'\u202B', code:'U+202B', name:'RTL Embedding' },
+  { char:'\u202C', code:'U+202C', name:'Pop Directional' },
+  { char:'\u202D', code:'U+202D', name:'LTR Override' },
+  { char:'\u202E', code:'U+202E', name:'RTL Override' },
+  { char:'\u2066', code:'U+2066', name:'LTR Isolate' },
+  { char:'\u2067', code:'U+2067', name:'RTL Isolate' },
+  { char:'\u2068', code:'U+2068', name:'First Strong Isolate' },
+  { char:'\u2069', code:'U+2069', name:'Pop Directional Isolate' },
+  { char:'\u180E', code:'U+180E', name:'Mongolian Vowel Separator' },
+];
+
+document.getElementById('input').addEventListener('input', function() {
+  document.getElementById('in-count').textContent = this.value.length + ' chars';
+});
+
+function findInvisible(text) {
+  const found = {};
+  INVISIBLE.forEach(inv => {
+    let count = 0;
+    for (const c of text) { if (c === inv.char) count++; }
+    if (count) found[inv.code] = { ...inv, count };
+  });
+  // check extra spaces
+  const multiSpaces = (text.match(/  +/g) || []).length;
+  if (multiSpaces) found['multi-space'] = { code:'--', name:'Multiple consecutive spaces', count: multiSpaces };
+  const blankLines = (text.match(/\n\s*\n/g) || []).length;
+  if (blankLines) found['blank-lines'] = { code:'--', name:'Blank lines', count: blankLines };
+  return found;
+}
+
+function analyze() {
+  const text = document.getElementById('input').value;
+  if (!text) return showToast('Please paste some text');
+  const found = findInvisible(text);
+  renderFound(found);
+  if (!Object.keys(found).length) showToast('No hidden characters found! ✨');
+}
+
+function clean() {
+  let text = document.getElementById('input').value;
+  if (!text) return showToast('Please paste some text');
+  const found = findInvisible(text);
+  
+  if (document.getElementById('opt-zwc').checked) {
+    INVISIBLE.forEach(inv => { text = text.split(inv.char).join(''); });
+  }
+  if (document.getElementById('opt-nbsp').checked) {
+    text = text.replace(/\u00A0/g, ' ');
+  }
+  if (document.getElementById('opt-tabs').checked) {
+    text = text.replace(/\t/g, '    ');
+  }
+  if (document.getElementById('opt-multi').checked) {
+    text = text.replace(/ {2,}/g, ' ');
+  }
+  if (document.getElementById('opt-trim').checked) {
+    text = text.split('\n').map(l => l.trim()).join('\n');
+  }
+  if (document.getElementById('opt-blank').checked) {
+    text = text.replace(/\n{3,}/g, '\n\n').replace(/^\n+/, '').replace(/\n+$/, '');
+  }
+  
+  document.getElementById('output').value = text;
+  document.getElementById('out-count').textContent = text.length + ' chars';
+  renderFound(found);
+  
+  const removed = document.getElementById('input').value.length - text.length;
+  const stats = document.getElementById('stats');
+  stats.innerHTML = `
+    <span class="stat-chip">Input: ${document.getElementById('input').value.length} chars</span>
+    <span class="stat-chip">Output: ${text.length} chars</span>
+    <span class="stat-chip ${removed > 0 ? 'danger' : ''}">${removed} characters removed</span>
+  `;
+  showToast(removed > 0 ? `Removed ${removed} characters!` : 'Text is clean! ✨');
+}
+
+function renderFound(found) {
+  const keys = Object.keys(found);
+  const section = document.getElementById('found-section');
+  if (!keys.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  document.getElementById('found-list').innerHTML = keys.map(k => {
+    const f = found[k];
+    return `<div class="found-item">
+      <div class="found-char">${f.code.length <= 6 ? f.code : '⚠'}</div>
+      <span class="found-name">${f.name}</span>
+      <span class="found-count">×${f.count}</span>
+    </div>`;
+  }).join('');
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').value;
+  if (!text) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!'));
+}
+
+function loadSample() {
+  document.getElementById('input').value = 'Hello\u200B World\u00A0 \u200D  \nThis  has   multiple   spaces\n\n\n\nBlank lines above\n\u200BZero\u200Bwidth\u200Bspaces\u200Bhidden\nNon\u00A0breaking\u00A0spaces\u00A0here\n\u200ELeft to right mark\u200F and right to left\n\uFEFFBOM character at start';
+  document.getElementById('in-count').textContent = document.getElementById('input').value.length + ' chars';
+  clean();
+}
+</script>
+</body>
+</html>

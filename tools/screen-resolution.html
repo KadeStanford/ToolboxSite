@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Screen Resolution Detector — Display & Browser Info | ToolNook</title>
+  <meta name="description" content="Detect your screen resolution, viewport size, pixel density, color depth, and device info in real-time." />
+  <meta name="keywords" content="screen resolution detector, display info, viewport size, pixel ratio, screen size test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/screen-resolution.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .hero-display{text-align:center;padding:30px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--radius-lg);color:#fff;margin-bottom:20px;}
+    .hero-res{font-size:3rem;font-weight:800;letter-spacing:1px;}
+    .hero-sub{font-size:.92rem;opacity:.85;margin-top:4px;}
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px;}
+    .info-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;}
+    .info-card .ic-icon{font-size:1.4rem;margin-bottom:6px;}
+    .info-card .ic-label{font-size:.72rem;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:4px;}
+    .info-card .ic-val{font-size:1.1rem;font-weight:700;color:var(--primary);}
+    .info-card .ic-note{font-size:.74rem;color:var(--text-muted);margin-top:4px;}
+    .visual-box{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center;margin-bottom:16px;}
+    .screen-vis{position:relative;display:inline-block;border:3px solid #333;border-radius:8px;background:#1a1a2e;overflow:hidden;}
+    .screen-vis .viewport-vis{background:linear-gradient(135deg,#667eea33,#764ba233);border:2px dashed var(--primary);position:absolute;}
+    .screen-label{font-size:.7rem;color:#fff;position:absolute;padding:2px 6px;background:rgba(0,0,0,.6);border-radius:3px;}
+    .bp-section{margin-top:16px;}
+    .bp-section h3{font-size:.88rem;margin-bottom:10px;}
+    .bp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;}
+    .bp-card{padding:10px;border:2px solid var(--border);border-radius:var(--radius);font-size:.82rem;display:flex;align-items:center;justify-content:space-between;}
+    .bp-card.match{border-color:#22c55e;background:#f0fdf4;}
+    .bp-card .bp-name{font-weight:600;}
+    .bp-card .bp-range{color:var(--text-muted);font-size:.76rem;}
+    .live-badge{display:inline-block;background:#22c55e;color:#fff;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:600;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Screen Resolution</div>
+      <h1>Screen Resolution Detector</h1>
+      <p>Detect your display resolution, viewport size, pixel density, and more — updated in real-time. <span class="live-badge">LIVE</span></p>
+    </div>
+    <div class="tool-container">
+      <div class="hero-display">
+        <div class="hero-res" id="heroRes">-</div>
+        <div class="hero-sub" id="heroSub">Screen Resolution</div>
+      </div>
+      <div class="info-grid" id="infoGrid"></div>
+      <div class="visual-box" id="visualBox"></div>
+      <div class="bp-section">
+        <h3>📐 Responsive Breakpoints</h3>
+        <div class="bp-grid" id="bpGrid"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Understanding Screen Resolution</h2>
+      <p>Screen resolution refers to the number of pixels displayed on your screen. Higher resolutions provide sharper images. The device pixel ratio (DPR) indicates how many physical pixels make up one CSS pixel — Retina displays typically have a DPR of 2 or more.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('screen-resolution');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('screen-resolution','utility');
+  detect();
+  window.addEventListener('resize',detect);
+});
+
+const BREAKPOINTS=[
+  {name:'Mobile S',min:0,max:320},
+  {name:'Mobile M',min:321,max:375},
+  {name:'Mobile L',min:376,max:425},
+  {name:'Tablet',min:426,max:768},
+  {name:'Laptop',min:769,max:1024},
+  {name:'Laptop L',min:1025,max:1440},
+  {name:'4K',min:1441,max:Infinity},
+];
+
+function detect(){
+  const sw=screen.width, sh=screen.height;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const dpr=window.devicePixelRatio||1;
+  const cd=screen.colorDepth;
+  const orient=sw>sh?'Landscape':'Portrait';
+  const aw=screen.availWidth, ah=screen.availHeight;
+
+  document.getElementById('heroRes').textContent=`${sw} × ${sh}`;
+  document.getElementById('heroSub').textContent=`Screen Resolution (${orient})`;
+
+  const cards=[
+    {icon:'🖥️',label:'Screen Size',val:`${sw} × ${sh}`,note:'Physical screen pixels'},
+    {icon:'📐',label:'Viewport Size',val:`${vw} × ${vh}`,note:'CSS viewport (browser window)'},
+    {icon:'📏',label:'Available Area',val:`${aw} × ${ah}`,note:'Minus taskbar / system bars'},
+    {icon:'🔍',label:'Device Pixel Ratio',val:`${dpr}x`,note:dpr>1?'High DPI / Retina display':'Standard display'},
+    {icon:'🎨',label:'Color Depth',val:`${cd}-bit`,note:`${Math.pow(2,cd).toLocaleString()} colors`},
+    {icon:'🔄',label:'Orientation',val:orient,note:`Aspect ratio: ${(sw/sh).toFixed(2)}`},
+    {icon:'📱',label:'Touch Support',val:('ontouchstart' in window)?'Yes':'No',note:'Touch events available'},
+    {icon:'🖼️',label:'Physical Resolution',val:`${Math.round(sw*dpr)} × ${Math.round(sh*dpr)}`,note:'Hardware pixels'},
+  ];
+  document.getElementById('infoGrid').innerHTML=cards.map(c=>`<div class="info-card"><div class="ic-icon">${c.icon}</div><div class="ic-label">${c.label}</div><div class="ic-val">${c.val}</div><div class="ic-note">${c.note}</div></div>`).join('');
+
+  // Visualization
+  const scale=Math.min(200/sw,150/sh);
+  const dw=Math.round(sw*scale),dh=Math.round(sh*scale);
+  const dvw=Math.round(vw*scale),dvh=Math.round(vh*scale);
+  document.getElementById('visualBox').innerHTML=`<div style="font-size:.82rem;margin-bottom:8px;font-weight:600;">Visual Representation</div><div class="screen-vis" style="width:${dw}px;height:${dh}px;"><div class="viewport-vis" style="width:${dvw}px;height:${dvh}px;top:${Math.round((dh-dvh)/2)}px;left:${Math.round((dw-dvw)/2)}px;"></div><span class="screen-label" style="top:4px;left:4px;">Screen</span><span class="screen-label" style="bottom:4px;right:4px;background:rgba(79,70,229,.7);">Viewport</span></div>`;
+
+  // Breakpoints
+  document.getElementById('bpGrid').innerHTML=BREAKPOINTS.map(bp=>{
+    const match=vw>=bp.min&&vw<=bp.max;
+    return `<div class="bp-card${match?' match':''}"><span class="bp-name">${match?'✅ ':''} ${bp.name}</span><span class="bp-range">${bp.min}${bp.max===Infinity?'+':'–'+bp.max}px</span></div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

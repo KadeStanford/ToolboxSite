@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YAML to JSON Converter — Transform YAML Data | ToolNook</title>
+  <meta name="description" content="Convert YAML to JSON and JSON to YAML instantly. Syntax validation, pretty formatting, and one-click copy." />
+  <meta name="keywords" content="YAML to JSON, JSON to YAML, YAML converter, YAML parser, config converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/yaml-to-json.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .dir-toggle { display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:16px; }
+    .dir-label { font-weight:700; font-size:.86rem; padding:8px 16px; border-radius:var(--radius); }
+    .dir-label.from { background:#e0f2fe; color:#0369a1; }
+    .dir-label.to { background:#dcfce7; color:#15803d; }
+    .dir-arrow { font-size:1.4rem; cursor:pointer; width:44px; height:44px; border:2px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; background:#fff; transition:.2s; }
+    .dir-arrow:hover { border-color:var(--primary); transform:rotate(180deg); }
+    .panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .panel-head { padding:10px 16px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .p-icon { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:#fff; }
+    .p-icon.yaml { background:#0369a1; }
+    .p-icon.json { background:#15803d; }
+    .p-title { font-weight:700; font-size:.82rem; }
+    .p-badge { margin-left:auto; font-size:.68rem; padding:2px 8px; background:#f1f5f9; border-radius:10px; color:var(--text-muted); font-weight:600; }
+    .panel textarea { width:100%; min-height:260px; border:none; padding:14px; font-family:'Courier New',monospace; font-size:.84rem; resize:vertical; line-height:1.6; }
+    .panel textarea:focus { outline:none; }
+    .act-row { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; }
+    .error-box { background:#fef2f2; border:1px solid #fecaca; border-radius:var(--radius); padding:10px 14px; color:#dc2626; font-size:.82rem; margin:10px 0; display:none; }
+    .error-box code { background:#fee2e2; padding:2px 6px; border-radius:4px; font-size:.78rem; }
+    .stat-bar { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    .stat { padding:5px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:14px; font-size:.76rem; font-weight:600; color:#15803d; }
+    @media(max-width:700px) { .panels { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converter</a> › YAML ↔ JSON</div>
+      <h1>YAML ↔ JSON Converter</h1>
+      <p>Convert between YAML and JSON formats with syntax validation and pretty formatting.</p>
+    </div>
+    <div class="tool-container">
+      <div class="dir-toggle">
+        <span class="dir-label from" id="from-label">YAML</span>
+        <div class="dir-arrow" onclick="swapDir()" title="Swap direction">⇄</div>
+        <span class="dir-label to" id="to-label">JSON</span>
+      </div>
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="p-icon yaml" id="in-icon">YML</div>
+            <span class="p-title" id="in-title">YAML Input</span>
+            <span class="p-badge" id="in-lines">0 lines</span>
+          </div>
+          <textarea id="input" placeholder="Paste YAML here...&#10;&#10;name: Alice&#10;age: 30&#10;hobbies:&#10;  - reading&#10;  - coding"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="p-icon json" id="out-icon">JSON</div>
+            <span class="p-title" id="out-title">JSON Output</span>
+            <span class="p-badge" id="out-size">0 B</span>
+          </div>
+          <textarea id="output" readonly placeholder="Converted output will appear here..."></textarea>
+        </div>
+      </div>
+      <div class="error-box" id="error-box"></div>
+      <div class="act-row">
+        <button class="btn btn-primary" onclick="convert()">Convert</button>
+        <button class="btn btn-secondary" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn btn-secondary" onclick="download()">💾 Download</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button class="btn btn-secondary" onclick="clear()">Clear</button>
+      </div>
+      <div class="stat-bar" id="stats"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>YAML and JSON Conversion</h2>
+      <p>YAML (YAML Ain't Markup Language) and JSON (JavaScript Object Notation) are both popular data serialization formats. YAML is more human-readable with its indentation-based structure, while JSON is more widely used in APIs and web applications.</p>
+      <h3>Note on YAML Parsing</h3>
+      <p>This tool uses a lightweight YAML parser that handles common YAML patterns including nested objects, arrays, multi-line strings, and quoted values. For extremely complex YAML features (anchors, custom tags), consider using a full YAML library.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('yaml-to-json');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('yaml-to-json','converter');
+});
+
+let direction = 'yaml-to-json';
+
+document.getElementById('input').addEventListener('input', function() {
+  document.getElementById('in-lines').textContent = this.value.split('\n').length + ' lines';
+});
+
+function swapDir() {
+  direction = direction === 'yaml-to-json' ? 'json-to-yaml' : 'yaml-to-json';
+  const fl = document.getElementById('from-label');
+  const tl = document.getElementById('to-label');
+  const inI = document.getElementById('in-icon');
+  const outI = document.getElementById('out-icon');
+  const inT = document.getElementById('in-title');
+  const outT = document.getElementById('out-title');
+  if (direction === 'yaml-to-json') {
+    fl.textContent = 'YAML'; fl.className = 'dir-label from';
+    tl.textContent = 'JSON'; tl.className = 'dir-label to';
+    inI.textContent = 'YML'; inI.className = 'p-icon yaml';
+    outI.textContent = 'JSON'; outI.className = 'p-icon json';
+    inT.textContent = 'YAML Input'; outT.textContent = 'JSON Output';
+  } else {
+    fl.textContent = 'JSON'; fl.className = 'dir-label from';
+    tl.textContent = 'YAML'; tl.className = 'dir-label to';
+    inI.textContent = 'JSON'; inI.className = 'p-icon json';
+    outI.textContent = 'YML'; outI.className = 'p-icon yaml';
+    inT.textContent = 'JSON Input'; outT.textContent = 'YAML Output';
+  }
+  // Swap content
+  const tmp = document.getElementById('input').value;
+  document.getElementById('input').value = document.getElementById('output').value;
+  document.getElementById('output').value = tmp;
+}
+
+function parseYAML(yaml) {
+  const lines = yaml.split('\n');
+  const result = {};
+  const stack = [{ obj: result, indent: -1 }];
+  let currentKey = null;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    
+    const indent = line.search(/\S/);
+    const trimmed = line.trim();
+    
+    // Pop stack to find parent
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+      stack.pop();
+    }
+    const parent = stack[stack.length - 1].obj;
+    
+    if (trimmed.startsWith('- ')) {
+      const val = trimmed.slice(2).trim();
+      if (Array.isArray(parent)) {
+        parent.push(parseYAMLValue(val));
+      } else if (currentKey) {
+        if (!Array.isArray(parent[currentKey])) parent[currentKey] = [];
+        parent[currentKey].push(parseYAMLValue(val));
+      }
+    } else if (trimmed.includes(':')) {
+      const colonIdx = trimmed.indexOf(':');
+      const key = trimmed.slice(0, colonIdx).trim();
+      const val = trimmed.slice(colonIdx + 1).trim();
+      currentKey = key;
+      
+      if (val === '' || val === '|' || val === '>') {
+        parent[key] = {};
+        stack.push({ obj: parent[key], indent: indent });
+      } else if (val.startsWith('[') && val.endsWith(']')) {
+        parent[key] = val.slice(1, -1).split(',').map(v => parseYAMLValue(v.trim()));
+      } else {
+        parent[key] = parseYAMLValue(val);
+      }
+    }
+  }
+  return result;
+}
+
+function parseYAMLValue(val) {
+  if (val === 'true') return true;
+  if (val === 'false') return false;
+  if (val === 'null' || val === '~') return null;
+  if (val !== '' && !isNaN(val) && val.trim() !== '') return Number(val);
+  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'")))
+    return val.slice(1, -1);
+  return val;
+}
+
+function toYAML(obj, indent = 0) {
+  const pad = '  '.repeat(indent);
+  let yaml = '';
+  if (Array.isArray(obj)) {
+    obj.forEach(item => {
+      if (typeof item === 'object' && item !== null) {
+        yaml += pad + '- \n' + toYAML(item, indent + 1);
+      } else {
+        yaml += pad + '- ' + yamlValue(item) + '\n';
+      }
+    });
+  } else if (typeof obj === 'object' && obj !== null) {
+    Object.entries(obj).forEach(([key, val]) => {
+      if (typeof val === 'object' && val !== null) {
+        yaml += pad + key + ':\n' + toYAML(val, indent + 1);
+      } else {
+        yaml += pad + key + ': ' + yamlValue(val) + '\n';
+      }
+    });
+  }
+  return yaml;
+}
+
+function yamlValue(v) {
+  if (v === null) return 'null';
+  if (typeof v === 'boolean') return String(v);
+  if (typeof v === 'number') return String(v);
+  if (typeof v === 'string' && (v.includes(':') || v.includes('#') || v.includes("'") || v === ''))
+    return '"' + v.replace(/"/g, '\\"') + '"';
+  return String(v);
+}
+
+function convert() {
+  const input = document.getElementById('input').value.trim();
+  if (!input) return showToast('Please paste some content');
+  const errBox = document.getElementById('error-box');
+  errBox.style.display = 'none';
+
+  try {
+    let result;
+    if (direction === 'yaml-to-json') {
+      const obj = parseYAML(input);
+      result = JSON.stringify(obj, null, 2);
+    } else {
+      const obj = JSON.parse(input);
+      result = toYAML(obj);
+    }
+    document.getElementById('output').value = result;
+    document.getElementById('out-size').textContent = formatBytes(result.length);
+    document.getElementById('stats').innerHTML = `
+      <span class="stat">Input: ${formatBytes(input.length)}</span>
+      <span class="stat">Output: ${formatBytes(result.length)}</span>
+    `;
+    showToast('Converted!');
+  } catch (e) {
+    errBox.innerHTML = 'Parse Error: <code>' + escapeHtml(e.message) + '</code>';
+    errBox.style.display = '';
+  }
+}
+
+function copyOutput() {
+  const t = document.getElementById('output').value;
+  if (!t) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(t).then(() => showToast('Copied!'));
+}
+
+function download() {
+  const t = document.getElementById('output').value;
+  if (!t) return showToast('Nothing to download');
+  const ext = direction === 'yaml-to-json' ? 'json' : 'yml';
+  const mime = direction === 'yaml-to-json' ? 'application/json' : 'text/yaml';
+  const blob = new Blob([t], { type: mime });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'output.' + ext; a.click();
+}
+
+function clear() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').value = '';
+  document.getElementById('error-box').style.display = 'none';
+}
+
+function loadSample() {
+  if (direction === 'yaml-to-json') {
+    document.getElementById('input').value = `# Server Configuration
+server:
+  host: localhost
+  port: 8080
+  debug: true
+
+database:
+  type: postgres
+  host: db.example.com
+  port: 5432
+  name: myapp
+  credentials:
+    user: admin
+    password: secret123
+
+features:
+  - authentication
+  - logging
+  - caching
+
+limits:
+  max_connections: 100
+  timeout: 30
+  retry: true`;
+  } else {
+    document.getElementById('input').value = JSON.stringify({
+      server: { host: "localhost", port: 8080, debug: true },
+      database: { type: "postgres", host: "db.example.com", port: 5432 },
+      features: ["authentication", "logging", "caching"]
+    }, null, 2);
+  }
+  convert();
+}
+</script>
+</body>
+</html>

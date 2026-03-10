@@ -66,6 +66,53 @@ const TN_TOOLS = [
   // ── Connected Tools (Firebase) ──
   { name: 'URL Shortener',            slug: 'url-shortener',         category: 'connected',  icon: '&#128279;',    desc: 'Shorten long URLs with cloud storage' },
   { name: 'Text Share / Pastebin',    slug: 'pastebin',              category: 'connected',  icon: '&#128203;',    desc: 'Share text snippets with a link' },
+  // ── New Developer Tools ──
+  { name: 'JSON to CSV',              slug: 'json-to-csv',           category: 'developer',  icon: '&#128196;',    desc: 'Convert JSON data to CSV format' },
+  { name: 'HTML Entity Encoder',      slug: 'html-entity-encoder',   category: 'developer',  icon: '&#38;',        desc: 'Encode & decode HTML entities' },
+  { name: 'Chmod Calculator',         slug: 'chmod-calculator',      category: 'developer',  icon: '&#128274;',    desc: 'Calculate Unix file permissions' },
+  { name: 'HTTP Status Codes',        slug: 'http-status-codes',     category: 'developer',  icon: '&#128214;',    desc: 'Searchable HTTP status code reference' },
+  { name: 'API Response Formatter',   slug: 'api-response-formatter',category: 'developer',  icon: '&#128203;',    desc: 'Format & highlight API responses' },
+  // ── New Text Tools ──
+  { name: 'Text to Speech',           slug: 'text-to-speech',        category: 'text',       icon: '&#128264;',    desc: 'Convert text to speech in browser' },
+  { name: 'Fancy Text Generator',     slug: 'fancy-text-generator',  category: 'text',       icon: '&#10024;',     desc: 'Unicode fonts & fancy text styles' },
+  { name: 'Emoji Picker',             slug: 'emoji-picker',          category: 'text',       icon: '&#128515;',    desc: 'Browse & copy emojis by category' },
+  { name: 'Whitespace Remover',       slug: 'whitespace-remover',    category: 'text',       icon: '&#128065;',    desc: 'Detect & remove invisible characters' },
+  // ── Converter Tools ──
+  { name: 'CSV to JSON',              slug: 'csv-to-json',           category: 'converter',  icon: '&#128196;',    desc: 'Convert CSV data to JSON format' },
+  { name: 'YAML to JSON',             slug: 'yaml-to-json',          category: 'converter',  icon: '&#128196;',    desc: 'Convert between YAML and JSON' },
+  { name: 'Markdown to HTML',         slug: 'markdown-to-html',      category: 'converter',  icon: '&#9999;',      desc: 'Convert Markdown to HTML in real-time' },
+  { name: 'Image to PDF',             slug: 'image-to-pdf',          category: 'converter',  icon: '&#128444;',    desc: 'Combine images into a PDF document' },
+  { name: 'PDF to Image',             slug: 'pdf-to-image',          category: 'converter',  icon: '&#128444;',    desc: 'Extract images from PDF pages' },
+  // ── SEO & Web Tools ──
+  { name: 'Meta Tag Analyzer',        slug: 'meta-tag-analyzer',     category: 'seo',        icon: '&#128270;',    desc: 'Analyze & score HTML meta tags' },
+  { name: 'Robots.txt Generator',     slug: 'robots-txt-generator',  category: 'seo',        icon: '&#129302;',    desc: 'Build robots.txt with presets' },
+  { name: 'OG Tag Preview',           slug: 'og-preview',            category: 'seo',        icon: '&#128247;',    desc: 'Preview Open Graph social cards' },
+  { name: 'Redirect Checker',         slug: 'redirect-checker',      category: 'seo',        icon: '&#128259;',    desc: 'Simulate & visualize redirect chains' },
+  { name: 'Schema Generator',         slug: 'schema-generator',      category: 'seo',        icon: '&#128203;',    desc: 'Generate JSON-LD structured data' },
+  // ── Security Tools ──
+  { name: 'Password Strength Checker',slug: 'password-strength',     category: 'security',   icon: '&#128272;',    desc: 'Analyze password entropy & strength' },
+  { name: 'IP Lookup',                slug: 'ip-lookup',             category: 'security',   icon: '&#127758;',    desc: 'Lookup IP geolocation & info' },
+  { name: 'User Agent Parser',        slug: 'user-agent',            category: 'security',   icon: '&#128187;',    desc: 'Parse browser user agent strings' },
+  { name: 'Email Header Analyzer',    slug: 'email-header-analyzer', category: 'security',   icon: '&#128231;',    desc: 'Trace email headers & hops' },
+  { name: 'Privacy Policy Generator', slug: 'privacy-policy-generator',category:'security',   icon: '&#128220;',    desc: 'Generate a privacy policy for your site' },
+  // ── Social Media Tools ──
+  { name: 'Tweet Character Counter',  slug: 'twitter-counter',       category: 'social',     icon: '&#128038;',    desc: 'Count chars for Twitter/X posts' },
+  { name: 'Instagram Caption Editor', slug: 'instagram-caption',     category: 'social',     icon: '&#128247;',    desc: 'Format Instagram captions & hashtags' },
+  { name: 'YouTube Thumbnail Preview',slug: 'youtube-thumbnail',     category: 'social',     icon: '&#127909;',    desc: 'Preview YouTube thumbnail in context' },
+  { name: 'Social Image Resizer',     slug: 'social-image-resizer',  category: 'social',     icon: '&#128444;',    desc: 'Resize images for social platforms' },
+  { name: 'Bio Link Generator',       slug: 'bio-link-generator',    category: 'social',     icon: '&#128279;',    desc: 'Create a link-in-bio page' },
+  // ── Math Tools (extra) ──
+  { name: 'Matrix Calculator',        slug: 'matrix-calculator',     category: 'math',       icon: '&#129518;',    desc: 'Add, multiply & invert matrices' },
+  { name: 'Quadratic Solver',         slug: 'quadratic-solver',      category: 'math',       icon: '&#128208;',    desc: 'Solve quadratic equations step-by-step' },
+  { name: 'Prime Number Checker',     slug: 'prime-checker',         category: 'math',       icon: '&#128290;',    desc: 'Check primes & find prime ranges' },
+  // ── Utility Tools ──
+  { name: 'Stopwatch',                slug: 'stopwatch',             category: 'utility',    icon: '&#9201;',      desc: 'Precision stopwatch with lap times' },
+  { name: 'Pomodoro Timer',           slug: 'pomodoro-timer',        category: 'utility',    icon: '&#127813;',    desc: 'Focus timer using Pomodoro technique' },
+  { name: 'Notes & Scratchpad',       slug: 'notes-scratchpad',      category: 'utility',    icon: '&#128221;',    desc: 'Multi-tab notepad with auto-save' },
+  { name: 'Screen Resolution',        slug: 'screen-resolution',     category: 'utility',    icon: '&#128187;',    desc: 'Detect display resolution & info' },
+  { name: 'Typing Speed Test',        slug: 'typing-test',           category: 'utility',    icon: '&#9000;',      desc: 'Test your typing speed & accuracy' },
+  { name: 'Internet Speed Test',      slug: 'speed-test',            category: 'utility',    icon: '&#128640;',    desc: 'Estimate your download speed' },
+  { name: 'Random Color Generator',   slug: 'random-color',          category: 'utility',    icon: '&#127912;',    desc: 'Generate random colors & palettes' },
 ];
 
 const CATEGORY_META = {
@@ -80,6 +127,11 @@ const CATEGORY_META = {
   image:      { label: 'Image Tools',        icon: '&#128444;' },
   content:    { label: 'Content & SEO',      icon: '&#128203;' },
   connected:  { label: 'Connected Tools',    icon: '&#9729;'   },
+  converter:  { label: 'Converters',         icon: '&#128196;' },
+  seo:        { label: 'SEO & Web',          icon: '&#128270;' },
+  security:   { label: 'Security',           icon: '&#128274;' },
+  social:     { label: 'Social Media',       icon: '&#128038;' },
+  utility:    { label: 'Utility',            icon: '&#128295;' },
 };
 
 function getToolPath(slug) {
@@ -130,7 +182,7 @@ function renderFooter() {
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="/" class="footer-logo" aria-label="ToolNook home"><span aria-hidden="true">&#128736;</span> ToolNook</a>
-          <p>54+ free online tools for developers, writers, and everyone in between. No signup. No tracking. Just tools.</p>
+          <p>90+ free online tools for developers, writers, and everyone in between. No signup. No tracking. Just tools.</p>
         </div>
         <nav class="footer-col" aria-label="Developer tools">
           <h4>Developer Tools</h4>

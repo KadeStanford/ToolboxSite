@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matrix Calculator — Add, Multiply, Transpose, Determinant | ToolNook</title>
+  <meta name="description" content="Perform matrix operations including addition, subtraction, multiplication, transpose, determinant, and inverse. Supports up to 6×6 matrices." />
+  <meta name="keywords" content="matrix calculator, matrix multiplication, matrix determinant, matrix transpose, matrix inverse, linear algebra" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/matrix-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .op-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .op-tab{padding:8px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.8rem;cursor:pointer;background:#fff;font-weight:600;transition:all .15s;}
+    .op-tab.active{border-color:var(--primary);background:var(--primary);color:#fff;}
+    .matrices{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;}
+    .matrix-block{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;}
+    .matrix-block h4{font-size:.82rem;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+    .dim-ctrl{display:flex;align-items:center;gap:4px;font-size:.76rem;}
+    .dim-ctrl button{width:24px;height:24px;border:1px solid var(--border);border-radius:4px;background:#fff;cursor:pointer;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+    .dim-ctrl button:hover{background:#f3f4f6;}
+    .dim-ctrl span{min-width:30px;text-align:center;font-weight:600;}
+    .m-grid{display:inline-grid;gap:4px;}
+    .m-grid input{width:52px;height:36px;text-align:center;border:2px solid var(--border);border-radius:var(--radius);font-size:.84rem;font-weight:500;}
+    .m-grid input:focus{border-color:var(--primary);outline:none;}
+    .op-symbol{font-size:1.8rem;font-weight:700;color:var(--primary);align-self:center;padding:0 8px;}
+    .result-block{margin-top:16px;background:#f0fdf4;border:2px solid #86efac;border-radius:var(--radius-lg);padding:16px;}
+    .result-block h4{font-size:.82rem;margin-bottom:8px;color:#16a34a;}
+    .result-grid{display:inline-grid;gap:4px;}
+    .result-grid .cell{width:62px;height:36px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #86efac;border-radius:var(--radius);font-size:.84rem;font-weight:600;}
+    .scalar-result{font-size:1.4rem;font-weight:700;color:var(--primary);}
+    .error-msg{color:#ef4444;font-size:.84rem;margin-top:10px;font-weight:500;}
+    .preset-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+    .preset-btns button{font-size:.72rem;padding:4px 10px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#math-tools">Math</a> › Matrix Calculator</div>
+      <h1>Matrix Calculator</h1>
+      <p>Perform matrix operations: addition, subtraction, multiplication, transpose, determinant, and inverse.</p>
+    </div>
+    <div class="tool-container">
+      <div class="op-tabs" id="opTabs"></div>
+      <div class="preset-btns">
+        <button class="btn btn-secondary btn-sm" onclick="fillIdentity('A')">Identity A</button>
+        <button class="btn btn-secondary btn-sm" onclick="fillRandom('A')">Random A</button>
+        <button class="btn btn-secondary btn-sm" onclick="fillRandom('B')">Random B</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearAll()">Clear All</button>
+      </div>
+      <div class="matrices" id="matricesArea"></div>
+      <div style="margin-top:12px;"><button class="btn btn-primary" onclick="calculate()">Calculate</button></div>
+      <div id="resultArea"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Matrix Operations</h2>
+      <p>Matrices are fundamental in linear algebra, computer graphics, machine learning, and engineering. This calculator supports basic operations on matrices up to 6×6.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('matrix-calculator');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('matrix-calculator','math');
+  buildOps();
+  renderMatrices();
+});
+
+const OPS=['Add (A+B)','Subtract (A−B)','Multiply (A×B)','Transpose (Aᵀ)','Determinant (|A|)','Inverse (A⁻¹)'];
+let currentOp=0;
+let dims={A:{r:3,c:3},B:{r:3,c:3}};
+
+function buildOps(){
+  document.getElementById('opTabs').innerHTML=OPS.map((o,i)=>`<div class="op-tab${i===0?' active':''}" onclick="setOp(${i},this)">${o}</div>`).join('');
+}
+function setOp(i,el){
+  currentOp=i;
+  document.querySelectorAll('.op-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMatrices();
+  document.getElementById('resultArea').innerHTML='';
+}
+function needsB(){return currentOp<=2;}
+function renderMatrices(){
+  let html=renderMatrix('A');
+  if(needsB()){
+    html+=`<div class="op-symbol">${['+','−','×'][currentOp]}</div>`;
+    html+=renderMatrix('B');
+  }
+  document.getElementById('matricesArea').innerHTML=html;
+}
+function renderMatrix(name){
+  const d=dims[name];
+  let html=`<div class="matrix-block"><h4>${name} <div class="dim-ctrl">`;
+  html+=`<button onclick="changeDim('${name}','r',-1)">−</button><span>${d.r}</span><button onclick="changeDim('${name}','r',1)">+</button>`;
+  html+=`<span>×</span>`;
+  html+=`<button onclick="changeDim('${name}','c',-1)">−</button><span>${d.c}</span><button onclick="changeDim('${name}','c',1)">+</button>`;
+  html+=`</div></h4>`;
+  html+=`<div class="m-grid" style="grid-template-columns:repeat(${d.c},52px)">`;
+  for(let i=0;i<d.r;i++)for(let j=0;j<d.c;j++) html+=`<input id="${name}_${i}_${j}" value="0">`;
+  html+=`</div></div>`;
+  return html;
+}
+function changeDim(name,dim,delta){
+  dims[name][dim]=Math.max(1,Math.min(6,dims[name][dim]+delta));
+  renderMatrices();
+}
+function getMatrix(name){
+  const d=dims[name];
+  const m=[];
+  for(let i=0;i<d.r;i++){
+    m[i]=[];
+    for(let j=0;j<d.c;j++){
+      const el=document.getElementById(`${name}_${i}_${j}`);
+      m[i][j]=parseFloat(el?.value)||0;
+    }
+  }
+  return m;
+}
+function showResult(m,label){
+  if(typeof m==='number'){
+    document.getElementById('resultArea').innerHTML=`<div class="result-block"><h4>${label}</h4><div class="scalar-result">${Number.isInteger(m)?m:m.toFixed(6)}</div></div>`;
+    return;
+  }
+  let html=`<div class="result-block"><h4>${label} (${m.length}×${m[0].length})</h4><div class="result-grid" style="grid-template-columns:repeat(${m[0].length},62px)">`;
+  m.forEach(row=>row.forEach(v=>html+=`<div class="cell">${Number.isInteger(v)?v:v.toFixed(4)}</div>`));
+  html+=`</div></div>`;
+  document.getElementById('resultArea').innerHTML=html;
+}
+function showError(msg){document.getElementById('resultArea').innerHTML=`<div class="error-msg">❌ ${msg}</div>`;}
+
+function calculate(){
+  const A=getMatrix('A');
+  const B=needsB()?getMatrix('B'):null;
+  try{
+    switch(currentOp){
+      case 0: // Add
+        if(dims.A.r!==dims.B.r||dims.A.c!==dims.B.c) return showError('Matrices must have same dimensions for addition.');
+        showResult(A.map((row,i)=>row.map((v,j)=>v+B[i][j])),'A + B');break;
+      case 1: // Subtract
+        if(dims.A.r!==dims.B.r||dims.A.c!==dims.B.c) return showError('Matrices must have same dimensions for subtraction.');
+        showResult(A.map((row,i)=>row.map((v,j)=>v-B[i][j])),'A − B');break;
+      case 2: // Multiply
+        if(dims.A.c!==dims.B.r) return showError(`Cannot multiply: A columns (${dims.A.c}) must equal B rows (${dims.B.r}).`);
+        const res=[];
+        for(let i=0;i<dims.A.r;i++){res[i]=[];for(let j=0;j<dims.B.c;j++){let s=0;for(let k=0;k<dims.A.c;k++)s+=A[i][k]*B[k][j];res[i][j]=s;}}
+        showResult(res,'A × B');break;
+      case 3: // Transpose
+        showResult(A[0].map((_,j)=>A.map(row=>row[j])),'Aᵀ');break;
+      case 4: // Determinant
+        if(dims.A.r!==dims.A.c) return showError('Matrix must be square for determinant.');
+        showResult(det(A),'det(A)');break;
+      case 5: // Inverse
+        if(dims.A.r!==dims.A.c) return showError('Matrix must be square for inverse.');
+        const d=det(A);
+        if(Math.abs(d)<1e-10) return showError('Matrix is singular (determinant = 0), no inverse exists.');
+        showResult(inverse(A),'A⁻¹');break;
+    }
+  }catch(e){showError(e.message);}
+}
+function det(m){
+  const n=m.length;
+  if(n===1)return m[0][0];
+  if(n===2)return m[0][0]*m[1][1]-m[0][1]*m[1][0];
+  let d=0;
+  for(let j=0;j<n;j++){
+    const sub=m.slice(1).map(r=>[...r.slice(0,j),...r.slice(j+1)]);
+    d+=((j%2===0?1:-1)*m[0][j]*det(sub));
+  }
+  return d;
+}
+function inverse(m){
+  const n=m.length;
+  const aug=m.map((r,i)=>[...r,...Array(n).fill(0).map((_,j)=>i===j?1:0)]);
+  for(let i=0;i<n;i++){
+    let maxR=i;
+    for(let k=i+1;k<n;k++)if(Math.abs(aug[k][i])>Math.abs(aug[maxR][i]))maxR=k;
+    [aug[i],aug[maxR]]=[aug[maxR],aug[i]];
+    const pivot=aug[i][i];
+    for(let j=0;j<2*n;j++)aug[i][j]/=pivot;
+    for(let k=0;k<n;k++){
+      if(k===i)continue;
+      const f=aug[k][i];
+      for(let j=0;j<2*n;j++)aug[k][j]-=f*aug[i][j];
+    }
+  }
+  return aug.map(r=>r.slice(n));
+}
+function fillIdentity(name){
+  renderMatrices();
+  const d=dims[name];
+  for(let i=0;i<d.r;i++)for(let j=0;j<d.c;j++){
+    const el=document.getElementById(`${name}_${i}_${j}`);
+    if(el)el.value=i===j?1:0;
+  }
+}
+function fillRandom(name){
+  renderMatrices();
+  const d=dims[name];
+  for(let i=0;i<d.r;i++)for(let j=0;j<d.c;j++){
+    const el=document.getElementById(`${name}_${i}_${j}`);
+    if(el)el.value=Math.floor(Math.random()*19)-9;
+  }
+}
+function clearAll(){renderMatrices();document.getElementById('resultArea').innerHTML='';}
+</script>
+</body>
+</html>

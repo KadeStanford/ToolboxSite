@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media Image Resizer — Resize for All Platforms | ToolNook</title>
+  <meta name="description" content="Resize images for Instagram, Facebook, Twitter, YouTube, LinkedIn, and Pinterest. Export perfectly sized images for every platform." />
+  <meta name="keywords" content="social media image resizer, resize for instagram, facebook image size, twitter image size, social media dimensions" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/social-image-resizer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .upload-zone{border:3px dashed var(--border);border-radius:var(--radius-lg);padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:#eff6ff;}
+    .platform-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0;}
+    .plat-tab{padding:7px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:.78rem;cursor:pointer;background:#fff;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:5px;}
+    .plat-tab.active{border-color:var(--primary);background:var(--primary);color:#fff;}
+    .size-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px;}
+    .size-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all .15s;text-align:center;}
+    .size-card:hover{border-color:var(--primary);}
+    .size-card.active{border-color:var(--primary);background:#eff6ff;}
+    .size-card .sz-name{font-weight:700;font-size:.82rem;margin-bottom:2px;}
+    .size-card .sz-dim{font-size:.74rem;color:var(--text-muted);}
+    .canvas-wrap{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin-top:16px;}
+    .canvas-preview{border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#f9fafb;display:flex;align-items:center;justify-content:center;position:relative;max-width:100%;}
+    .canvas-preview canvas{max-width:100%;max-height:400px;}
+    .controls-panel{flex:1;min-width:240px;}
+    .ctrl-group{margin-bottom:14px;}
+    .ctrl-group label{display:block;font-weight:600;font-size:.78rem;margin-bottom:5px;color:var(--text-muted);text-transform:uppercase;}
+    .ctrl-group input[type=range]{width:100%;}
+    .ctrl-group select{width:100%;padding:8px;border:2px solid var(--border);border-radius:var(--radius);}
+    .dim-display{font-size:.82rem;font-weight:600;margin-top:12px;background:#f3f4f6;padding:8px 12px;border-radius:var(--radius);text-align:center;}
+    .hidden{display:none;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#social-media-tools">Social Media</a> › Social Image Resizer</div>
+      <h1>Social Media Image Resizer</h1>
+      <p>Upload an image and resize it for any social media platform. Choose a preset or enter custom dimensions.</p>
+    </div>
+    <div class="tool-container">
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:2.2rem;">📐</div>
+        <p>Click or drag & drop an image to resize</p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="loadImage(this.files[0])">
+      </div>
+
+      <div id="editorUI" class="hidden">
+        <div class="platform-tabs" id="platTabs"></div>
+        <div class="size-grid" id="sizeGrid"></div>
+        <div class="canvas-wrap">
+          <div class="canvas-preview"><canvas id="canvas"></canvas></div>
+          <div class="controls-panel">
+            <div class="dim-display" id="dimDisplay">1080 × 1080</div>
+            <div class="ctrl-group"><label>Fit Mode</label><select id="fitMode" onchange="redraw()"><option value="cover">Cover (fill, crop)</option><option value="contain">Contain (fit, bars)</option><option value="stretch">Stretch</option></select></div>
+            <div class="ctrl-group"><label>Background Color</label><input type="color" id="bgColor" value="#ffffff" onchange="redraw()"></div>
+            <div class="ctrl-group"><label>Quality</label><input type="range" id="quality" min="10" max="100" value="90"><span id="qualVal">90%</span></div>
+            <button class="btn btn-primary" onclick="downloadImage()" style="width:100%;margin-top:10px;">⬇ Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Social Media Image Sizes</h2>
+      <p>Each platform has recommended image sizes for best display quality. Using the correct dimensions ensures your images display without cropping or quality loss.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('social-image-resizer');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('social-image-resizer','social');
+  const dz=document.getElementById('dropZone');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0]);});
+  document.getElementById('quality').addEventListener('input',e=>{document.getElementById('qualVal').textContent=e.target.value+'%';});
+  buildPlatforms();
+});
+
+const PLATFORMS = {
+  instagram:[{name:'Square Post',w:1080,h:1080},{name:'Portrait Post',w:1080,h:1350},{name:'Landscape Post',w:1080,h:566},{name:'Story / Reel',w:1080,h:1920},{name:'Profile Pic',w:320,h:320}],
+  facebook:[{name:'Post',w:1200,h:630},{name:'Cover Photo',w:820,h:312},{name:'Story',w:1080,h:1920},{name:'Profile Pic',w:170,h:170},{name:'Event Cover',w:1920,h:1005}],
+  twitter:[{name:'Post',w:1600,h:900},{name:'Header',w:1500,h:500},{name:'Profile Pic',w:400,h:400},{name:'Card',w:800,h:418}],
+  youtube:[{name:'Thumbnail',w:1280,h:720},{name:'Channel Art',w:2560,h:1440},{name:'Profile Pic',w:800,h:800}],
+  linkedin:[{name:'Post',w:1200,h:627},{name:'Cover',w:1584,h:396},{name:'Profile Pic',w:400,h:400}],
+  pinterest:[{name:'Pin',w:1000,h:1500},{name:'Square Pin',w:1000,h:1000},{name:'Long Pin',w:1000,h:2100}]
+};
+let activePlat='instagram', activeSize=null, sourceImg=null;
+
+function buildPlatforms(){
+  const tabs=document.getElementById('platTabs');
+  const icons={instagram:'📷',facebook:'📘',twitter:'🐦',youtube:'▶️',linkedin:'💼',pinterest:'📌'};
+  tabs.innerHTML=Object.keys(PLATFORMS).map(p=>`<div class="plat-tab${p===activePlat?' active':''}" onclick="selectPlatform('${p}',this)">${icons[p]||''} ${p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('');
+  renderSizes();
+}
+function selectPlatform(p,el){
+  activePlat=p;
+  document.querySelectorAll('.plat-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderSizes();
+}
+function renderSizes(){
+  const sizes=PLATFORMS[activePlat];
+  activeSize=sizes[0];
+  document.getElementById('sizeGrid').innerHTML=sizes.map((s,i)=>`<div class="size-card${i===0?' active':''}" onclick="selectSize(${i},this)"><div class="sz-name">${s.name}</div><div class="sz-dim">${s.w} × ${s.h}</div></div>`).join('');
+  if(sourceImg)redraw();
+}
+function selectSize(i,el){
+  activeSize=PLATFORMS[activePlat][i];
+  document.querySelectorAll('.size-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  if(sourceImg)redraw();
+}
+function loadImage(f){
+  if(!f||!f.type.startsWith('image/'))return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{sourceImg=img;document.getElementById('editorUI').classList.remove('hidden');redraw();};
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+function redraw(){
+  if(!sourceImg||!activeSize)return;
+  const canvas=document.getElementById('canvas');
+  const ctx=canvas.getContext('2d');
+  const tw=activeSize.w,th=activeSize.h;
+  canvas.width=tw;canvas.height=th;
+  document.getElementById('dimDisplay').textContent=`${tw} × ${th}`;
+  ctx.fillStyle=document.getElementById('bgColor').value;
+  ctx.fillRect(0,0,tw,th);
+  const fit=document.getElementById('fitMode').value;
+  const sw=sourceImg.width,sh=sourceImg.height;
+  let dx=0,dy=0,dw=tw,dh=th;
+  if(fit==='cover'){
+    const scale=Math.max(tw/sw,th/sh);
+    dw=sw*scale;dh=sh*scale;dx=(tw-dw)/2;dy=(th-dh)/2;
+  }else if(fit==='contain'){
+    const scale=Math.min(tw/sw,th/sh);
+    dw=sw*scale;dh=sh*scale;dx=(tw-dw)/2;dy=(th-dh)/2;
+  }
+  ctx.drawImage(sourceImg,dx,dy,dw,dh);
+}
+function downloadImage(){
+  if(!sourceImg)return;
+  const canvas=document.getElementById('canvas');
+  const q=parseInt(document.getElementById('quality').value)/100;
+  const link=document.createElement('a');
+  link.download=`${activePlat}-${activeSize.name.replace(/\s+/g,'-').toLowerCase()}.png`;
+  link.href=canvas.toDataURL('image/png',q);
+  link.click();
+  showToast('Image downloaded!');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV to JSON Converter — Transform CSV Data | ToolNook</title>
+  <meta name="description" content="Convert CSV data to JSON format instantly. Supports custom delimiters, nested output, and various JSON structures." />
+  <meta name="keywords" content="CSV to JSON, convert CSV, CSV parser, data converter, CSV JSON transformer" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/csv-to-json.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .converter-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .conv-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+    .conv-head { padding:10px 16px; border-bottom:2px solid var(--border); display:flex; align-items:center; gap:8px; }
+    .conv-dot { width:10px; height:10px; border-radius:50%; }
+    .dot-csv { background:#10b981; }
+    .dot-json { background:#f59e0b; }
+    .conv-title { font-weight:700; font-size:.82rem; }
+    .conv-badge { margin-left:auto; font-size:.68rem; padding:2px 8px; background:#f1f5f9; border-radius:10px; color:var(--text-muted); font-weight:600; }
+    .conv-panel textarea { width:100%; min-height:220px; border:none; padding:14px; font-family:'Courier New',monospace; font-size:.84rem; resize:vertical; }
+    .conv-panel textarea:focus { outline:none; }
+    .opts-row { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0; align-items:end; }
+    .opt-group { display:flex; flex-direction:column; gap:4px; }
+    .opt-group label { font-size:.72rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; }
+    .opt-group select { padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius); font-size:.82rem; }
+    .opt-group select:focus { border-color:var(--primary); outline:none; }
+    .act-row { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; }
+    .stat-bar { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    .stat { padding:5px 12px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:14px; font-size:.76rem; font-weight:600; color:#15803d; }
+    .preview-wrap { background:#f8fafc; border:2px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-top:14px; }
+    .preview-head { padding:8px 14px; background:#f1f5f9; font-size:.76rem; font-weight:700; color:var(--text-muted); border-bottom:1px solid var(--border); }
+    .preview-table { width:100%; overflow-x:auto; }
+    .preview-table table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    .preview-table th { background:#e2e8f0; padding:8px 12px; text-align:left; font-size:.72rem; text-transform:uppercase; position:sticky; top:0; }
+    .preview-table td { padding:6px 12px; border-bottom:1px solid #f1f5f9; }
+    .preview-table tr:hover td { background:#eff6ff; }
+    @media(max-width:700px) { .converter-layout { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converter</a> › CSV to JSON</div>
+      <h1>CSV to JSON Converter</h1>
+      <p>Convert CSV data into JSON format with customizable options. Preview your data in a table before converting.</p>
+    </div>
+    <div class="tool-container">
+      <div class="opts-row">
+        <div class="opt-group">
+          <label>Delimiter</label>
+          <select id="delim">
+            <option value=",">Comma (,)</option>
+            <option value="&#9;">Tab (⇥)</option>
+            <option value=";">Semicolon (;)</option>
+            <option value="|">Pipe (|)</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <label>Output Format</label>
+          <select id="fmt">
+            <option value="array">Array of Objects</option>
+            <option value="records">Column Arrays</option>
+            <option value="pairs">Key-Value Pairs</option>
+          </select>
+        </div>
+        <div class="opt-group">
+          <label>Indent</label>
+          <select id="indent">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="t">Tab</option>
+            <option value="0">Minified</option>
+          </select>
+        </div>
+      </div>
+      <div class="converter-layout">
+        <div class="conv-panel">
+          <div class="conv-head"><span class="conv-dot dot-csv"></span><span class="conv-title">CSV Input</span><span class="conv-badge" id="csv-rows">0 rows</span></div>
+          <textarea id="csv-in" placeholder="name,age,city&#10;Alice,30,NYC&#10;Bob,25,London"></textarea>
+        </div>
+        <div class="conv-panel">
+          <div class="conv-head"><span class="conv-dot dot-json"></span><span class="conv-title">JSON Output</span><span class="conv-badge" id="json-size">0 B</span></div>
+          <textarea id="json-out" readonly placeholder="JSON output will appear here..."></textarea>
+        </div>
+      </div>
+      <div class="act-row">
+        <button class="btn btn-primary" onclick="convert()">Convert to JSON</button>
+        <button class="btn btn-secondary" onclick="copyJSON()">📋 Copy JSON</button>
+        <button class="btn btn-secondary" onclick="download()">💾 Download</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+      </div>
+      <div class="stat-bar" id="stats"></div>
+      <div class="preview-wrap" id="preview-wrap" style="display:none;">
+        <div class="preview-head">Data Preview</div>
+        <div class="preview-table" id="preview-table"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>CSV to JSON Conversion</h2>
+      <p>Easily transform CSV (Comma-Separated Values) data into JSON format. The first row is used as field names, and each subsequent row becomes a JSON object.</p>
+      <h3>Output Formats</h3>
+      <ul>
+        <li><strong>Array of Objects</strong> — Each row becomes an object with column names as keys</li>
+        <li><strong>Column Arrays</strong> — Data grouped by column name</li>
+        <li><strong>Key-Value Pairs</strong> — First column used as key, second as value</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('csv-to-json');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('csv-to-json','converter');
+});
+
+function parseCSV(text, delim) {
+  const rows = [];
+  let current = '';
+  let inQuote = false;
+  const chars = [...text];
+  const row = [];
+  for (let i = 0; i < chars.length; i++) {
+    const c = chars[i];
+    if (c === '"') {
+      if (inQuote && chars[i+1] === '"') { current += '"'; i++; }
+      else { inQuote = !inQuote; }
+    } else if (c === delim && !inQuote) {
+      row.push(current); current = '';
+    } else if ((c === '\n' || (c === '\r' && chars[i+1] === '\n')) && !inQuote) {
+      if (c === '\r') i++;
+      row.push(current); current = '';
+      if (row.some(cell => cell.trim())) rows.push([...row]);
+      row.length = 0;
+    } else {
+      current += c;
+    }
+  }
+  row.push(current);
+  if (row.some(cell => cell.trim())) rows.push(row);
+  return rows;
+}
+
+function convert() {
+  const csv = document.getElementById('csv-in').value.trim();
+  if (!csv) return showToast('Please paste CSV data');
+  const delim = document.getElementById('delim').value;
+  const fmt = document.getElementById('fmt').value;
+  const indVal = document.getElementById('indent').value;
+  const indent = indVal === 't' ? '\t' : indVal === '0' ? undefined : parseInt(indVal);
+
+  const rows = parseCSV(csv, delim);
+  if (rows.length < 2) return showToast('Need at least a header row and one data row');
+
+  const headers = rows[0].map(h => h.trim());
+  const data = rows.slice(1);
+  let result;
+
+  if (fmt === 'array') {
+    result = data.map(row => {
+      const obj = {};
+      headers.forEach((h, i) => {
+        let val = (row[i] || '').trim();
+        if (val === 'true') val = true;
+        else if (val === 'false') val = false;
+        else if (val === 'null') val = null;
+        else if (val !== '' && !isNaN(val)) val = Number(val);
+        obj[h] = val;
+      });
+      return obj;
+    });
+  } else if (fmt === 'records') {
+    result = {};
+    headers.forEach((h, i) => { result[h] = data.map(r => (r[i] || '').trim()); });
+  } else {
+    result = {};
+    data.forEach(row => { if (row[0]) result[row[0].trim()] = row[1] ? row[1].trim() : ''; });
+  }
+
+  const json = JSON.stringify(result, null, indent);
+  document.getElementById('json-out').value = json;
+  document.getElementById('json-size').textContent = formatBytes(json.length);
+  document.getElementById('csv-rows').textContent = data.length + ' rows';
+  document.getElementById('stats').innerHTML = `
+    <span class="stat">${data.length} rows</span>
+    <span class="stat">${headers.length} columns</span>
+    <span class="stat">${formatBytes(json.length)}</span>
+  `;
+  renderPreview(headers, data);
+  showToast('Converted!');
+}
+
+function renderPreview(headers, data) {
+  const w = document.getElementById('preview-wrap');
+  w.style.display = '';
+  const preview = data.slice(0, 10);
+  document.getElementById('preview-table').innerHTML = `<table>
+    <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
+    ${preview.map(r => `<tr>${headers.map((_, i) => `<td>${escapeHtml((r[i]||'').trim())}</td>`).join('')}</tr>`).join('')}
+    ${data.length > 10 ? `<tr><td colspan="${headers.length}" style="text-align:center;color:var(--text-muted);font-style:italic;">...and ${data.length-10} more rows</td></tr>` : ''}
+  </table>`;
+}
+
+function copyJSON() {
+  const json = document.getElementById('json-out').value;
+  if (!json) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(json).then(() => showToast('Copied!'));
+}
+
+function download() {
+  const json = document.getElementById('json-out').value;
+  if (!json) return showToast('Nothing to download');
+  const blob = new Blob([json], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'data.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function loadSample() {
+  document.getElementById('csv-in').value = `name,age,city,active
+Alice,30,New York,true
+Bob,25,London,false
+Charlie,35,Tokyo,true
+Diana,28,"San Francisco",true
+Eve,32,Berlin,false`;
+  convert();
+}
+</script>
+</body>
+</html>

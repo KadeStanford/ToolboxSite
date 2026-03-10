@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Thumbnail Previewer — Check How Your Thumbnail Looks | ToolNook</title>
+  <meta name="description" content="Preview your YouTube thumbnail at different sizes. See how it looks in search results, suggested videos, and homepage layouts." />
+  <meta name="keywords" content="youtube thumbnail previewer, thumbnail checker, youtube preview, thumbnail size, video thumbnail" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/youtube-thumbnail.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .upload-zone{border:3px dashed var(--border);border-radius:var(--radius-lg);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:#eff6ff;}
+    .upload-zone p{color:var(--text-muted);font-size:.88rem;margin-top:8px;}
+    .meta-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+    @media(max-width:600px){.meta-fields{grid-template-columns:1fr;}}
+    .meta-fields input{padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);font-size:.84rem;}
+    .meta-fields input:focus{border-color:var(--primary);outline:none;}
+    .preview-section{margin-top:24px;}
+    .preview-section h3{font-size:.92rem;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .preview-modes{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+    .mode-btn{padding:7px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.78rem;cursor:pointer;background:#fff;font-weight:600;transition:all .15s;}
+    .mode-btn.active{border-color:var(--primary);background:var(--primary);color:#fff;}
+    .yt-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.08);}
+    /* Search result style */
+    .yt-search{display:flex;gap:12px;max-width:700px;}
+    .yt-search .yt-thumb{width:360px;min-width:360px;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;position:relative;}
+    .yt-search .yt-thumb img{width:100%;height:100%;object-fit:cover;}
+    .yt-search .yt-duration{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.8);color:#fff;padding:1px 5px;border-radius:3px;font-size:.7rem;font-weight:600;}
+    .yt-search .yt-meta{padding:4px 0;}
+    .yt-search .yt-title{font-size:.95rem;font-weight:600;line-height:1.3;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .yt-search .yt-channel{font-size:.75rem;color:#606060;margin-bottom:2px;}
+    .yt-search .yt-views{font-size:.72rem;color:#606060;}
+    /* Home grid */
+    .yt-home{max-width:340px;}
+    .yt-home .yt-thumb{width:100%;aspect-ratio:16/9;background:#000;border-radius:10px;overflow:hidden;position:relative;}
+    .yt-home .yt-thumb img{width:100%;height:100%;object-fit:cover;}
+    .yt-home .yt-duration{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.8);color:#fff;padding:1px 5px;border-radius:3px;font-size:.7rem;font-weight:600;}
+    .yt-home .yt-bot{display:flex;gap:10px;padding:10px 0;}
+    .yt-home .yt-av{width:36px;height:36px;border-radius:50%;background:#ddd;flex-shrink:0;}
+    .yt-home .yt-title{font-size:.84rem;font-weight:600;line-height:1.3;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .yt-home .yt-channel{font-size:.72rem;color:#606060;}
+    .yt-home .yt-views{font-size:.72rem;color:#606060;}
+    /* Sidebar */
+    .yt-sidebar{display:flex;gap:8px;max-width:400px;}
+    .yt-sidebar .yt-thumb{width:168px;min-width:168px;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;position:relative;}
+    .yt-sidebar .yt-thumb img{width:100%;height:100%;object-fit:cover;}
+    .yt-sidebar .yt-duration{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.8);color:#fff;padding:1px 4px;border-radius:3px;font-size:.64rem;font-weight:600;}
+    .yt-sidebar .yt-title{font-size:.78rem;font-weight:600;line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .yt-sidebar .yt-channel{font-size:.68rem;color:#606060;}
+    .yt-sidebar .yt-views{font-size:.68rem;color:#606060;}
+    .img-info{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:.78rem;color:var(--text-muted);}
+    .img-info span{background:#f3f4f6;padding:4px 10px;border-radius:20px;}
+    .hidden{display:none;}
+    @media(max-width:600px){.yt-search{flex-direction:column;}.yt-search .yt-thumb{width:100%;min-width:auto;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#social-media-tools">Social Media</a> › YouTube Thumbnail</div>
+      <h1>YouTube Thumbnail Previewer</h1>
+      <p>Upload a thumbnail and see how it looks in search results, suggested videos, and the homepage grid.</p>
+    </div>
+    <div class="tool-container">
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:2.5rem;">🖼️</div>
+        <p>Click or drag & drop your thumbnail image<br><small>Recommended: 1280×720 (16:9)</small></p>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+      </div>
+      <div class="img-info hidden" id="imgInfo"></div>
+      <div class="meta-fields">
+        <input id="mTitle" placeholder="Video Title" value="My Amazing Video Title Here" oninput="renderPreview()">
+        <input id="mChannel" placeholder="Channel Name" value="My Channel" oninput="renderPreview()">
+        <input id="mViews" placeholder="View count" value="1.2M views" oninput="renderPreview()">
+        <input id="mDuration" placeholder="Duration" value="12:34" oninput="renderPreview()">
+      </div>
+      <div class="preview-section" id="previewSection">
+        <h3>📺 Preview Modes</h3>
+        <div class="preview-modes">
+          <button class="mode-btn active" onclick="setMode('search',this)">Search Result</button>
+          <button class="mode-btn" onclick="setMode('home',this)">Homepage</button>
+          <button class="mode-btn" onclick="setMode('sidebar',this)">Sidebar</button>
+          <button class="mode-btn" onclick="setMode('all',this)">All</button>
+        </div>
+        <div id="previewArea"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>YouTube Thumbnail Best Practices</h2>
+      <p>YouTube recommends thumbnails be 1280×720 pixels with a 16:9 aspect ratio. Use high-contrast text, expressive faces, and bright colors to increase click-through rates. Keep important elements away from the edges where duration overlays appear.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('youtube-thumbnail');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('youtube-thumbnail','social');
+  const dz=document.getElementById('dropZone');
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+  renderPreview();
+});
+let thumbSrc=null, mode='search';
+function handleFile(f){
+  if(!f||!f.type.startsWith('image/'))return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    thumbSrc=e.target.result;
+    const img=new Image();
+    img.onload=()=>{
+      const info=document.getElementById('imgInfo');
+      info.classList.remove('hidden');
+      info.innerHTML=`<span>${img.width}×${img.height}</span><span>${(f.size/1024).toFixed(1)} KB</span><span>${f.type}</span><span>${img.width===1280&&img.height===720?'✅ Perfect size':'⚠️ Recommended: 1280×720'}</span>`;
+      renderPreview();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(f);
+}
+function setMode(m,btn){
+  mode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPreview();
+}
+function renderPreview(){
+  const t=document.getElementById('mTitle').value||'Video Title';
+  const ch=document.getElementById('mChannel').value||'Channel';
+  const v=document.getElementById('mViews').value||'0 views';
+  const d=document.getElementById('mDuration').value||'0:00';
+  const imgTag=thumbSrc?`<img src="${thumbSrc}" alt="thumb">`:'<div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;">🖼️</div>';
+  const te=escapeHtml(t), che=escapeHtml(ch), ve=escapeHtml(v), de=escapeHtml(d);
+  let html='';
+  const searchHtml=`<div class="yt-card yt-search"><div class="yt-thumb">${imgTag}<span class="yt-duration">${de}</span></div><div class="yt-meta"><div class="yt-title">${te}</div><div class="yt-channel">${che}</div><div class="yt-views">${ve} • 2 days ago</div></div></div>`;
+  const homeHtml=`<div class="yt-card yt-home"><div class="yt-thumb">${imgTag}<span class="yt-duration">${de}</span></div><div class="yt-bot"><div class="yt-av"></div><div><div class="yt-title">${te}</div><div class="yt-channel">${che}</div><div class="yt-views">${ve} • 2 days ago</div></div></div></div>`;
+  const sideHtml=`<div class="yt-card yt-sidebar"><div class="yt-thumb">${imgTag}<span class="yt-duration">${de}</span></div><div><div class="yt-title">${te}</div><div class="yt-channel">${che}</div><div class="yt-views">${ve}</div></div></div>`;
+  if(mode==='search')html=searchHtml;
+  else if(mode==='home')html=homeHtml;
+  else if(mode==='sidebar')html=sideHtml;
+  else html=`<div style="display:flex;flex-direction:column;gap:20px;">${searchHtml}${homeHtml}${sideHtml}</div>`;
+  document.getElementById('previewArea').innerHTML=html;
+}
+</script>
+</body>
+</html>

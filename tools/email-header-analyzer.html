@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Header Analyzer — Parse & Trace Email Headers | ToolNook</title>
+  <meta name="description" content="Analyze email headers to trace the path of an email, identify sender servers, check authentication, and detect potential issues." />
+  <meta name="keywords" content="email header analyzer, email trace, SPF DKIM, email authentication, mail header parser" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/email-header-analyzer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .header-input { width:100%; min-height:200px; font-family:'Courier New',monospace; font-size:.78rem; padding:14px; border:2px solid var(--border); border-radius:var(--radius); resize:vertical; }
+    .header-input:focus { border-color:var(--primary); outline:none; }
+    .btn-row { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; }
+    .summary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin:16px 0; }
+    .sum-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); padding:14px; }
+    .sum-label { font-size:.7rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; margin-bottom:4px; }
+    .sum-val { font-size:.88rem; font-weight:700; word-break:break-all; }
+    .auth-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin:14px 0; }
+    .auth-card { padding:12px; border-radius:var(--radius); text-align:center; }
+    .auth-pass { background:#dcfce7; border:2px solid #86efac; }
+    .auth-fail { background:#fee2e2; border:2px solid #fca5a5; }
+    .auth-none { background:#f1f5f9; border:2px solid var(--border); }
+    .auth-name { font-weight:700; font-size:.82rem; }
+    .auth-status { font-size:1.2rem; margin:4px 0; }
+    .auth-detail { font-size:.7rem; color:var(--text-muted); }
+    .hop-list { margin:16px 0; }
+    .hop-item { display:flex; gap:0; margin-bottom:0; }
+    .hop-line { display:flex; flex-direction:column; align-items:center; width:36px; flex-shrink:0; }
+    .hop-dot { width:12px; height:12px; border-radius:50%; background:var(--primary); flex-shrink:0; z-index:1; }
+    .hop-conn { width:2px; flex:1; background:#cbd5e1; }
+    .hop-card { flex:1; background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; }
+    .hop-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+    .hop-num { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:var(--primary); color:#fff; border-radius:50%; font-size:.66rem; font-weight:800; }
+    .hop-from, .hop-to { font-size:.78rem; font-family:'Courier New',monospace; word-break:break-all; }
+    .hop-label { font-size:.68rem; font-weight:600; color:var(--text-muted); min-width:35px; }
+    .hop-time { font-size:.7rem; color:var(--text-muted); margin-top:4px; }
+    .hop-delay { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:700; }
+    .delay-fast { background:#dcfce7; color:#15803d; }
+    .delay-slow { background:#fef3c7; color:#92400e; }
+    .delay-bad { background:#fee2e2; color:#dc2626; }
+    .raw-section { margin-top:14px; }
+    .raw-toggle { cursor:pointer; font-weight:600; font-size:.82rem; color:var(--primary); background:none; border:none; }
+    .raw-content { display:none; background:#0f172a; color:#a5f3fc; padding:14px; border-radius:var(--radius); font-family:'Courier New',monospace; font-size:.72rem; max-height:300px; overflow:auto; margin-top:8px; white-space:pre-wrap; word-break:break-all; }
+    .section-title { font-weight:700; font-size:.92rem; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#security-tools">Security</a> › Email Header Analyzer</div>
+      <h1>Email Header Analyzer</h1>
+      <p>Parse email headers to trace delivery path, check authentication status, and identify issues.</p>
+    </div>
+    <div class="tool-container">
+      <textarea class="header-input" id="headers" placeholder='Paste your email headers here...&#10;&#10;How to find headers:&#10;• Gmail: Open email → ⋮ → "Show original"&#10;• Outlook: Open email → ⋯ → "View message source"&#10;• Yahoo: Open email → ⋯ → "View raw message"'></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="analyzeHeaders()">🔍 Analyze Headers</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('headers').value='';document.getElementById('results').innerHTML='';">Clear</button>
+      </div>
+      <div id="results"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Understanding Email Headers</h2>
+      <p>Email headers contain metadata about the message — who sent it, which servers it passed through, and whether authentication checks passed.</p>
+      <h3>Key Headers</h3>
+      <ul>
+        <li><strong>From / Return-Path</strong> — Sender information</li>
+        <li><strong>Received</strong> — Server hops the email took</li>
+        <li><strong>Authentication-Results</strong> — SPF, DKIM, DMARC pass/fail</li>
+        <li><strong>Message-ID</strong> — Unique email identifier</li>
+        <li><strong>X-Spam-Status</strong> — Spam filtering results</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('email-header-analyzer');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('email-header-analyzer','security');
+});
+
+function parseHeaderPairs(raw) {
+  const headers = {};
+  const lines = raw.replace(/\r\n/g, '\n').split('\n');
+  let currentKey = '', currentVal = '';
+  lines.forEach(line => {
+    if (/^\s/.test(line)) {
+      currentVal += ' ' + line.trim();
+    } else {
+      if (currentKey) {
+        if (!headers[currentKey]) headers[currentKey] = [];
+        headers[currentKey].push(currentVal);
+      }
+      const idx = line.indexOf(':');
+      if (idx > 0) {
+        currentKey = line.substring(0, idx).trim().toLowerCase();
+        currentVal = line.substring(idx + 1).trim();
+      } else { currentKey = ''; currentVal = ''; }
+    }
+  });
+  if (currentKey) { if (!headers[currentKey]) headers[currentKey] = []; headers[currentKey].push(currentVal); }
+  return headers;
+}
+
+function analyzeHeaders() {
+  const raw = document.getElementById('headers').value.trim();
+  if (!raw) return showToast('Please paste email headers');
+  
+  const h = parseHeaderPairs(raw);
+  const results = document.getElementById('results');
+  
+  const from = (h['from'] || [''])[0];
+  const to = (h['to'] || [''])[0];
+  const subject = (h['subject'] || [''])[0];
+  const date = (h['date'] || [''])[0];
+  const messageId = (h['message-id'] || [''])[0];
+  const returnPath = (h['return-path'] || [''])[0];
+  const authResults = (h['authentication-results'] || []).join(' ');
+  
+  // Parse hops
+  const received = h['received'] || [];
+  const hops = received.map(r => {
+    const fromMatch = r.match(/from\s+(\S+)/i);
+    const byMatch = r.match(/by\s+(\S+)/i);
+    const dateMatch = r.match(/;\s*(.+)$/);
+    return { from: fromMatch?.[1] || 'unknown', by: byMatch?.[1] || 'unknown', date: dateMatch?.[1]?.trim() || '' };
+  }).reverse();
+
+  // Auth
+  const spf = /spf=pass/i.test(authResults) ? 'pass' : /spf=fail/i.test(authResults) ? 'fail' : 'none';
+  const dkim = /dkim=pass/i.test(authResults) ? 'pass' : /dkim=fail/i.test(authResults) ? 'fail' : 'none';
+  const dmarc = /dmarc=pass/i.test(authResults) ? 'pass' : /dmarc=fail/i.test(authResults) ? 'fail' : 'none';
+  
+  function authCard(name, status) {
+    const cls = status === 'pass' ? 'auth-pass' : status === 'fail' ? 'auth-fail' : 'auth-none';
+    const icon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '➖';
+    return `<div class="auth-card ${cls}"><div class="auth-name">${name}</div><div class="auth-status">${icon}</div><div class="auth-detail">${status.toUpperCase()}</div></div>`;
+  }
+
+  // Calculate delays between hops
+  const hopDelays = hops.map((hop, i) => {
+    if (i === 0 || !hop.date || !hops[i-1].date) return null;
+    try {
+      const t1 = new Date(hops[i-1].date).getTime();
+      const t2 = new Date(hop.date).getTime();
+      const diff = (t2 - t1) / 1000;
+      return diff;
+    } catch { return null; }
+  });
+
+  let hopsHTML = '';
+  hops.forEach((hop, i) => {
+    const delay = hopDelays[i];
+    let delayStr = '', delayCls = '';
+    if (delay !== null && !isNaN(delay)) {
+      if (delay < 2) { delayStr = `${delay.toFixed(1)}s`; delayCls = 'delay-fast'; }
+      else if (delay < 30) { delayStr = `${delay.toFixed(1)}s`; delayCls = 'delay-slow'; }
+      else { delayStr = `${Math.round(delay)}s`; delayCls = 'delay-bad'; }
+    }
+    hopsHTML += `
+      <div class="hop-item">
+        <div class="hop-line"><div class="hop-dot"></div>${i<hops.length-1?'<div class="hop-conn"></div>':''}</div>
+        <div class="hop-card">
+          <div class="hop-head"><span class="hop-num">${i+1}</span>${delayStr ? `<span class="hop-delay ${delayCls}">${delayStr}</span>` : ''}</div>
+          <div style="margin-bottom:2px"><span class="hop-label">From:</span> <span class="hop-from">${escapeHtml(hop.from)}</span></div>
+          <div><span class="hop-label">By:</span> <span class="hop-to">${escapeHtml(hop.by)}</span></div>
+          ${hop.date ? `<div class="hop-time">${escapeHtml(hop.date)}</div>` : ''}
+        </div>
+      </div>`;
+  });
+
+  results.innerHTML = `
+    <div class="section-title">📋 Message Summary</div>
+    <div class="summary-grid">
+      <div class="sum-card"><div class="sum-label">From</div><div class="sum-val">${escapeHtml(from||'N/A')}</div></div>
+      <div class="sum-card"><div class="sum-label">To</div><div class="sum-val">${escapeHtml(to||'N/A')}</div></div>
+      <div class="sum-card"><div class="sum-label">Subject</div><div class="sum-val">${escapeHtml(subject||'N/A')}</div></div>
+      <div class="sum-card"><div class="sum-label">Date</div><div class="sum-val">${escapeHtml(date||'N/A')}</div></div>
+      <div class="sum-card"><div class="sum-label">Return-Path</div><div class="sum-val">${escapeHtml(returnPath||'N/A')}</div></div>
+      <div class="sum-card"><div class="sum-label">Message-ID</div><div class="sum-val">${escapeHtml(messageId||'N/A')}</div></div>
+    </div>
+    
+    <div class="section-title">🔐 Authentication</div>
+    <div class="auth-grid">
+      ${authCard('SPF', spf)}
+      ${authCard('DKIM', dkim)}
+      ${authCard('DMARC', dmarc)}
+    </div>
+    
+    <div class="section-title">🔗 Delivery Path (${hops.length} hops)</div>
+    <div class="hop-list">${hopsHTML || '<p style="color:var(--text-muted)">No Received headers found</p>'}</div>
+    
+    <div class="raw-section">
+      <button class="raw-toggle" onclick="let el=document.getElementById('raw-content');el.style.display=el.style.display==='block'?'none':'block'">▸ Show Raw Headers</button>
+      <pre class="raw-content" id="raw-content">${escapeHtml(raw)}</pre>
+    </div>`;
+}
+
+function loadSample() {
+  document.getElementById('headers').value = `Return-Path: <sender@example.com>
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+        by mx.receiver.com (Postfix) with ESMTPS id ABC123
+        for <user@receiver.com>; Mon, 15 Jan 2024 10:30:45 -0500 (EST)
+Received: by mail-yw1-f182.google.com with SMTP id abc123
+        for <user@receiver.com>; Mon, 15 Jan 2024 07:30:44 -0800 (PST)
+Received: from webserver.example.com (webserver.example.com [192.168.1.100])
+        by smtp.google.com with ESMTPSA id def456
+        for <user@receiver.com>; Mon, 15 Jan 2024 07:30:43 -0800 (PST)
+Authentication-Results: mx.receiver.com;
+       dkim=pass header.i=@example.com header.s=google header.b=aBcDeF;
+       spf=pass (sender SPF authorized) smtp.mailfrom=example.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=example.com
+From: John Doe <sender@example.com>
+To: Jane Smith <user@receiver.com>
+Subject: Important Project Update - Q1 Review
+Date: Mon, 15 Jan 2024 10:30:42 -0500
+Message-ID: <CABx+XJ2abc123@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Google Mail`;
+  analyzeHeaders();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typing Speed Test — WPM & Accuracy Checker | ToolNook</title>
+  <meta name="description" content="Test your typing speed and accuracy with our free online typing test. Get WPM, accuracy, and detailed stats." />
+  <meta name="keywords" content="typing test, typing speed, wpm test, words per minute, typing accuracy, keyboard test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/typing-test.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .tt-controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .tt-btn{padding:8px 16px;border:2px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-weight:600;font-size:.82rem;transition:all .15s;}
+    .tt-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .tt-btn:hover{border-color:var(--primary);}
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
+    .stat-card{text-align:center;padding:16px 10px;background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);transition:border-color .3s;}
+    .stat-card.highlight{border-color:var(--primary);background:var(--primary-light,#eef2ff);}
+    .stat-val{font-size:1.8rem;font-weight:800;color:var(--primary);}
+    .stat-label{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-top:2px;}
+    .text-display{font-family:'Courier New',Courier,monospace;font-size:1.15rem;line-height:1.9;padding:20px;border:2px solid var(--border);border-radius:var(--radius-lg);background:#fafafa;min-height:120px;margin-bottom:16px;position:relative;user-select:none;}
+    .text-display .char{transition:color .05s;}
+    .text-display .char.correct{color:#22c55e;}
+    .text-display .char.incorrect{color:#ef4444;text-decoration:underline;background:rgba(239,68,68,.1);}
+    .text-display .char.current{background:var(--primary);color:#fff;border-radius:2px;animation:blink 1s infinite;}
+    .text-display .char.upcoming{color:#94a3b8;}
+    @keyframes blink{0%,100%{opacity:1;}50%{opacity:.7;}}
+    .tt-input{width:100%;padding:14px;font-family:'Courier New',Courier,monospace;font-size:1.05rem;border:2px solid var(--border);border-radius:var(--radius-lg);outline:none;transition:border-color .2s;}
+    .tt-input:focus{border-color:var(--primary);}
+    .tt-input:disabled{background:#f1f5f9;cursor:not-allowed;}
+    .result-box{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:var(--radius-lg);padding:24px;text-align:center;margin-top:16px;display:none;}
+    .result-box h2{font-size:1.3rem;margin:0 0 12px;}
+    .result-wpm{font-size:3.4rem;font-weight:900;}
+    .result-sub{font-size:.88rem;opacity:.85;margin-top:8px;}
+    .progress-bar{height:6px;background:#e2e8f0;border-radius:4px;margin-bottom:16px;overflow:hidden;}
+    .progress-bar .fill{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:4px;transition:width .1s;}
+    .restart-btn{margin-top:14px;padding:10px 28px;font-size:.92rem;font-weight:700;border:none;border-radius:var(--radius);background:#fff;color:var(--primary);cursor:pointer;}
+    .restart-btn:hover{background:#f1f5f9;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Typing Test</div>
+      <h1>⌨️ Typing Speed Test</h1>
+      <p>Start typing in the input box to begin. Test your speed and accuracy!</p>
+    </div>
+    <div class="tool-container">
+      <div class="tt-controls">
+        <span style="font-weight:600;font-size:.82rem;margin-right:4px;">Duration:</span>
+        <button class="tt-btn active" data-dur="30">30s</button>
+        <button class="tt-btn" data-dur="60">60s</button>
+        <button class="tt-btn" data-dur="120">2m</button>
+        <button class="tt-btn" id="restartTop" style="margin-left:auto;background:var(--primary);color:#fff;border-color:var(--primary);">↻ Restart</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card highlight"><div class="stat-val" id="wpmStat">0</div><div class="stat-label">WPM</div></div>
+        <div class="stat-card"><div class="stat-val" id="accStat">100%</div><div class="stat-label">Accuracy</div></div>
+        <div class="stat-card"><div class="stat-val" id="timeStat">30</div><div class="stat-label">Time Left</div></div>
+        <div class="stat-card"><div class="stat-val" id="charStat">0/0</div><div class="stat-label">Chars</div></div>
+      </div>
+      <div class="progress-bar"><div class="fill" id="progFill" style="width:0%"></div></div>
+      <div class="text-display" id="textDisplay"></div>
+      <input class="tt-input" id="ttInput" placeholder="Start typing here to begin..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <div class="result-box" id="resultBox">
+        <h2>🎉 Test Complete!</h2>
+        <div class="result-wpm" id="resultWpm">0</div>
+        <div class="result-sub">words per minute</div>
+        <div class="result-sub" id="resultDetails"></div>
+        <button class="restart-btn" id="restartResult">Try Again</button>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>How Typing Speed Is Measured</h2>
+      <p>Words per minute (WPM) is calculated using the standard definition: one "word" equals 5 characters (including spaces). Your net WPM accounts for errors, while gross WPM counts all typed characters. A good typing speed is 40+ WPM, professional typists often reach 80-120 WPM.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('typing-test');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('typing-test','utility');
+
+  const PARAGRAPHS=[
+    "The quick brown fox jumps over the lazy dog. A wizard's job is to vex chumps quickly in fog. How vexingly quick daft zebras jump. The five boxing wizards jump quickly at dawn.",
+    "Programming is the art of telling another human what one wants the computer to do. Good code is its own best documentation. Any fool can write code that a computer can understand.",
+    "The best way to predict the future is to invent it. Innovation distinguishes between a leader and a follower. Stay hungry, stay foolish. Think different and challenge the status quo.",
+    "In the beginning was the command line. Hackers solve problems and build things, and they believe in freedom and voluntary mutual help. To understand recursion, one must first understand recursion.",
+    "Technology is best when it brings people together. The advance of technology is based on making it fit in so that you don't even notice it. Once a new technology rolls over you, if you're not part of the steamroller, you're part of the road.",
+    "Every great developer you know got there by solving problems they were unqualified to solve until they actually did it. The only way to learn a new programming language is by writing programs in it.",
+    "Simplicity is the soul of efficiency. Clean code always looks like it was written by someone who cares. First, solve the problem. Then, write the code. Make it work, make it right, make it fast.",
+  ];
+
+  let duration=30, timer=null, startTime=null, running=false, done=false;
+  let text='', charIndex=0, correct=0, incorrect=0;
+
+  const display=document.getElementById('textDisplay');
+  const input=document.getElementById('ttInput');
+  const progFill=document.getElementById('progFill');
+  const wpmStat=document.getElementById('wpmStat');
+  const accStat=document.getElementById('accStat');
+  const timeStat=document.getElementById('timeStat');
+  const charStat=document.getElementById('charStat');
+  const resultBox=document.getElementById('resultBox');
+  const resultWpm=document.getElementById('resultWpm');
+  const resultDetails=document.getElementById('resultDetails');
+
+  function pickText(){
+    const shuffled=[...PARAGRAPHS].sort(()=>Math.random()-.5);
+    return shuffled.slice(0,3).join(' ');
+  }
+
+  function renderText(){
+    display.innerHTML=text.split('').map((c,i)=>{
+      let cls='upcoming';
+      if(i<charIndex){
+        // Already typed
+        cls=i<correct+incorrect?(text[i]===undefined?'incorrect':'correct'):'correct';
+      }
+      if(i===charIndex) cls='current';
+      return `<span class="char ${cls}" data-i="${i}">${c==='\n'?'↵\n':c}</span>`;
+    }).join('');
+  }
+
+  function init(){
+    clearInterval(timer);
+    timer=null; startTime=null; running=false; done=false;
+    charIndex=0; correct=0; incorrect=0;
+    text=pickText();
+    input.value='';
+    input.disabled=false;
+    input.focus();
+    resultBox.style.display='none';
+    timeStat.textContent=duration;
+    wpmStat.textContent='0';
+    accStat.textContent='100%';
+    charStat.textContent='0/'+text.length;
+    progFill.style.width='0%';
+    renderDisplay();
+  }
+
+  function renderDisplay(){
+    let html='';
+    for(let i=0;i<text.length;i++){
+      let cls='upcoming';
+      if(i<charIndex) cls='correct';
+      if(i===charIndex) cls='current';
+      html+=`<span class="char ${cls}">${text[i]}</span>`;
+    }
+    display.innerHTML=html;
+  }
+
+  function updateDisplay(){
+    const spans=display.querySelectorAll('.char');
+    spans.forEach((s,i)=>{
+      s.className='char ';
+      if(i<charIndex) s.classList.add('correct');
+      else if(i===charIndex) s.classList.add('current');
+      else s.classList.add('upcoming');
+    });
+  }
+
+  function startTimer(){
+    startTime=Date.now();
+    running=true;
+    timer=setInterval(()=>{
+      const elapsed=Math.floor((Date.now()-startTime)/1000);
+      const left=Math.max(0,duration-elapsed);
+      timeStat.textContent=left;
+      progFill.style.width=((elapsed/duration)*100).toFixed(1)+'%';
+      // Live WPM
+      const mins=elapsed/60||1/60;
+      const netWpm=Math.max(0,Math.round(((correct/5))/mins));
+      wpmStat.textContent=netWpm;
+      if(left<=0) finish();
+    },200);
+  }
+
+  function finish(){
+    clearInterval(timer);
+    done=true;
+    running=false;
+    input.disabled=true;
+    const elapsed=duration;
+    const mins=elapsed/60;
+    const grossWpm=Math.round((charIndex/5)/mins);
+    const netWpm=Math.max(0,Math.round((correct/5)/mins));
+    const acc=charIndex>0?Math.round((correct/charIndex)*100):100;
+    resultWpm.textContent=netWpm;
+    resultDetails.textContent=`${acc}% accuracy · ${correct} correct · ${incorrect} errors · ${grossWpm} gross WPM`;
+    resultBox.style.display='block';
+    wpmStat.textContent=netWpm;
+    accStat.textContent=acc+'%';
+    progFill.style.width='100%';
+  }
+
+  // Mark correct/incorrect on each character
+  let typedChars=[];
+  input.addEventListener('input',e=>{
+    if(done) return;
+    if(!running) startTimer();
+
+    const val=input.value;
+    charIndex=val.length;
+
+    // Recalculate correct/incorrect
+    correct=0; incorrect=0;
+    const spans=display.querySelectorAll('.char');
+    for(let i=0;i<text.length;i++){
+      if(i<val.length){
+        if(val[i]===text[i]){
+          correct++;
+          spans[i].className='char correct';
+        } else {
+          incorrect++;
+          spans[i].className='char incorrect';
+        }
+      } else if(i===val.length){
+        spans[i].className='char current';
+      } else {
+        spans[i].className='char upcoming';
+      }
+    }
+    const total=correct+incorrect;
+    const acc=total>0?Math.round((correct/total)*100):100;
+    accStat.textContent=acc+'%';
+    charStat.textContent=charIndex+'/'+text.length;
+
+    // Auto finish if all typed
+    if(charIndex>=text.length) finish();
+  });
+
+  // Duration buttons
+  document.querySelectorAll('.tt-btn[data-dur]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tt-btn[data-dur]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      duration=parseInt(btn.dataset.dur);
+      init();
+    });
+  });
+
+  document.getElementById('restartTop').addEventListener('click',init);
+  document.getElementById('restartResult').addEventListener('click',init);
+
+  init();
+});
+</script>
+</body>
+</html>

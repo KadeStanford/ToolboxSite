@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prime Number Checker — Test Primality & Find Nearby Primes | ToolNook</title>
+  <meta name="description" content="Check if a number is prime. Find prime factors, nearby primes, and explore prime number facts." />
+  <meta name="keywords" content="prime number checker, is number prime, prime factorization, find primes, primality test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/prime-checker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .input-row{display:flex;gap:10px;align-items:center;max-width:500px;margin:0 auto 16px;}
+    .num-input{flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:var(--radius-lg);font-size:1.2rem;font-weight:600;text-align:center;}
+    .num-input:focus{border-color:var(--primary);outline:none;}
+    .verdict{text-align:center;padding:20px;border-radius:var(--radius-lg);margin-bottom:16px;font-size:1.1rem;font-weight:600;}
+    .verdict.prime{background:#dcfce7;color:#16a34a;border:2px solid #86efac;}
+    .verdict.not-prime{background:#fee2e2;color:#dc2626;border:2px solid #fca5a5;}
+    .verdict.special{background:#fef3c7;color:#92400e;border:2px solid #fed7aa;}
+    .verdict .big{font-size:1.8rem;display:block;margin-bottom:4px;}
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px;}
+    .info-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:14px;}
+    .info-card h4{font-size:.76rem;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;}
+    .info-card .val{font-size:1rem;font-weight:600;}
+    .factor-tags{display:flex;flex-wrap:wrap;gap:6px;}
+    .factor-tag{background:var(--primary);color:#fff;padding:4px 12px;border-radius:20px;font-size:.82rem;font-weight:600;}
+    .nearby-primes{display:flex;gap:6px;flex-wrap:wrap;}
+    .np{padding:5px 12px;border:2px solid var(--border);border-radius:var(--radius);font-size:.82rem;cursor:pointer;transition:all .15s;font-weight:500;background:#fff;}
+    .np:hover{border-color:var(--primary);background:#eff6ff;}
+    .np.current{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .range-section{margin-top:20px;background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;}
+    .range-section h3{font-size:.88rem;margin-bottom:10px;}
+    .range-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+    .range-row input{width:120px;padding:8px;border:2px solid var(--border);border-radius:var(--radius);font-size:.88rem;text-align:center;}
+    .range-row input:focus{border-color:var(--primary);outline:none;}
+    .prime-grid{display:flex;flex-wrap:wrap;gap:4px;max-height:200px;overflow-y:auto;}
+    .pg{padding:4px 10px;background:#f3f4f6;border-radius:var(--radius);font-size:.8rem;font-weight:500;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#math-tools">Math</a> › Prime Checker</div>
+      <h1>Prime Number Checker</h1>
+      <p>Check if a number is prime, see its factorization, and explore nearby primes.</p>
+    </div>
+    <div class="tool-container">
+      <div class="input-row">
+        <input class="num-input" id="numInput" type="number" placeholder="Enter a number" value="97" oninput="check()">
+        <button class="btn btn-primary" onclick="check()">Check</button>
+      </div>
+      <div id="verdict"></div>
+      <div class="info-grid" id="infoGrid"></div>
+      <div id="nearbySection"></div>
+
+      <div class="range-section">
+        <h3>🔢 Find Primes in Range</h3>
+        <div class="range-row">
+          <input id="rangeFrom" type="number" value="1" placeholder="From">
+          <span>to</span>
+          <input id="rangeTo" type="number" value="100" placeholder="To">
+          <button class="btn btn-primary btn-sm" onclick="findRange()">Find</button>
+        </div>
+        <div id="rangeResult"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>What Are Prime Numbers?</h2>
+      <p>A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself. The first few primes are 2, 3, 5, 7, 11, 13, 17, 19, 23, 29... They are the building blocks of all natural numbers through prime factorization.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('prime-checker');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('prime-checker','math');
+  check();
+});
+
+function isPrime(n){
+  if(n<2)return false;
+  if(n<4)return true;
+  if(n%2===0||n%3===0)return false;
+  for(let i=5;i*i<=n;i+=6) if(n%i===0||n%(i+2)===0)return false;
+  return true;
+}
+
+function primeFactors(n){
+  if(n<2)return[];
+  const factors=[];
+  let d=2;
+  while(n>1){
+    while(n%d===0){factors.push(d);n/=d;}
+    d++;
+    if(d*d>n&&n>1){factors.push(n);break;}
+  }
+  return factors;
+}
+
+function nearbyPrimes(n,count=5){
+  const below=[],above=[];
+  let x=n-1;
+  while(below.length<count&&x>=2){if(isPrime(x))below.unshift(x);x--;}
+  x=n+1;
+  while(above.length<count&&x<n+200){if(isPrime(x))above.push(x);x++;}
+  return {below,above};
+}
+
+function check(){
+  const n=parseInt(document.getElementById('numInput').value);
+  if(isNaN(n)){
+    document.getElementById('verdict').innerHTML='<div class="verdict special"><span class="big">?</span>Enter a number to check</div>';
+    document.getElementById('infoGrid').innerHTML='';
+    document.getElementById('nearbySection').innerHTML='';
+    return;
+  }
+  if(n<2){
+    document.getElementById('verdict').innerHTML=`<div class="verdict special"><span class="big">${n}</span>Not a prime (primes must be ≥ 2)</div>`;
+    document.getElementById('infoGrid').innerHTML='';
+    document.getElementById('nearbySection').innerHTML='';
+    return;
+  }
+
+  const prime=isPrime(n);
+  const factors=primeFactors(n);
+  const nearby=nearbyPrimes(n);
+  const divisors=[];
+  for(let i=1;i<=Math.min(n,10000);i++)if(n%i===0)divisors.push(i);
+  const isEven=n%2===0;
+  const isMersenne=(() => { for(let p=2;p<=30;p++) if(Math.pow(2,p)-1===n) return p; return null; })();
+  const isFib = (() => { let a=0,b=1; while(b<n){[a,b]=[b,a+b];} return b===n; })();
+
+  if(prime){
+    document.getElementById('verdict').innerHTML=`<div class="verdict prime"><span class="big">✅ ${n}</span>is a PRIME number!</div>`;
+  } else {
+    document.getElementById('verdict').innerHTML=`<div class="verdict not-prime"><span class="big">❌ ${n}</span>is NOT a prime number</div>`;
+  }
+
+  let cards=`<div class="info-card"><h4>Prime Factorization</h4><div class="factor-tags">${factors.length?factors.map(f=>`<span class="factor-tag">${f}</span>`).join(''):'N/A'}</div></div>`;
+  cards+=`<div class="info-card"><h4>Factorization String</h4><div class="val">${factors.length?formatFactors(factors):'N/A'}</div></div>`;
+  cards+=`<div class="info-card"><h4>Number of Divisors</h4><div class="val">${divisors.length}${divisors.length<=20?' → '+divisors.join(', '):''}</div></div>`;
+  cards+=`<div class="info-card"><h4>Properties</h4><div class="val">${isEven?'Even':'Odd'}${isMersenne?' • Mersenne (2^'+isMersenne+'-1)':''}${isFib?' • Fibonacci':''}</div></div>`;
+  cards+=`<div class="info-card"><h4>Previous Prime</h4><div class="val">${nearby.below.length?nearby.below[nearby.below.length-1]:'—'}</div></div>`;
+  cards+=`<div class="info-card"><h4>Next Prime</h4><div class="val">${nearby.above.length?nearby.above[0]:'—'}</div></div>`;
+  document.getElementById('infoGrid').innerHTML=cards;
+
+  let nh='<h4 style="font-size:.82rem;margin-bottom:8px;">Nearby Primes</h4><div class="nearby-primes">';
+  nearby.below.forEach(p=>nh+=`<span class="np" onclick="document.getElementById('numInput').value=${p};check()">${p}</span>`);
+  if(prime)nh+=`<span class="np current">${n}</span>`;
+  nearby.above.forEach(p=>nh+=`<span class="np" onclick="document.getElementById('numInput').value=${p};check()">${p}</span>`);
+  nh+='</div>';
+  document.getElementById('nearbySection').innerHTML=nh;
+}
+
+function formatFactors(factors){
+  const counts={};
+  factors.forEach(f=>counts[f]=(counts[f]||0)+1);
+  return Object.entries(counts).map(([f,c])=>c>1?`${f}^${c}`:f).join(' × ');
+}
+
+function findRange(){
+  let from=parseInt(document.getElementById('rangeFrom').value)||1;
+  let to=parseInt(document.getElementById('rangeTo').value)||100;
+  if(from>to)[from,to]=[to,from];
+  if(to-from>100000){document.getElementById('rangeResult').innerHTML='<span style="color:#ef4444;font-size:.84rem;">Range too large (max 100,000)</span>';return;}
+  const primes=[];
+  for(let i=Math.max(2,from);i<=to;i++)if(isPrime(i))primes.push(i);
+  document.getElementById('rangeResult').innerHTML=`<div style="font-size:.82rem;margin-bottom:8px;font-weight:600;">Found ${primes.length} primes between ${from} and ${to}</div><div class="prime-grid">${primes.map(p=>`<span class="pg">${p}</span>`).join('')}</div>`;
+}
+</script>
+</body>
+</html>

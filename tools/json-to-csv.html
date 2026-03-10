@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON to CSV Converter — Convert JSON to CSV Online | ToolNook</title>
+  <meta name="description" content="Convert JSON data to CSV format instantly. Supports nested objects, arrays, and custom delimiters. Free online JSON to CSV converter." />
+  <meta name="keywords" content="JSON to CSV, convert JSON to CSV, JSON CSV converter, export JSON as CSV, JSON table converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/json-to-csv.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .converter-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:768px){ .converter-grid { grid-template-columns:1fr; } }
+    .panel { display:flex; flex-direction:column; }
+    .panel-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .panel-label { font-weight:700; font-size:.9rem; display:flex; align-items:center; gap:6px; }
+    .panel-label .dot { width:8px; height:8px; border-radius:50%; }
+    .dot-json { background:#f59e0b; }
+    .dot-csv { background:#10b981; }
+    .panel textarea { font-family:'Courier New',monospace; font-size:.84rem; min-height:320px; resize:vertical; border:2px solid var(--border); border-radius:var(--radius); padding:14px; transition:border-color .2s; }
+    .panel textarea:focus { border-color:var(--primary); outline:none; }
+    .convert-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    .opts { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+    .opts label { font-size:.82rem; display:flex; align-items:center; gap:5px; }
+    .opts select, .opts input[type="text"] { padding:4px 8px; border:1px solid var(--border); border-radius:var(--radius); font-size:.82rem; }
+    .preview-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:.82rem; overflow-x:auto; display:block; }
+    .preview-table th { background:var(--primary); color:#fff; padding:8px 12px; text-align:left; white-space:nowrap; position:sticky; top:0; }
+    .preview-table td { padding:7px 12px; border-bottom:1px solid var(--border); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .preview-table tr:nth-child(even) td { background:#f8fafc; }
+    .preview-table tr:hover td { background:#ede9fe; }
+    .stats-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; }
+    .stat-chip { background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:.75rem; color:var(--text-muted); }
+    .stat-chip strong { color:var(--text); }
+    .err-msg { background:#fef2f2; border:1px solid #fca5a5; color:#b91c1c; padding:10px 14px; border-radius:var(--radius); font-size:.84rem; margin-top:8px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converters</a> › JSON to CSV</div>
+      <h1>JSON to CSV Converter</h1>
+      <p>Paste your JSON array and get clean CSV output instantly. Handles nested objects and arrays.</p>
+    </div>
+    <div class="tool-container">
+      <div class="opts">
+        <label>Delimiter: <select id="delim"><option value=",">,  (comma)</option><option value="&#9;">Tab</option><option value=";">; (semicolon)</option><option value="|">| (pipe)</option></select></label>
+        <label><input type="checkbox" id="headers" checked /> Include headers</label>
+        <label><input type="checkbox" id="quotes" checked /> Quote strings</label>
+        <label><input type="checkbox" id="flatten" /> Flatten nested</label>
+      </div>
+      <div class="converter-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-label"><span class="dot dot-json"></span> JSON Input</span>
+            <button class="btn btn-secondary" style="font-size:.74rem;padding:4px 10px;" onclick="document.getElementById('json-in').value='';convert()">Clear</button>
+          </div>
+          <textarea id="json-in" placeholder='[&#10;  {"name":"Alice","age":30,"city":"NYC"},&#10;  {"name":"Bob","age":25,"city":"LA"}&#10;]' spellcheck="false"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-label"><span class="dot dot-csv"></span> CSV Output</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-secondary" style="font-size:.74rem;padding:4px 10px;" onclick="copyCSV()">Copy</button>
+              <button class="btn btn-secondary" style="font-size:.74rem;padding:4px 10px;" onclick="downloadCSV()">Download</button>
+            </div>
+          </div>
+          <textarea id="csv-out" readonly placeholder="CSV will appear here..." spellcheck="false"></textarea>
+        </div>
+      </div>
+      <div class="convert-bar">
+        <button class="btn btn-primary" onclick="convert()">Convert to CSV</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+      </div>
+      <div id="error" class="err-msg" style="display:none;"></div>
+      <div class="stats-row" id="stats" style="display:none;"></div>
+      <div style="overflow-x:auto;max-height:300px;overflow-y:auto;" id="preview-wrap" style="display:none;">
+        <table class="preview-table" id="preview"></table>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>How to Convert JSON to CSV</h2>
+      <p>Paste a JSON array of objects in the left panel. Each object becomes a row, and keys become column headers. The converter automatically handles:</p>
+      <ul>
+        <li><strong>Flat objects</strong> — Direct key-value mapping to columns</li>
+        <li><strong>Nested objects</strong> — Enable "Flatten nested" to expand nested.key paths</li>
+        <li><strong>Missing fields</strong> — Empty cells for objects missing certain keys</li>
+        <li><strong>Special characters</strong> — Commas and quotes in values are properly escaped</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('json-to-csv');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('json-to-csv','converter');
+});
+
+function flatten(obj, prefix = '') {
+  let result = {};
+  for (const [k, v] of Object.entries(obj)) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      Object.assign(result, flatten(v, key));
+    } else {
+      result[key] = v;
+    }
+  }
+  return result;
+}
+
+function convert() {
+  const raw = document.getElementById('json-in').value.trim();
+  const errEl = document.getElementById('error');
+  const statsEl = document.getElementById('stats');
+  errEl.style.display = 'none';
+  statsEl.style.display = 'none';
+  document.getElementById('csv-out').value = '';
+  document.getElementById('preview').innerHTML = '';
+  if (!raw) return;
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    errEl.textContent = `JSON parse error: ${e.message}`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (!Array.isArray(data)) {
+    if (typeof data === 'object' && data !== null) data = [data];
+    else { errEl.textContent = 'Input must be a JSON array of objects.'; errEl.style.display = 'block'; return; }
+  }
+
+  const shouldFlatten = document.getElementById('flatten').checked;
+  const rows = data.map(r => shouldFlatten ? flatten(r) : r);
+  const delim = document.getElementById('delim').value;
+  const includeHeaders = document.getElementById('headers').checked;
+  const quoteStrings = document.getElementById('quotes').checked;
+
+  const allKeys = [...new Set(rows.flatMap(r => Object.keys(r)))];
+  const lines = [];
+
+  if (includeHeaders) lines.push(allKeys.map(k => esc(k, delim, quoteStrings)).join(delim));
+
+  for (const row of rows) {
+    const vals = allKeys.map(k => {
+      let v = row[k];
+      if (v === undefined || v === null) return '';
+      if (Array.isArray(v)) v = v.join('; ');
+      else if (typeof v === 'object') v = JSON.stringify(v);
+      return esc(String(v), delim, quoteStrings);
+    });
+    lines.push(vals.join(delim));
+  }
+
+  const csv = lines.join('\n');
+  document.getElementById('csv-out').value = csv;
+
+  statsEl.innerHTML = `<span class="stat-chip"><strong>${rows.length}</strong> rows</span><span class="stat-chip"><strong>${allKeys.length}</strong> columns</span><span class="stat-chip"><strong>${csv.length}</strong> chars</span>`;
+  statsEl.style.display = 'flex';
+
+  // Preview table
+  const maxPreview = Math.min(rows.length, 50);
+  let thtml = '<thead><tr>' + allKeys.map(k => `<th>${escapeHtml(k)}</th>`).join('') + '</tr></thead><tbody>';
+  for (let i = 0; i < maxPreview; i++) {
+    thtml += '<tr>' + allKeys.map(k => {
+      let v = rows[i][k]; if (v == null) v = '';
+      if (typeof v === 'object') v = JSON.stringify(v);
+      return `<td title="${escapeHtml(String(v))}">${escapeHtml(String(v))}</td>`;
+    }).join('') + '</tr>';
+  }
+  thtml += '</tbody>';
+  document.getElementById('preview').innerHTML = thtml;
+}
+
+function esc(val, delim, quote) {
+  if (!quote) return val;
+  if (val.includes('"') || val.includes(delim) || val.includes('\n')) {
+    return '"' + val.replace(/"/g, '""') + '"';
+  }
+  return val;
+}
+
+function copyCSV() {
+  const csv = document.getElementById('csv-out').value;
+  if (!csv) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(csv).then(() => showToast('CSV copied!'));
+}
+
+function downloadCSV() {
+  const csv = document.getElementById('csv-out').value;
+  if (!csv) return showToast('Nothing to download');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function loadSample() {
+  document.getElementById('json-in').value = JSON.stringify([
+    { name: "Alice Johnson", age: 30, email: "alice@example.com", city: "New York", role: "Engineer" },
+    { name: "Bob Smith", age: 25, email: "bob@example.com", city: "Los Angeles", role: "Designer" },
+    { name: "Charlie Brown", age: 35, email: "charlie@example.com", city: "Chicago", role: "Manager" },
+    { name: "Diana Lee", age: 28, email: "diana@example.com", city: "Houston", role: "Analyst" },
+    { name: "Eve Martinez", age: 32, email: "eve@example.com", city: "Phoenix", role: "Developer" }
+  ], null, 2);
+  convert();
+}
+
+document.getElementById('json-in').addEventListener('input', convert);
+['delim','headers','quotes','flatten'].forEach(id => document.getElementById(id).addEventListener('change', convert));
+</script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Entity Encoder/Decoder — Encode &amp; Decode HTML Entities | ToolNook</title>
+  <meta name="description" content="Encode special characters to HTML entities or decode entities back to text. Supports named, decimal, and hexadecimal entities." />
+  <meta name="keywords" content="HTML entity encoder, HTML entity decoder, encode HTML, decode HTML entities, special characters HTML" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/html-entity-encoder.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .mode-tabs { display:flex; gap:0; margin-bottom:16px; }
+    .mode-tab { flex:1; padding:12px; text-align:center; font-weight:600; font-size:.88rem; border:2px solid var(--border); background:#fff; cursor:pointer; transition:.2s; }
+    .mode-tab:first-child { border-radius:var(--radius) 0 0 var(--radius); }
+    .mode-tab:last-child { border-radius:0 var(--radius) var(--radius) 0; }
+    .mode-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .io-area { position:relative; }
+    .io-area textarea { font-family:'Courier New',monospace; font-size:.88rem; min-height:200px; resize:vertical; width:100%; border:2px solid var(--border); border-radius:var(--radius); padding:14px; transition:border .2s; }
+    .io-area textarea:focus { border-color:var(--primary); outline:none; }
+    .io-label { font-weight:700; font-size:.84rem; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+    .io-label .badge { font-size:.7rem; background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:600; }
+    .arrow-between { text-align:center; font-size:1.6rem; padding:8px 0; color:var(--text-muted); }
+    .char-count { position:absolute; bottom:8px; right:12px; font-size:.72rem; color:var(--text-muted); pointer-events:none; }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+    .ref-section { margin-top:20px; }
+    .ref-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; margin-top:10px; }
+    .ref-card { background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; font-size:.82rem; cursor:pointer; transition:.15s; }
+    .ref-card:hover { background:#ede9fe; border-color:var(--primary); }
+    .ref-char { font-size:1.3rem; font-weight:700; }
+    .ref-code { font-family:monospace; color:var(--primary); font-size:.78rem; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer</a> › HTML Entity Encoder</div>
+      <h1>HTML Entity Encoder / Decoder</h1>
+      <p>Convert special characters to HTML entities or decode entities back to readable text.</p>
+    </div>
+    <div class="tool-container">
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="setMode('encode')">Encode →</button>
+        <button class="mode-tab" onclick="setMode('decode')">← Decode</button>
+      </div>
+      <div class="io-area">
+        <div class="io-label">Input <span class="badge" id="in-badge">Text</span></div>
+        <textarea id="input" placeholder="Type or paste your text here..."></textarea>
+        <span class="char-count" id="in-count">0 chars</span>
+      </div>
+      <div class="arrow-between" id="arrow">⬇️ Encoded</div>
+      <div class="io-area">
+        <div class="io-label">Output <span class="badge" id="out-badge">HTML Entities</span></div>
+        <textarea id="output" readonly placeholder="Result will appear here..."></textarea>
+        <span class="char-count" id="out-count">0 chars</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="process()">Convert</button>
+        <button class="btn btn-secondary" onclick="copyOutput()">Copy Output</button>
+        <button class="btn btn-secondary" onclick="swapFields()">↕ Swap</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+      </div>
+      <div class="ref-section">
+        <h3>Common HTML Entities Reference</h3>
+        <div class="ref-grid" id="ref-grid"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>About HTML Entities</h2>
+      <p>HTML entities represent reserved or special characters that can't appear directly in HTML source code. Characters like <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, and <code>&quot;</code> must be encoded to display correctly in web pages.</p>
+      <ul>
+        <li><strong>Named entities</strong> — <code>&amp;amp;</code>, <code>&amp;lt;</code>, <code>&amp;gt;</code></li>
+        <li><strong>Decimal</strong> — <code>&amp;#38;</code>, <code>&amp;#60;</code></li>
+        <li><strong>Hexadecimal</strong> — <code>&amp;#x26;</code>, <code>&amp;#x3C;</code></li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('html-entity-encoder');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('html-entity-encoder','developer');
+  buildRef();
+});
+
+let mode = 'encode';
+
+const ENTITIES = [
+  ['&','&amp;'],['<','&lt;'],['>','&gt;'],['"','&quot;'],["'",'&apos;'],
+  [' ','&nbsp;'],['©','&copy;'],['®','&reg;'],['™','&trade;'],['€','&euro;'],
+  ['£','&pound;'],['¥','&yen;'],['¢','&cent;'],['§','&sect;'],['¶','&para;'],
+  ['†','&dagger;'],['‡','&Dagger;'],['•','&bull;'],['…','&hellip;'],['—','&mdash;'],
+  ['–','&ndash;'],['←','&larr;'],['→','&rarr;'],['↑','&uarr;'],['↓','&darr;'],
+  ['♠','&spades;'],['♣','&clubs;'],['♥','&hearts;'],['♦','&diams;'],['∞','&infin;']
+];
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&m==='encode')||(i===1&&m==='decode')));
+  document.getElementById('in-badge').textContent = m === 'encode' ? 'Text' : 'HTML Entities';
+  document.getElementById('out-badge').textContent = m === 'encode' ? 'HTML Entities' : 'Text';
+  document.getElementById('arrow').textContent = m === 'encode' ? '⬇️ Encoded' : '⬇️ Decoded';
+  process();
+}
+
+function process() {
+  const input = document.getElementById('input').value;
+  document.getElementById('in-count').textContent = input.length + ' chars';
+  let out = '';
+  if (mode === 'encode') {
+    out = input.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.innerHTML = input;
+    out = ta.value;
+  }
+  document.getElementById('output').value = out;
+  document.getElementById('out-count').textContent = out.length + ' chars';
+}
+
+function copyOutput() {
+  const o = document.getElementById('output').value;
+  if (!o) return showToast('Nothing to copy');
+  navigator.clipboard.writeText(o).then(() => showToast('Copied!'));
+}
+
+function swapFields() {
+  const inp = document.getElementById('input');
+  const out = document.getElementById('output');
+  inp.value = out.value;
+  setMode(mode === 'encode' ? 'decode' : 'encode');
+}
+
+function clearAll() {
+  document.getElementById('input').value = '';
+  document.getElementById('output').value = '';
+  document.getElementById('in-count').textContent = '0 chars';
+  document.getElementById('out-count').textContent = '0 chars';
+}
+
+function buildRef() {
+  document.getElementById('ref-grid').innerHTML = ENTITIES.map(([ch, ent]) =>
+    `<div class="ref-card" onclick="navigator.clipboard.writeText('${ent}').then(()=>showToast('Copied ${ent}'))">
+      <span class="ref-char">${ch}</span><span class="ref-code">${escapeHtml(ent)}</span>
+    </div>`
+  ).join('');
+}
+
+document.getElementById('input').addEventListener('input', process);
+</script>
+</body>
+</html>

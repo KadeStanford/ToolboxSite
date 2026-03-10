@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chmod Calculator — Linux File Permission Calculator | ToolNook</title>
+  <meta name="description" content="Calculate Linux file permissions with an interactive chmod calculator. Convert between symbolic and octal notation. Visual permission grid." />
+  <meta name="keywords" content="chmod calculator, Linux file permissions, octal permission calculator, chmod 777, file permission converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/chmod-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .perm-grid { display:grid; grid-template-columns:auto repeat(3,1fr); gap:0; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:20px; }
+    .perm-cell { padding:12px 16px; text-align:center; font-size:.88rem; border-bottom:1px solid var(--border); border-right:1px solid var(--border); transition:.15s; }
+    .perm-cell:last-child { border-right:none; }
+    .perm-header { background:#0f172a; color:#e2e8f0; font-weight:700; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; }
+    .perm-role { background:#f8fafc; font-weight:700; color:var(--text); text-align:left; }
+    .perm-check { cursor:pointer; user-select:none; }
+    .perm-check:hover { background:#ede9fe; }
+    .perm-check.on { background:#e0e7ff; }
+    .perm-check .box { display:inline-flex; width:28px; height:28px; border-radius:6px; border:2px solid var(--border); align-items:center; justify-content:center; font-size:1rem; transition:.2s; }
+    .perm-check.on .box { background:var(--primary); border-color:var(--primary); color:#fff; }
+    .result-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:16px; }
+    .result-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+    .result-label { font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); font-weight:600; margin-bottom:6px; }
+    .result-value { font-family:'Courier New',monospace; font-size:1.6rem; font-weight:800; color:var(--primary); letter-spacing:.08em; }
+    .result-cmd { font-family:'Courier New',monospace; font-size:.9rem; color:var(--text); background:#f8fafc; padding:10px 14px; border-radius:var(--radius); border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .octal-input { display:flex; gap:4px; align-items:center; margin-bottom:16px; }
+    .octal-input input { width:50px; text-align:center; font-family:'Courier New',monospace; font-size:1.4rem; font-weight:700; border:2px solid var(--border); border-radius:var(--radius); padding:8px; }
+    .octal-input input:focus { border-color:var(--primary); outline:none; }
+    .octal-input .prefix { font-family:'Courier New',monospace; font-weight:700; font-size:1.4rem; color:var(--text-muted); }
+    .common-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; margin-top:12px; }
+    .common-btn { background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:10px; text-align:center; cursor:pointer; transition:.15s; }
+    .common-btn:hover { border-color:var(--primary); background:#ede9fe; }
+    .common-val { font-family:monospace; font-size:1.1rem; font-weight:800; color:var(--primary); }
+    .common-desc { font-size:.7rem; color:var(--text-muted); margin-top:2px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer</a> › Chmod Calculator</div>
+      <h1>Chmod Calculator</h1>
+      <p>Calculate Linux/Unix file permissions interactively. Click to toggle, enter octal values, or use common presets.</p>
+    </div>
+    <div class="tool-container">
+      <h3 style="margin-bottom:10px;">Enter Octal Value</h3>
+      <div class="octal-input">
+        <span class="prefix">0</span>
+        <input type="text" id="o-owner" maxlength="1" value="7" oninput="fromOctal()" />
+        <input type="text" id="o-group" maxlength="1" value="5" oninput="fromOctal()" />
+        <input type="text" id="o-other" maxlength="1" value="5" oninput="fromOctal()" />
+      </div>
+      <h3 style="margin-bottom:10px;">Toggle Permissions</h3>
+      <div class="perm-grid">
+        <div class="perm-cell perm-header"></div>
+        <div class="perm-cell perm-header">Read (4)</div>
+        <div class="perm-cell perm-header">Write (2)</div>
+        <div class="perm-cell perm-header">Execute (1)</div>
+        <div class="perm-cell perm-role">Owner</div>
+        <div class="perm-cell perm-check on" data-r="0" data-p="r" onclick="toggle(this)"><span class="box">r</span></div>
+        <div class="perm-cell perm-check on" data-r="0" data-p="w" onclick="toggle(this)"><span class="box">w</span></div>
+        <div class="perm-cell perm-check on" data-r="0" data-p="x" onclick="toggle(this)"><span class="box">x</span></div>
+        <div class="perm-cell perm-role">Group</div>
+        <div class="perm-cell perm-check on" data-r="1" data-p="r" onclick="toggle(this)"><span class="box">r</span></div>
+        <div class="perm-cell perm-check"    data-r="1" data-p="w" onclick="toggle(this)"><span class="box">w</span></div>
+        <div class="perm-cell perm-check on" data-r="1" data-p="x" onclick="toggle(this)"><span class="box">x</span></div>
+        <div class="perm-cell perm-role">Others</div>
+        <div class="perm-cell perm-check on" data-r="2" data-p="r" onclick="toggle(this)"><span class="box">r</span></div>
+        <div class="perm-cell perm-check"    data-r="2" data-p="w" onclick="toggle(this)"><span class="box">w</span></div>
+        <div class="perm-cell perm-check on" data-r="2" data-p="x" onclick="toggle(this)"><span class="box">x</span></div>
+      </div>
+      <div class="result-grid">
+        <div class="result-card"><div class="result-label">Octal</div><div class="result-value" id="res-octal">755</div></div>
+        <div class="result-card"><div class="result-label">Symbolic</div><div class="result-value" id="res-sym" style="font-size:1.2rem;">rwxr-xr-x</div></div>
+        <div class="result-card"><div class="result-label">File Type</div><div class="result-value" id="res-type" style="font-size:1rem;">-rwxr-xr-x</div></div>
+      </div>
+      <div class="result-cmd">
+        <span id="res-cmd">chmod 755 filename</span>
+        <button class="btn btn-primary" style="font-size:.78rem;padding:5px 12px;" onclick="navigator.clipboard.writeText(document.getElementById('res-cmd').textContent).then(()=>showToast('Copied!'))">Copy</button>
+      </div>
+      <div style="margin-top:24px;">
+        <h3>Common Presets</h3>
+        <div class="common-grid" id="presets"></div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Understanding Linux File Permissions</h2>
+      <p>Linux uses a 3-digit octal number to represent file permissions for owner, group, and others:</p>
+      <ul>
+        <li><strong>Read (4)</strong> — View file contents or list directory</li>
+        <li><strong>Write (2)</strong> — Modify or delete the file</li>
+        <li><strong>Execute (1)</strong> — Run the file or access directory</li>
+        <li>Combine values: <code>rwx = 4+2+1 = 7</code>, <code>r-x = 4+0+1 = 5</code></li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('chmod-calculator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('chmod-calculator','developer');
+  buildPresets();
+  updateDisplay();
+});
+
+const PERMS = [
+  ['755','Standard executable'],['644','Standard file'],['777','Full access'],['600','Owner only'],
+  ['700','Owner full'],['750','Group read/exec'],['664','Group writable'],['666','All read/write'],
+  ['444','Read only'],['555','Read/exec all'],['711','Public exec only'],['640','Group read']
+];
+
+// perms[role][type] = boolean
+let perms = [[true,true,true],[true,false,true],[true,false,true]];
+
+function toggle(el) {
+  const r = +el.dataset.r, p = el.dataset.p;
+  const pi = p==='r'?0:p==='w'?1:2;
+  perms[r][pi] = !perms[r][pi];
+  el.classList.toggle('on');
+  updateDisplay();
+}
+
+function getOctal() {
+  return perms.map(row => (row[0]?4:0)+(row[1]?2:0)+(row[2]?1:0)).join('');
+}
+
+function getSymbolic() {
+  return perms.map(row => (row[0]?'r':'-')+(row[1]?'w':'-')+(row[2]?'x':'-')).join('');
+}
+
+function updateDisplay() {
+  const oct = getOctal();
+  const sym = getSymbolic();
+  document.getElementById('res-octal').textContent = oct;
+  document.getElementById('res-sym').textContent = sym;
+  document.getElementById('res-type').textContent = '-' + sym;
+  document.getElementById('res-cmd').textContent = `chmod ${oct} filename`;
+  document.getElementById('o-owner').value = oct[0];
+  document.getElementById('o-group').value = oct[1];
+  document.getElementById('o-other').value = oct[2];
+}
+
+function fromOctal() {
+  const vals = [
+    document.getElementById('o-owner').value,
+    document.getElementById('o-group').value,
+    document.getElementById('o-other').value
+  ].map(v => parseInt(v) || 0);
+
+  perms = vals.map(v => [!!(v&4), !!(v&2), !!(v&1)]);
+  document.querySelectorAll('.perm-check').forEach(el => {
+    const r = +el.dataset.r, pi = el.dataset.p==='r'?0:el.dataset.p==='w'?1:2;
+    el.classList.toggle('on', perms[r][pi]);
+  });
+  const oct = getOctal(), sym = getSymbolic();
+  document.getElementById('res-octal').textContent = oct;
+  document.getElementById('res-sym').textContent = sym;
+  document.getElementById('res-type').textContent = '-' + sym;
+  document.getElementById('res-cmd').textContent = `chmod ${oct} filename`;
+}
+
+function setPreset(oct) {
+  document.getElementById('o-owner').value = oct[0];
+  document.getElementById('o-group').value = oct[1];
+  document.getElementById('o-other').value = oct[2];
+  fromOctal();
+}
+
+function buildPresets() {
+  document.getElementById('presets').innerHTML = PERMS.map(([v,d]) =>
+    `<div class="common-btn" onclick="setPreset('${v}')"><div class="common-val">${v}</div><div class="common-desc">${d}</div></div>`
+  ).join('');
+}
+</script>
+</body>
+</html>

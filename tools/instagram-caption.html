@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instagram Caption Generator — Format & Preview | ToolNook</title>
+  <meta name="description" content="Format Instagram captions with line breaks, hashtags, and clean spacing. Preview exactly how your caption will look." />
+  <meta name="keywords" content="instagram caption generator, instagram formatter, caption line breaks, instagram hashtags, caption preview" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/instagram-caption.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .ig-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:768px){.ig-grid{grid-template-columns:1fr;}}
+    .ig-panel{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:18px;}
+    .ig-panel h3{font-size:.88rem;margin-bottom:12px;}
+    .cap-input{width:100%;min-height:200px;padding:12px;border:2px solid var(--border);border-radius:var(--radius);font-size:.88rem;line-height:1.6;resize:vertical;}
+    .cap-input:focus{border-color:var(--primary);outline:none;}
+    .hash-input{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius);font-size:.84rem;margin-top:10px;}
+    .hash-input:focus{border-color:var(--primary);outline:none;}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+    .break-btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+    .break-btns button{font-size:.74rem;padding:5px 10px;}
+    .ig-preview{background:#fff;border:1px solid #dbdbdb;border-radius:8px;overflow:hidden;max-width:400px;margin:0 auto;}
+    .ig-prev-header{display:flex;align-items:center;padding:10px 12px;gap:8px;}
+    .ig-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;}
+    .ig-avatar-inner{width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#333;}
+    .ig-username{font-weight:600;font-size:.82rem;}
+    .ig-image{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;}
+    .ig-actions{display:flex;gap:14px;padding:10px 12px;}
+    .ig-actions span{font-size:1.2rem;cursor:pointer;}
+    .ig-caption-area{padding:0 12px 12px;font-size:.82rem;line-height:1.6;}
+    .ig-caption-area .ig-user-inline{font-weight:600;margin-right:4px;}
+    .ig-caption-text{white-space:pre-wrap;word-break:break-word;}
+    .ig-hashtags{color:#00376b;}
+    .stat-row{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;}
+    .stat-chip{background:#f3f4f6;padding:5px 12px;border-radius:20px;font-size:.76rem;font-weight:600;}
+    .template-sec{margin-top:18px;}
+    .template-sec h4{font-size:.82rem;margin-bottom:8px;}
+    .tmpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .tmpl-card{background:#f9fafb;border:1px solid var(--border);border-radius:var(--radius);padding:10px;cursor:pointer;font-size:.78rem;transition:all .15s;}
+    .tmpl-card:hover{border-color:var(--primary);background:#eff6ff;}
+    .tmpl-card strong{display:block;margin-bottom:3px;color:var(--primary);}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#social-media-tools">Social Media</a> › Instagram Caption</div>
+      <h1>Instagram Caption Generator</h1>
+      <p>Format your Instagram captions with proper line breaks, spaced hashtags, and live preview.</p>
+    </div>
+    <div class="tool-container">
+      <div class="ig-grid">
+        <div class="ig-panel">
+          <h3>✏️ Write Your Caption</h3>
+          <textarea class="cap-input" id="capInput" placeholder="Write your caption here...&#10;&#10;Use the buttons below to add invisible line breaks." oninput="updatePreview()"></textarea>
+          <div class="break-btns">
+            <button class="btn btn-secondary btn-sm" onclick="insertBreaks(1)" title="Insert an invisible line break">+ Line Break</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertBreaks(5)" title="Hide hashtags below the fold">+ Spacer (5 lines)</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('📸')">📸</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('✨')">✨</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('🔥')">🔥</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('💡')">💡</button>
+          </div>
+          <input class="hash-input" id="hashInput" placeholder="#hashtag1 #hashtag2 #hashtag3 ..." oninput="updatePreview()">
+          <div class="stat-row">
+            <span class="stat-chip">Chars: <span id="sChars">0</span>/2200</span>
+            <span class="stat-chip">Hashtags: <span id="sHash">0</span>/30</span>
+            <span class="stat-chip">Words: <span id="sWords">0</span></span>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="copyCaption()">📋 Copy Full Caption</button>
+            <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+          </div>
+
+          <div class="template-sec">
+            <h4>📝 Quick Templates</h4>
+            <div class="tmpl-grid">
+              <div class="tmpl-card" onclick="applyTemplate('engage')"><strong>Engagement</strong>Double tap if you agree! 👇 What do you think?</div>
+              <div class="tmpl-card" onclick="applyTemplate('promo')"><strong>Promotion</strong>Limited time offer 🔥 Link in bio!</div>
+              <div class="tmpl-card" onclick="applyTemplate('story')"><strong>Storytelling</strong>Here's the thing nobody tells you about...</div>
+              <div class="tmpl-card" onclick="applyTemplate('quote')"><strong>Quote</strong>"Your quote here" — Author ✨</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-panel">
+          <h3>👁️ Live Preview</h3>
+          <div class="ig-preview">
+            <div class="ig-prev-header">
+              <div class="ig-avatar"><div class="ig-avatar-inner">U</div></div>
+              <div class="ig-username">username</div>
+            </div>
+            <div class="ig-image">📷</div>
+            <div class="ig-actions"><span>♡</span><span>💬</span><span>➤</span></div>
+            <div class="ig-caption-area">
+              <span class="ig-user-inline">username</span>
+              <span class="ig-caption-text" id="previewText">Your caption preview...</span>
+              <div class="ig-hashtags" id="previewHash"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Instagram Caption Tips</h2>
+      <p>Great captions boost engagement. Use line breaks to separate ideas, add a call-to-action, and place hashtags below the fold using spacers. Instagram allows up to 2,200 characters and 30 hashtags per post.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sidebar-tools').innerHTML=renderSidebarTools('instagram-caption');
+  document.getElementById('related-grid').innerHTML=renderRelatedTools('instagram-caption','social');
+  updatePreview();
+});
+function updatePreview(){
+  const cap=document.getElementById('capInput').value;
+  const hash=document.getElementById('hashInput').value.trim();
+  document.getElementById('previewText').textContent=cap||'Your caption preview...';
+  document.getElementById('previewHash').textContent=hash;
+  const totalChars=cap.length+(hash?' '+hash:'').length;
+  const hashCount=(hash.match(/#\w+/g)||[]).length;
+  const words=cap.trim()?cap.trim().split(/\s+/).length:0;
+  document.getElementById('sChars').textContent=totalChars;
+  document.getElementById('sHash').textContent=hashCount;
+  document.getElementById('sWords').textContent=words;
+  document.getElementById('sChars').style.color=totalChars>2200?'#ef4444':'inherit';
+  document.getElementById('sHash').style.color=hashCount>30?'#ef4444':'inherit';
+}
+function insertBreaks(n){
+  const ta=document.getElementById('capInput');
+  const pos=ta.selectionStart;
+  const spacer='\n'.repeat(n).split('\n').join('\n');
+  ta.value=ta.value.slice(0,pos)+'\n'.repeat(n)+ta.value.slice(pos);
+  ta.selectionStart=ta.selectionEnd=pos+n;
+  ta.focus();
+  updatePreview();
+}
+function insertEmoji(e){
+  const ta=document.getElementById('capInput');
+  const pos=ta.selectionStart;
+  ta.value=ta.value.slice(0,pos)+e+ta.value.slice(pos);
+  ta.selectionStart=ta.selectionEnd=pos+e.length;
+  ta.focus();
+  updatePreview();
+}
+function copyCaption(){
+  const cap=document.getElementById('capInput').value;
+  const hash=document.getElementById('hashInput').value.trim();
+  const full=cap+(hash?'\n.\n.\n.\n.\n.\n'+hash:'');
+  navigator.clipboard.writeText(full);
+  showToast('Caption copied!');
+}
+function clearAll(){
+  document.getElementById('capInput').value='';
+  document.getElementById('hashInput').value='';
+  updatePreview();
+}
+const templates={
+  engage:"Double tap if you agree! 👇\n\nWhat do you think? Let me know in the comments below! 💬\n\nSave this for later ➡️",
+  promo:"🔥 LIMITED TIME OFFER 🔥\n\nDon't miss out on this amazing deal!\n\n👉 Link in bio\n\n⏰ Offer ends soon!",
+  story:"Here's the thing nobody tells you about...\n\nI used to think [old belief]. But then I realized something that changed everything.\n\n[Share your story]\n\nHas this happened to you? 👇",
+  quote:'"Your inspiring quote goes here."\n\n— Author Name ✨\n\nDo you agree? Tag someone who needs to hear this! 💭'
+};
+function applyTemplate(key){
+  document.getElementById('capInput').value=templates[key];
+  updatePreview();
+  showToast('Template applied!');
+}
+</script>
+</body>
+</html>

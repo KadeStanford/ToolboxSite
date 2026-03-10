@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy Generator — Free Template Builder | ToolNook</title>
+  <meta name="description" content="Generate a professional privacy policy for your website or app. Customizable template covering GDPR, CCPA, and common privacy requirements." />
+  <meta name="keywords" content="privacy policy generator, privacy policy template, GDPR privacy policy, CCPA compliance, website privacy" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/privacy-policy-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .gen-grid { display:grid; grid-template-columns:340px 1fr; gap:20px; }
+    @media(max-width:800px) { .gen-grid { grid-template-columns:1fr; } }
+    .form-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); padding:18px; max-height:700px; overflow-y:auto; }
+    .form-title { font-weight:700; font-size:.92rem; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .fg { margin-bottom:14px; }
+    .fg label { display:block; font-weight:600; font-size:.78rem; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.3px; }
+    .fg input, .fg textarea, .fg select { width:100%; padding:9px 12px; border:2px solid var(--border); border-radius:var(--radius); font-size:.84rem; }
+    .fg input:focus, .fg textarea:focus { border-color:var(--primary); outline:none; }
+    .fg textarea { min-height:50px; resize:vertical; }
+    .check-group { display:flex; flex-direction:column; gap:8px; }
+    .check-item { display:flex; align-items:center; gap:8px; font-size:.82rem; }
+    .check-item input[type=checkbox] { accent-color:var(--primary); flex-shrink:0; }
+    .section-divider { border:none; border-top:2px solid var(--border); margin:18px 0; }
+    .output-panel { position:relative; }
+    .output-area { width:100%; min-height:600px; padding:20px; border:2px solid var(--border); border-radius:var(--radius-lg); font-size:.84rem; line-height:1.7; resize:vertical; background:#fff; }
+    .output-area:focus { border-color:var(--primary); outline:none; }
+    .output-actions { display:flex; gap:8px; margin-bottom:10px; }
+    .disclaimer { background:#fef3c7; border:1px solid #fed7aa; border-radius:var(--radius); padding:12px; font-size:.78rem; color:#92400e; margin:14px 0; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#security-tools">Security</a> › Privacy Policy Generator</div>
+      <h1>Privacy Policy Generator</h1>
+      <p>Generate a privacy policy for your website or app. Customize it to match your data practices.</p>
+    </div>
+    <div class="tool-container">
+      <div class="disclaimer">⚠️ <strong>Disclaimer:</strong> This tool generates a template privacy policy for informational purposes only. It is not legal advice. Consult a qualified attorney to ensure full compliance with applicable laws.</div>
+
+      <div class="gen-grid">
+        <div class="form-panel">
+          <div class="form-title">⚙️ Configuration</div>
+          <div class="fg"><label>Website / App Name *</label><input id="p-name" placeholder="My Website" oninput="generate()"></div>
+          <div class="fg"><label>Website URL *</label><input id="p-url" placeholder="https://example.com" oninput="generate()"></div>
+          <div class="fg"><label>Company / Owner Name</label><input id="p-company" placeholder="Your Company Inc." oninput="generate()"></div>
+          <div class="fg"><label>Contact Email *</label><input id="p-email" placeholder="privacy@example.com" oninput="generate()"></div>
+          <div class="fg"><label>Country</label><input id="p-country" placeholder="United States" oninput="generate()"></div>
+          <div class="fg"><label>Effective Date</label><input type="date" id="p-date" oninput="generate()"></div>
+
+          <hr class="section-divider">
+          <div class="fg">
+            <label>Data Collected</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" id="d-personal" checked onchange="generate()">Personal info (name, email)</label>
+              <label class="check-item"><input type="checkbox" id="d-usage" checked onchange="generate()">Usage data (pages visited, time)</label>
+              <label class="check-item"><input type="checkbox" id="d-cookies" checked onchange="generate()">Cookies & tracking</label>
+              <label class="check-item"><input type="checkbox" id="d-location" onchange="generate()">Location data</label>
+              <label class="check-item"><input type="checkbox" id="d-payment" onchange="generate()">Payment information</label>
+              <label class="check-item"><input type="checkbox" id="d-device" onchange="generate()">Device information</label>
+              <label class="check-item"><input type="checkbox" id="d-social" onchange="generate()">Social media data</label>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+          <div class="fg">
+            <label>Third-Party Services</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" id="t-analytics" checked onchange="generate()">Google Analytics</label>
+              <label class="check-item"><input type="checkbox" id="t-ads" onchange="generate()">Advertising (Google Ads, etc.)</label>
+              <label class="check-item"><input type="checkbox" id="t-payment" onchange="generate()">Payment processors (Stripe, PayPal)</label>
+              <label class="check-item"><input type="checkbox" id="t-social" onchange="generate()">Social media plugins</label>
+              <label class="check-item"><input type="checkbox" id="t-email" onchange="generate()">Email marketing (Mailchimp, etc.)</label>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+          <div class="fg">
+            <label>Compliance</label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" id="c-gdpr" checked onchange="generate()">GDPR (EU)</label>
+              <label class="check-item"><input type="checkbox" id="c-ccpa" onchange="generate()">CCPA (California)</label>
+              <label class="check-item"><input type="checkbox" id="c-children" onchange="generate()">Children's privacy (COPPA)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="output-panel">
+          <div class="output-actions">
+            <button class="btn btn-primary" onclick="copyPolicy()">📋 Copy</button>
+            <button class="btn btn-secondary" onclick="downloadPolicy()">⬇ Download .txt</button>
+            <button class="btn btn-secondary" onclick="downloadHTML()">⬇ Download .html</button>
+          </div>
+          <textarea class="output-area" id="output" readonly></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Why You Need a Privacy Policy</h2>
+      <p>Privacy policies are legally required in most jurisdictions if you collect any personal data from visitors. They explain what data you collect, how you use it, and users' rights regarding their data.</p>
+      <h3>Key Regulations</h3>
+      <ul>
+        <li><strong>GDPR</strong> — Required for EU visitors. Must explain legal basis for processing, data retention, and user rights.</li>
+        <li><strong>CCPA</strong> — California residents have the right to know, delete, and opt-out of sale of personal information.</li>
+        <li><strong>COPPA</strong> — Special protections for children under 13 in the US.</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('privacy-policy-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('privacy-policy-generator','security');
+  document.getElementById('p-date').value = new Date().toISOString().split('T')[0];
+  generate();
+});
+
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function c(id) { return document.getElementById(id)?.checked; }
+
+function generate() {
+  const name = v('p-name') || '[Your Website]';
+  const url = v('p-url') || '[Your URL]';
+  const company = v('p-company') || name;
+  const email = v('p-email') || '[your-email@example.com]';
+  const country = v('p-country') || '[Your Country]';
+  const date = v('p-date') ? new Date(v('p-date')).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : '[Date]';
+
+  let policy = `PRIVACY POLICY\n\nLast updated: ${date}\n\n`;
+  policy += `${company} ("we", "us", or "our") operates ${name} (${url}). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.\n\n`;
+  policy += `Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.\n\n`;
+
+  // Information We Collect
+  policy += `INFORMATION WE COLLECT\n\n`;
+  if (c('d-personal')) policy += `Personal Data: We may collect personally identifiable information such as your name, email address, and other contact details that you voluntarily provide to us when you register, make a purchase, or contact us.\n\n`;
+  if (c('d-usage')) policy += `Usage Data: We automatically collect certain information when you visit our website, including your IP address, browser type, operating system, referring URLs, pages viewed, time spent on pages, and other diagnostic data.\n\n`;
+  if (c('d-cookies')) policy += `Cookies and Tracking Technologies: We use cookies, web beacons, and similar tracking technologies to track activity on our website and hold certain information. Cookies are small data files placed on your device. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.\n\n`;
+  if (c('d-location')) policy += `Location Data: We may collect and process information about your approximate location based on your IP address. You may disable location services in your device settings.\n\n`;
+  if (c('d-payment')) policy += `Payment Data: We may collect data necessary to process your payment, such as your payment instrument number and the security code associated with your payment instrument. All payment data is stored by our payment processor, and you should review their privacy policies.\n\n`;
+  if (c('d-device')) policy += `Device Data: We may collect information about your device, including device type, unique device identifiers, operating system, and mobile network information.\n\n`;
+  if (c('d-social')) policy += `Social Media Data: If you connect your social media accounts, we may receive your profile information including your name, email address, and profile picture as permitted by the social media platform.\n\n`;
+
+  // How We Use
+  policy += `HOW WE USE YOUR INFORMATION\n\nWe use the information we collect to:\n`;
+  policy += `• Provide, operate, and maintain our website\n`;
+  policy += `• Improve, personalize, and expand our website\n`;
+  policy += `• Understand and analyze how you use our website\n`;
+  policy += `• Develop new products, services, features, and functionality\n`;
+  policy += `• Communicate with you for customer service, updates, and marketing purposes\n`;
+  policy += `• Process transactions and send related information\n`;
+  policy += `• Find and prevent fraud\n\n`;
+
+  // Third-party
+  if (c('t-analytics') || c('t-ads') || c('t-payment') || c('t-social') || c('t-email')) {
+    policy += `THIRD-PARTY SERVICES\n\nWe may employ third-party companies and individuals to facilitate our service:\n\n`;
+    if (c('t-analytics')) policy += `• Analytics: We use Google Analytics to monitor and analyze the use of our website. Google Analytics is a web analytics service that tracks and reports website traffic. For more information on Google's privacy practices, visit their Privacy & Terms page.\n\n`;
+    if (c('t-ads')) policy += `• Advertising: We may use third-party advertising companies to serve ads when you visit our website. These companies may use information about your visits to provide relevant advertisements.\n\n`;
+    if (c('t-payment')) policy += `• Payment Processing: We use third-party payment processors (such as Stripe and PayPal) to process payments. We do not store your credit card details. Payment processing is subject to the terms and privacy policies of the payment processor.\n\n`;
+    if (c('t-social')) policy += `• Social Media: Our website may include social media features. These features may collect your IP address and which page you are visiting. Social media features are governed by the respective platform's privacy policy.\n\n`;
+    if (c('t-email')) policy += `• Email Marketing: We may use third-party email marketing services to send newsletters and promotional communications. You can unsubscribe from our mailing list at any time.\n\n`;
+  }
+
+  // Data Retention
+  policy += `DATA RETENTION\n\nWe will retain your personal data only for as long as is necessary for the purposes set out in this privacy policy. We will retain and use your data to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our policies.\n\n`;
+
+  // Security
+  policy += `DATA SECURITY\n\nThe security of your data is important to us. We use commercially reasonable measures to protect your personal data. However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.\n\n`;
+
+  // GDPR
+  if (c('c-gdpr')) {
+    policy += `YOUR RIGHTS UNDER GDPR\n\nIf you are a resident of the European Economic Area (EEA), you have certain data protection rights:\n`;
+    policy += `• The right to access, update, or delete your personal information\n`;
+    policy += `• The right of rectification\n`;
+    policy += `• The right to object to processing\n`;
+    policy += `• The right of restriction\n`;
+    policy += `• The right to data portability\n`;
+    policy += `• The right to withdraw consent\n\n`;
+    policy += `To exercise these rights, please contact us at ${email}. We will respond to your request within 30 days.\n\n`;
+  }
+
+  // CCPA
+  if (c('c-ccpa')) {
+    policy += `YOUR RIGHTS UNDER CCPA\n\nIf you are a California resident, you have the right to:\n`;
+    policy += `• Request disclosure of collected personal information\n`;
+    policy += `• Request deletion of your personal information\n`;
+    policy += `• Opt-out of the sale of personal information\n`;
+    policy += `• Non-discrimination for exercising your rights\n\n`;
+    policy += `To exercise your California privacy rights, contact us at ${email}.\n\n`;
+  }
+
+  // Children
+  if (c('c-children')) {
+    policy += `CHILDREN'S PRIVACY\n\nOur website is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we discover that a child under 13 has provided us with personal information, we will delete it immediately. If you are a parent or guardian and believe your child has provided us with personal data, please contact us.\n\n`;
+  }
+
+  // Links
+  policy += `LINKS TO OTHER WEBSITES\n\nOur website may contain links to other websites that are not operated by us. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party sites or services.\n\n`;
+
+  // Changes
+  policy += `CHANGES TO THIS PRIVACY POLICY\n\nWe may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. Changes are effective when posted.\n\n`;
+
+  // Contact
+  policy += `CONTACT US\n\nIf you have any questions about this Privacy Policy, please contact us:\n\n`;
+  policy += `• By email: ${email}\n`;
+  policy += `• By visiting: ${url}\n`;
+  if (company !== name) policy += `• Company: ${company}\n`;
+  if (country) policy += `• Country: ${country}\n`;
+
+  document.getElementById('output').value = policy;
+}
+
+function copyPolicy() {
+  navigator.clipboard.writeText(document.getElementById('output').value);
+  showToast('Privacy policy copied!');
+}
+
+function downloadPolicy() {
+  const blob = new Blob([document.getElementById('output').value], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'privacy-policy.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function downloadHTML() {
+  const text = document.getElementById('output').value;
+  const paragraphs = text.split('\n\n').map(p => {
+    if (p === p.toUpperCase() && p.length < 60) return `<h2>${escapeHtml(p)}</h2>`;
+    return `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`;
+  }).join('\n');
+  const html = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>Privacy Policy</title>\n<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.7;color:#333}h2{margin-top:30px;color:#111}ul{padding-left:20px}</style>\n</head>\n<body>\n${paragraphs}\n</body>\n</html>`;
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'privacy-policy.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>

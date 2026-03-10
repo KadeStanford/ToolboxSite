@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schema Markup Generator — JSON-LD Structured Data | ToolNook</title>
+  <meta name="description" content="Generate valid JSON-LD Schema.org structured data markup for your website. Supports Article, FAQ, Product, LocalBusiness, and more." />
+  <meta name="keywords" content="schema generator, JSON-LD, structured data, schema.org, rich snippets, SEO markup" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/schema-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .schema-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    @media(max-width:800px) { .schema-grid { grid-template-columns:1fr; } }
+    .type-selector { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin:14px 0; }
+    .type-card { padding:12px; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; text-align:center; transition:all .2s; }
+    .type-card:hover { border-color:var(--primary); background:#eff6ff; }
+    .type-card.active { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .type-icon { font-size:1.3rem; margin-bottom:4px; }
+    .type-name { font-weight:700; font-size:.78rem; }
+    .fields-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); padding:18px; }
+    .fields-title { font-weight:700; font-size:.92rem; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .field-group { margin-bottom:14px; }
+    .field-group label { display:block; font-weight:600; font-size:.78rem; color:var(--text-muted); margin-bottom:5px; text-transform:uppercase; letter-spacing:.3px; }
+    .field-group label .req { color:#ef4444; }
+    .field-group input, .field-group textarea, .field-group select { width:100%; padding:9px 12px; border:2px solid var(--border); border-radius:var(--radius); font-size:.84rem; }
+    .field-group input:focus, .field-group textarea:focus { border-color:var(--primary); outline:none; }
+    .field-group textarea { min-height:60px; resize:vertical; }
+    .output-panel { position:relative; }
+    .output-area { width:100%; min-height:340px; font-family:'Courier New',monospace; font-size:.8rem; background:#0f172a; color:#a5f3fc; border:none; border-radius:var(--radius-lg); padding:16px; resize:vertical; }
+    .output-actions { position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+    .faq-list { display:flex; flex-direction:column; gap:8px; }
+    .faq-item { background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:12px; }
+    .faq-item input, .faq-item textarea { width:100%; margin-top:6px; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius); font-size:.82rem; }
+    .faq-item textarea { min-height:40px; }
+    .faq-head { display:flex; justify-content:space-between; align-items:center; }
+    .faq-label { font-weight:600; font-size:.74rem; color:var(--text-muted); }
+    .faq-del { background:none; border:none; cursor:pointer; color:#dc2626; }
+    .add-btn { font-size:.78rem; color:var(--primary); cursor:pointer; background:none; border:none; font-weight:600; margin-top:6px; }
+    .rating-row { display:flex; gap:8px; }
+    .rating-row input { flex:1; }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#seo-tools">SEO</a> › Schema Generator</div>
+      <h1>Schema Markup Generator</h1>
+      <p>Generate valid JSON-LD structured data to improve your search engine rich snippets.</p>
+    </div>
+    <div class="tool-container">
+      <div class="section-title" style="font-weight:700;margin-bottom:8px;">Select Schema Type</div>
+      <div class="type-selector" id="types"></div>
+
+      <div class="schema-grid">
+        <div class="fields-panel" id="fields-panel">
+          <div class="fields-title" id="fields-title">📝 Fill in the fields</div>
+          <div id="fields"></div>
+        </div>
+        <div class="output-panel">
+          <div class="output-actions">
+            <button class="btn btn-primary" onclick="copyOutput()">📋 Copy</button>
+          </div>
+          <textarea class="output-area" id="output" readonly></textarea>
+          <button class="btn btn-secondary" onclick="validateSchema()" style="margin-top:8px;width:100%">✓ Validate JSON-LD</button>
+          <div id="validate-msg" style="margin-top:8px;font-size:.82rem;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>What is Schema Markup?</h2>
+      <p>Schema markup (structured data) is code you add to your pages to help search engines understand your content. It can lead to rich snippets in search results — star ratings, FAQ dropdowns, product prices, and more.</p>
+      <h3>Supported Schema Types</h3>
+      <ul>
+        <li><strong>Article</strong> — Blog posts, news articles</li>
+        <li><strong>FAQ</strong> — Frequently asked questions (Google FAQ rich results)</li>
+        <li><strong>Product</strong> — Products with pricing and reviews</li>
+        <li><strong>Local Business</strong> — Physical business locations</li>
+        <li><strong>Organization</strong> — Companies and organizations</li>
+        <li><strong>Person</strong> — Individual profiles</li>
+        <li><strong>Event</strong> — Events with dates and venues</li>
+        <li><strong>Recipe</strong> — Cooking recipes</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('schema-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('schema-generator','seo');
+  renderTypes();
+  selectType('Article');
+});
+
+const TYPES = [
+  { id:'Article', icon:'📰', name:'Article' },
+  { id:'FAQPage', icon:'❓', name:'FAQ Page' },
+  { id:'Product', icon:'🛍️', name:'Product' },
+  { id:'LocalBusiness', icon:'🏪', name:'Local Business' },
+  { id:'Organization', icon:'🏢', name:'Organization' },
+  { id:'Person', icon:'👤', name:'Person' },
+  { id:'Event', icon:'📅', name:'Event' },
+  { id:'Recipe', icon:'🍳', name:'Recipe' },
+];
+
+let currentType = 'Article';
+let faqItems = [{q:'',a:''}];
+
+function renderTypes() {
+  document.getElementById('types').innerHTML = TYPES.map(t =>
+    `<div class="type-card${currentType===t.id?' active':''}" onclick="selectType('${t.id}')"><div class="type-icon">${t.icon}</div><div class="type-name">${t.name}</div></div>`
+  ).join('');
+}
+
+function selectType(type) {
+  currentType = type;
+  renderTypes();
+  renderFields();
+}
+
+function f(label, id, type='text', req=false, ph='') {
+  const reqSpan = req ? ' <span class="req">*</span>' : '';
+  if (type === 'textarea') return `<div class="field-group"><label>${label}${reqSpan}</label><textarea id="${id}" placeholder="${ph}" oninput="generate()"></textarea></div>`;
+  return `<div class="field-group"><label>${label}${reqSpan}</label><input type="${type}" id="${id}" placeholder="${ph}" oninput="generate()"></div>`;
+}
+
+function renderFields() {
+  const title = document.getElementById('fields-title');
+  const fields = document.getElementById('fields');
+  title.textContent = `📝 ${currentType} Fields`;
+  
+  let html = '';
+  switch(currentType) {
+    case 'Article':
+      html = f('Headline','s-headline','text',true,'Your article title') +
+             f('Author Name','s-author','text',true,'John Doe') +
+             f('Publisher Name','s-publisher','text',true,'My Website') +
+             f('Publisher Logo URL','s-pub-logo','text',false,'https://...') +
+             f('Date Published','s-published','date',true) +
+             f('Date Modified','s-modified','date') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Description','s-description','textarea',false,'Brief description');
+      break;
+    case 'FAQPage':
+      html = `<div class="field-group"><label>FAQ Items</label><div class="faq-list" id="faq-list"></div><button class="add-btn" onclick="faqItems.push({q:'',a:''});renderFAQ()">+ Add Question</button></div>`;
+      break;
+    case 'Product':
+      html = f('Product Name','s-name','text',true,'Widget Pro') +
+             f('Description','s-description','textarea',true,'A great widget') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Brand','s-brand','text',false,'Acme') +
+             f('SKU','s-sku','text',false,'WGT-001') +
+             f('Price','s-price','number',true,'29.99') +
+             f('Currency','s-currency','text',true,'USD') +
+             f('Availability','s-avail','text',false,'InStock') +
+             `<div class="field-group"><label>Rating</label><div class="rating-row"><input id="s-rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" oninput="generate()"><input id="s-reviews" type="number" min="0" placeholder="Reviews count" oninput="generate()"></div></div>`;
+      break;
+    case 'LocalBusiness':
+      html = f('Business Name','s-name','text',true,'Coffee Shop') +
+             f('Description','s-description','textarea',false,'A cozy place') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Phone','s-phone','tel',false,'+1-555-0100') +
+             f('Street Address','s-street','text',false,'123 Main St') +
+             f('City','s-city','text',false,'Anytown') +
+             f('State','s-state','text',false,'CA') +
+             f('ZIP','s-zip','text',false,'90210') +
+             f('Country','s-country','text',false,'US') +
+             f('Price Range','s-price','text',false,'$$');
+      break;
+    case 'Organization':
+      html = f('Organization Name','s-name','text',true,'Acme Inc') +
+             f('URL','s-url','text',true,'https://acme.com') +
+             f('Logo URL','s-logo','text',false,'https://...') +
+             f('Description','s-description','textarea',false,'About us') +
+             f('Phone','s-phone','tel',false,'+1-555-0100') +
+             f('Email','s-email','email',false,'info@acme.com');
+      break;
+    case 'Person':
+      html = f('Name','s-name','text',true,'Jane Doe') +
+             f('Job Title','s-job','text',false,'Software Engineer') +
+             f('URL','s-url','text',false,'https://janedoe.com') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Email','s-email','email',false,'jane@example.com') +
+             f('Works For','s-org','text',false,'Acme Inc');
+      break;
+    case 'Event':
+      html = f('Event Name','s-name','text',true,'Tech Conference 2024') +
+             f('Start Date','s-start','datetime-local',true) +
+             f('End Date','s-end','datetime-local') +
+             f('Description','s-description','textarea',false,'Join us for...') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Venue Name','s-venue','text',false,'Convention Center') +
+             f('Street Address','s-street','text',false,'123 Main St') +
+             f('City','s-city','text',false,'Anytown') +
+             f('Country','s-country','text',false,'US') +
+             f('Ticket URL','s-ticket','text',false,'https://...') +
+             f('Ticket Price','s-price','number',false,'49.99') +
+             f('Currency','s-currency','text',false,'USD');
+      break;
+    case 'Recipe':
+      html = f('Recipe Name','s-name','text',true,'Chocolate Cake') +
+             f('Description','s-description','textarea',true,'Moist and rich') +
+             f('Image URL','s-image','text',false,'https://...') +
+             f('Author','s-author','text',false,'Chef John') +
+             f('Prep Time (minutes)','s-prep','number',false,'15') +
+             f('Cook Time (minutes)','s-cook','number',false,'30') +
+             f('Servings','s-servings','number',false,'8') +
+             f('Cuisine','s-cuisine','text',false,'American') +
+             f('Category','s-category','text',false,'Dessert');
+      break;
+  }
+  fields.innerHTML = html;
+  if (currentType === 'FAQPage') renderFAQ();
+  generate();
+}
+
+function renderFAQ() {
+  const list = document.getElementById('faq-list');
+  if (!list) return;
+  list.innerHTML = faqItems.map((item, i) => `
+    <div class="faq-item">
+      <div class="faq-head"><span class="faq-label">Q${i+1}</span>${faqItems.length>1?`<button class="faq-del" onclick="faqItems.splice(${i},1);renderFAQ()">✕</button>`:''}</div>
+      <input placeholder="Question" value="${escapeHtml(item.q)}" onchange="faqItems[${i}].q=this.value;generate()">
+      <textarea placeholder="Answer" onchange="faqItems[${i}].a=this.value;generate()">${escapeHtml(item.a)}</textarea>
+    </div>`).join('');
+  generate();
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function generate() {
+  let schema = {};
+  switch(currentType) {
+    case 'Article':
+      schema = { '@context':'https://schema.org', '@type':'Article' };
+      if (v('s-headline')) schema.headline = v('s-headline');
+      if (v('s-author')) schema.author = { '@type':'Person', name: v('s-author') };
+      if (v('s-publisher')) { schema.publisher = { '@type':'Organization', name: v('s-publisher') }; if (v('s-pub-logo')) schema.publisher.logo = { '@type':'ImageObject', url: v('s-pub-logo') }; }
+      if (v('s-published')) schema.datePublished = v('s-published');
+      if (v('s-modified')) schema.dateModified = v('s-modified');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-description')) schema.description = v('s-description');
+      break;
+    case 'FAQPage':
+      schema = { '@context':'https://schema.org', '@type':'FAQPage', mainEntity: faqItems.filter(i=>i.q||i.a).map(i=>({ '@type':'Question', name:i.q, acceptedAnswer:{ '@type':'Answer', text:i.a } })) };
+      break;
+    case 'Product':
+      schema = { '@context':'https://schema.org', '@type':'Product' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-description')) schema.description = v('s-description');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-brand')) schema.brand = { '@type':'Brand', name: v('s-brand') };
+      if (v('s-sku')) schema.sku = v('s-sku');
+      if (v('s-price')) schema.offers = { '@type':'Offer', price: v('s-price'), priceCurrency: v('s-currency') || 'USD', availability: v('s-avail') ? `https://schema.org/${v('s-avail')}` : undefined };
+      if (v('s-rating')) schema.aggregateRating = { '@type':'AggregateRating', ratingValue: v('s-rating'), reviewCount: v('s-reviews') || '1' };
+      break;
+    case 'LocalBusiness':
+      schema = { '@context':'https://schema.org', '@type':'LocalBusiness' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-description')) schema.description = v('s-description');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-phone')) schema.telephone = v('s-phone');
+      if (v('s-street')) schema.address = { '@type':'PostalAddress', streetAddress: v('s-street'), addressLocality: v('s-city'), addressRegion: v('s-state'), postalCode: v('s-zip'), addressCountry: v('s-country') };
+      if (v('s-price')) schema.priceRange = v('s-price');
+      break;
+    case 'Organization':
+      schema = { '@context':'https://schema.org', '@type':'Organization' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-url')) schema.url = v('s-url');
+      if (v('s-logo')) schema.logo = v('s-logo');
+      if (v('s-description')) schema.description = v('s-description');
+      if (v('s-phone')) schema.telephone = v('s-phone');
+      if (v('s-email')) schema.email = v('s-email');
+      break;
+    case 'Person':
+      schema = { '@context':'https://schema.org', '@type':'Person' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-job')) schema.jobTitle = v('s-job');
+      if (v('s-url')) schema.url = v('s-url');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-email')) schema.email = v('s-email');
+      if (v('s-org')) schema.worksFor = { '@type':'Organization', name: v('s-org') };
+      break;
+    case 'Event':
+      schema = { '@context':'https://schema.org', '@type':'Event' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-start')) schema.startDate = v('s-start');
+      if (v('s-end')) schema.endDate = v('s-end');
+      if (v('s-description')) schema.description = v('s-description');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-venue')) { schema.location = { '@type':'Place', name: v('s-venue') }; if (v('s-street')) schema.location.address = { '@type':'PostalAddress', streetAddress: v('s-street'), addressLocality: v('s-city'), addressCountry: v('s-country') }; }
+      if (v('s-ticket')) schema.offers = { '@type':'Offer', url: v('s-ticket'), price: v('s-price'), priceCurrency: v('s-currency') || 'USD' };
+      break;
+    case 'Recipe':
+      schema = { '@context':'https://schema.org', '@type':'Recipe' };
+      if (v('s-name')) schema.name = v('s-name');
+      if (v('s-description')) schema.description = v('s-description');
+      if (v('s-image')) schema.image = v('s-image');
+      if (v('s-author')) schema.author = { '@type':'Person', name: v('s-author') };
+      if (v('s-prep')) schema.prepTime = `PT${v('s-prep')}M`;
+      if (v('s-cook')) schema.cookTime = `PT${v('s-cook')}M`;
+      if (v('s-servings')) schema.recipeYield = v('s-servings');
+      if (v('s-cuisine')) schema.recipeCuisine = v('s-cuisine');
+      if (v('s-category')) schema.recipeCategory = v('s-category');
+      break;
+  }
+
+  // Remove undefined values
+  const clean = JSON.parse(JSON.stringify(schema));
+  const code = `<script type="application/ld+json">\n${JSON.stringify(clean, null, 2)}\n<\/script>`;
+  document.getElementById('output').value = code;
+}
+
+function copyOutput() {
+  navigator.clipboard.writeText(document.getElementById('output').value);
+  showToast('Schema markup copied!');
+}
+
+function validateSchema() {
+  const val = document.getElementById('output').value;
+  const msg = document.getElementById('validate-msg');
+  try {
+    const match = val.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No JSON found');
+    const obj = JSON.parse(match[0]);
+    if (!obj['@context'] || !obj['@type']) throw new Error('Missing @context or @type');
+    msg.innerHTML = '<span style="color:#15803d;font-weight:600">✓ Valid JSON-LD structure. The markup is syntactically correct.</span>';
+  } catch(e) {
+    msg.innerHTML = `<span style="color:#dc2626;font-weight:600">✕ Invalid: ${escapeHtml(e.message)}</span>`;
+  }
+}
+</script>
+</body>
+</html>

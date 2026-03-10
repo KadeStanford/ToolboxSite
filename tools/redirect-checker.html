@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirect Checker — Trace URL Redirect Chains | ToolNook</title>
+  <meta name="description" content="Check URL redirects and trace complete redirect chains. See status codes, final destination, and redirect types." />
+  <meta name="keywords" content="redirect checker, URL redirect, 301 redirect, 302 redirect, redirect chain, HTTP redirect" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/redirect-checker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .url-bar { display:flex; gap:8px; margin-bottom:14px; }
+    .url-bar input { flex:1; padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:.92rem; }
+    .url-bar input:focus { border-color:var(--primary); outline:none; }
+    @media(max-width:600px) { .url-bar { flex-direction:column; } }
+    .info-banner { padding:14px 18px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:var(--radius); margin-bottom:16px; display:flex; align-items:flex-start; gap:10px; }
+    .info-banner .i { font-size:1.1rem; flex-shrink:0; }
+    .info-banner p { margin:0; font-size:.82rem; color:#1e40af; line-height:1.5; }
+    .chain-wrap { margin:16px 0; }
+    .chain-step { display:flex; align-items:stretch; gap:0; margin-bottom:0; }
+    .step-line { display:flex; flex-direction:column; align-items:center; width:40px; flex-shrink:0; }
+    .step-dot { width:16px; height:16px; border-radius:50%; flex-shrink:0; position:relative; z-index:1; }
+    .step-connector { width:2px; flex:1; }
+    .dot-301 { background:#3b82f6; }
+    .dot-302 { background:#f59e0b; }
+    .dot-200 { background:#10b981; }
+    .dot-err { background:#ef4444; }
+    .conn-301 { background:#93c5fd; }
+    .conn-302 { background:#fcd34d; }
+    .conn-200 { background:#6ee7b7; }
+    .conn-err { background:#fca5a5; }
+    .step-card { flex:1; background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-bottom:10px; }
+    .step-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+    .step-badge { padding:3px 10px; border-radius:12px; font-size:.7rem; font-weight:800; }
+    .badge-301 { background:#dbeafe; color:#1d4ed8; }
+    .badge-302 { background:#fef3c7; color:#92400e; }
+    .badge-200 { background:#dcfce7; color:#15803d; }
+    .badge-err { background:#fee2e2; color:#dc2626; }
+    .step-label { font-size:.72rem; font-weight:600; color:var(--text-muted); }
+    .step-url { font-size:.84rem; word-break:break-all; font-family:'Courier New',monospace; }
+    .step-meta { font-size:.72rem; color:var(--text-muted); margin-top:4px; }
+    .sim-section { background:#f8fafc; border:2px solid var(--border); border-radius:var(--radius-lg); padding:18px; margin-top:14px; }
+    .sim-title { font-weight:700; font-size:.88rem; margin-bottom:10px; }
+    .sim-row { display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap; align-items:center; }
+    .sim-row input { flex:1; min-width:200px; padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius); font-size:.82rem; }
+    .sim-row select { padding:8px 12px; border:2px solid var(--border); border-radius:var(--radius); font-size:.82rem; }
+    .sim-row .rm-btn { background:none; border:none; cursor:pointer; color:#dc2626; font-size:.9rem; }
+    .sim-chain { margin:14px 0; }
+    .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin:14px 0; }
+    .summary-item { background:#fff; border:2px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
+    .summary-val { font-size:1.3rem; font-weight:800; }
+    .summary-label { font-size:.7rem; color:var(--text-muted); font-weight:600; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#seo-tools">SEO</a> › Redirect Checker</div>
+      <h1>Redirect Checker</h1>
+      <p>Simulate and visualize URL redirect chains. Build chains to see how redirects flow.</p>
+    </div>
+    <div class="tool-container">
+      <div class="info-banner">
+        <span class="i">💡</span>
+        <p>Due to browser security (CORS), we can't trace live redirects from the browser. Instead, use the <strong>Redirect Chain Simulator</strong> below to plan and visualize your redirect chains, or build chains by entering known redirect hops.</p>
+      </div>
+
+      <div class="sim-section">
+        <div class="sim-title">🔗 Redirect Chain Builder</div>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Add URLs in sequence to see how your redirect chain works.</p>
+        <div id="sim-steps"></div>
+        <button class="btn btn-secondary" onclick="addStep()" style="margin-top:8px">+ Add Redirect Step</button>
+        <div style="margin-top:12px">
+          <button class="btn btn-primary" onclick="buildChain()">🔍 Visualize Chain</button>
+          <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+        </div>
+      </div>
+
+      <div id="results"></div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Understanding HTTP Redirects</h2>
+      <p>Redirects tell browsers and search engines that a page has moved. Using the right redirect type is important for both UX and SEO.</p>
+      <h3>Common Redirect Types</h3>
+      <ul>
+        <li><strong>301 Moved Permanently</strong> — Page has permanently moved. Passes ~90-99% of link equity.</li>
+        <li><strong>302 Found (Temporary)</strong> — Temporary redirect. Search engines may not pass link equity.</li>
+        <li><strong>307 Temporary Redirect</strong> — Like 302 but preserves the HTTP method.</li>
+        <li><strong>308 Permanent Redirect</strong> — Like 301 but preserves the HTTP method.</li>
+        <li><strong>Meta Refresh</strong> — HTML-based redirect (slow, not recommended).</li>
+      </ul>
+      <h3>Redirect Best Practices</h3>
+      <ul>
+        <li>Keep redirect chains short (ideally 1 hop)</li>
+        <li>Use 301 for permanent moves, 302 for temporary</li>
+        <li>Avoid redirect loops</li>
+        <li>Update internal links to point to final URLs</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('redirect-checker');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('redirect-checker','seo');
+  addStep();
+  addStep();
+});
+
+let steps = [];
+
+function addStep() {
+  steps.push({ url: '', code: '301' });
+  renderSteps();
+}
+
+function renderSteps() {
+  const c = document.getElementById('sim-steps');
+  c.innerHTML = steps.map((s, i) => `
+    <div class="sim-row">
+      <span style="font-weight:700;font-size:.78rem;min-width:20px;color:var(--text-muted)">${i+1}.</span>
+      <input value="${escapeHtml(s.url)}" placeholder="${i===0?'Source URL (e.g. https://old-site.com/page)':i===steps.length-1?'Final destination URL':'Intermediate URL'}" onchange="steps[${i}].url=this.value">
+      ${i < steps.length-1 ? `
+        <select onchange="steps[${i}].code=this.value">
+          <option value="301" ${s.code==='301'?'selected':''}>301</option>
+          <option value="302" ${s.code==='302'?'selected':''}>302</option>
+          <option value="307" ${s.code==='307'?'selected':''}>307</option>
+          <option value="308" ${s.code==='308'?'selected':''}>308</option>
+        </select>` : `<span style="font-size:.72rem;font-weight:600;color:#10b981;min-width:40px">FINAL</span>`}
+      ${steps.length > 2 ? `<button class="rm-btn" onclick="steps.splice(${i},1);renderSteps()">✕</button>` : ''}
+    </div>`).join('');
+}
+
+function buildChain() {
+  const valid = steps.filter(s => s.url.trim());
+  if (valid.length < 2) return showToast('Add at least 2 URLs to build a chain');
+
+  const hops = valid.length - 1;
+  const has301 = valid.some((s,i) => i < valid.length-1 && s.code === '301');
+  const has302 = valid.some((s,i) => i < valid.length-1 && (s.code === '302' || s.code === '307'));
+
+  // Check for loops
+  const urls = valid.map(v => v.url.trim().toLowerCase());
+  const hasLoop = urls.length !== new Set(urls).size;
+
+  let chain = '';
+  valid.forEach((s, i) => {
+    const isLast = i === valid.length - 1;
+    const code = isLast ? '200' : s.code;
+    const codeClass = code === '301' || code === '308' ? '301' : code === '302' || code === '307' ? '302' : code === '200' ? '200' : 'err';
+    const label = isLast ? 'Final Destination' : i === 0 ? 'Origin' : `Hop ${i}`;
+    const codeLabel = isLast ? '200 OK' : `${code} ${code==='301'?'Permanent':code==='302'?'Temporary':code==='307'?'Temporary':code==='308'?'Permanent':''}`;
+
+    chain += `
+      <div class="chain-step">
+        <div class="step-line">
+          <div class="step-dot dot-${codeClass}"></div>
+          ${!isLast ? `<div class="step-connector conn-${codeClass}"></div>` : ''}
+        </div>
+        <div class="step-card">
+          <div class="step-head">
+            <span class="step-badge badge-${codeClass}">${codeLabel}</span>
+            <span class="step-label">${label}</span>
+          </div>
+          <div class="step-url">${escapeHtml(s.url)}</div>
+          ${!isLast ? `<div class="step-meta">→ Redirects to next URL</div>` : `<div class="step-meta">✓ Page loads here</div>`}
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('results').innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-item"><div class="summary-val" style="color:#3b82f6">${hops}</div><div class="summary-label">REDIRECT HOPS</div></div>
+      <div class="summary-item"><div class="summary-val" style="color:${hops > 2 ? '#ef4444' : '#10b981'}">${hops > 2 ? 'Long' : hops > 1 ? 'OK' : 'Good'}</div><div class="summary-label">CHAIN LENGTH</div></div>
+      <div class="summary-item"><div class="summary-val" style="color:${hasLoop ? '#ef4444' : '#10b981'}">${hasLoop ? '⚠ Yes' : '✓ No'}</div><div class="summary-label">LOOP DETECTED</div></div>
+      <div class="summary-item"><div class="summary-val">~${hops * 50}-${hops * 200}ms</div><div class="summary-label">EST. DELAY</div></div>
+    </div>
+    ${hasLoop ? '<div class="info-banner" style="background:#fef2f2;border-color:#fecaca"><span class="i">⚠️</span><p style="color:#dc2626">Redirect loop detected! This will cause an infinite loop and the page will never load.</p></div>' : ''}
+    ${hops > 2 ? '<div class="info-banner" style="background:#fffbeb;border-color:#fed7aa"><span class="i">⚠️</span><p style="color:#92400e">Long redirect chain detected. Google typically follows up to 5 hops but recommends keeping chains as short as possible.</p></div>' : ''}
+    <div class="chain-wrap">${chain}</div>`;
+}
+
+function loadExample() {
+  steps = [
+    { url: 'http://example.com/old-page', code: '301' },
+    { url: 'https://example.com/old-page', code: '301' },
+    { url: 'https://www.example.com/old-page', code: '301' },
+    { url: 'https://www.example.com/new-page', code: '200' }
+  ];
+  renderSteps();
+  buildChain();
+}
+</script>
+</body>
+</html>
