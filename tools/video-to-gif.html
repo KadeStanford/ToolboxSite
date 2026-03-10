@@ -88,8 +88,8 @@
         <p><strong>Drop a video file here</strong></p>
         <p>or</p>
         <span class="btn-upload">Choose File</span>
-        <p style="margin-top:8px;font-size:.75rem;">MP4, WebM, MOV, AVI, MKV — max 500 MB</p>
-        <input type="file" id="fileInput" accept="video/*" hidden />
+        <p style="margin-top:8px;font-size:.75rem;">MP4, WebM, MOV, AVI, MKV, M4V, OGV, FLV, WMV, 3GP, TS — max 500 MB</p>
+        <input type="file" id="fileInput" accept="video/*,.mkv,.avi,.mov,.m4v,.ogv,.flv,.wmv,.3gp,.ts" hidden />
       </div>
 
       <!-- Editor (shown after file loaded) -->
@@ -331,7 +331,8 @@
   }
 
   /* ── Drop zone ── */
-  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', (e) => { if (e.target !== fileInput) fileInput.click(); });
+  fileInput.addEventListener('click', (e) => e.stopPropagation());
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -341,7 +342,7 @@
   });
 
   function handleFile(file) {
-    if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|m4v|ogv)$/i)) {
+    if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|avi|mkv|m4v|ogv|flv|wmv|3gp|ts|mts|m2ts|mpg|mpeg)$/i)) {
       alert('Please select a video file.'); return;
     }
     if (file.size > 500 * 1024 * 1024) { alert('File too large (max 500 MB).'); return; }
