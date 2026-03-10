@@ -18,7 +18,8 @@
     .detail-chip{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;}
     .detail-chip dt{font-weight:700;font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;}
     .detail-chip dd{margin:2px 0 0;font-weight:600;font-size:.88rem;word-break:break-all;}
-    .kb-visual{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:20px;}
+    .kb-visual{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:20px;}
+    .kb-row{display:flex;gap:4px;justify-content:center;}
     .kb-key{min-width:36px;height:36px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:#fff;transition:.15s;flex-shrink:0;}
     .kb-key.pressed{border-color:var(--primary);background:#eef2ff;color:var(--primary);}
     .kb-key.active{border-color:#10b981;background:#d1fae5;color:#059669;transform:scale(1.08);}
@@ -165,17 +166,19 @@ function buildKeyboard() {
   vis.innerHTML = '';
   codeEls = {};
   ROWS.forEach(row => {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'kb-row';
     row.forEach(code => {
       const el = document.createElement('div');
       el.className = 'kb-key';
       el.textContent = getLabel(code);
       if (WIDTHS[code]) el.style.minWidth = WIDTHS[code];
       el.dataset.code = code;
-      // Preserve pressed state across rebuilds
       if (pressed.has(code)) el.classList.add('pressed');
-      vis.appendChild(el);
+      rowDiv.appendChild(el);
       codeEls[code] = el;
     });
+    vis.appendChild(rowDiv);
   });
 }
 
