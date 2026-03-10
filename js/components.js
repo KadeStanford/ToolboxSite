@@ -146,7 +146,7 @@ const TN_TOOLS = [
   // ── New Converters ──
   { name: 'XML to JSON',              slug: 'xml-to-json',           category: 'converter',  icon: '<i class="fa-solid fa-file-code"></i>', desc: 'Convert XML data to JSON format' },
   { name: 'JSON to XML',              slug: 'json-to-xml',           category: 'converter',  icon: '<i class="fa-solid fa-file-code"></i>', desc: 'Convert JSON data to XML format' },
-  { name: 'Image Format Converter',   slug: 'image-format-converter',category:'converter',   icon: '<i class="fa-solid fa-images"></i>', desc: 'Convert images between PNG, JPG, WebP' },
+  { name: 'Image Converter',           slug: 'image-format-converter',category:'converter',   icon: '<i class="fa-solid fa-images"></i>', desc: 'Convert images between PNG, JPG, WebP, GIF, AVIF, ICO, TIFF, BMP' },
   { name: 'SVG to PNG Converter',     slug: 'svg-to-png',            category: 'converter',  icon: '<i class="fa-solid fa-file-image"></i>', desc: 'Convert SVG code or files to PNG' },
   { name: 'Text to Binary',           slug: 'text-to-binary',        category: 'converter',  icon: '<i class="fa-solid fa-binary"></i>', desc: 'Convert text to binary and back' },
   // ── New Developer Tools ──
@@ -177,8 +177,9 @@ const TN_TOOLS = [
   { name: 'Encryption/Decryption',    slug: 'encryption-tool',       category: 'security',   icon: '<i class="fa-solid fa-key"></i>', desc: 'AES-256 encrypt & decrypt text in browser' },
   { name: 'TOTP Generator',           slug: 'totp-generator',        category: 'security',   icon: '<i class="fa-solid fa-clock-rotate-left"></i>', desc: 'Generate time-based one-time passwords' },
   // ── New Converter Tools ──
+  { name: 'PDF Converter',             slug: 'pdf-converter',          category: 'converter',  icon: '<i class="fa-solid fa-file-pdf"></i>', desc: 'All-in-one PDF converter — Word, PPTX, images, text & more' },
   { name: 'PDF to Text',              slug: 'pdf-to-text',           category: 'converter',  icon: '<i class="fa-solid fa-file-lines"></i>', desc: 'Extract text content from PDF files' },
-  { name: 'Audio Format Converter',   slug: 'audio-converter',       category: 'converter',  icon: '<i class="fa-solid fa-music"></i>', desc: 'Convert audio between WAV & WebM' },
+  { name: 'Audio Converter',           slug: 'audio-converter',       category: 'converter',  icon: '<i class="fa-solid fa-music"></i>', desc: 'Convert audio between WAV, OGG, FLAC, M4A, WebM' },
   { name: 'Epoch Timestamp Converter',slug: 'epoch-converter',       category: 'converter',  icon: '<i class="fa-solid fa-clock"></i>', desc: 'Convert Unix timestamps to human dates' },
   { name: 'Document to PDF',          slug: 'document-to-pdf',       category: 'converter',  icon: '<i class="fa-solid fa-file-export"></i>', desc: 'Convert HTML/Markdown to PDF' },
   { name: 'PDF to Word',              slug: 'pdf-to-word',           category: 'converter',  icon: '<i class="fa-solid fa-file-word"></i>', desc: 'Convert PDF to editable Word DOCX' },

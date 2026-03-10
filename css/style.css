@@ -647,13 +647,17 @@ select:focus-visible { border-color: var(--primary) !important; box-shadow: 0 0 
 [data-theme="dark"] input[type="url"].tool-input,
 [data-theme="dark"] input[type="tel"].tool-input,
 [data-theme="dark"] input[type="password"].tool-input,
-[data-theme="dark"] select.tool-input { background: #0f172a; color: var(--text); border-color: var(--border); }
+[data-theme="dark"] select.tool-input { background-color: #0f172a; color: var(--text); border-color: var(--border); }
 [data-theme="dark"] textarea.tool-input:focus,
 [data-theme="dark"] input.tool-input:focus,
-[data-theme="dark"] select.tool-input:focus { background: #1e293b; }
+[data-theme="dark"] select.tool-input:focus { background-color: #1e293b; }
 [data-theme="dark"] .tool-container input:where(:not([type="color"]):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.btn)),
 [data-theme="dark"] .tool-container textarea,
-[data-theme="dark"] .tool-container select { background: #0f172a; color: var(--text); border-color: var(--border); }
+[data-theme="dark"] .tool-container select {
+  background-color: #0f172a;
+  color: var(--text);
+  border-color: var(--border);
+}
 [data-theme="dark"] .tool-container select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
 }
