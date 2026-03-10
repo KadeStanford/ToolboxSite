@@ -4,7 +4,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://toolnook.net/</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -12,43 +12,43 @@
   <!-- Developer Tools -->
   <url>
     <loc>https://toolnook.net/tools/json-formatter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/base64.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/regex-tester.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/color-converter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/diff-checker.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/jwt-decoder.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/url-encoder.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -56,43 +56,43 @@
   <!-- Text Tools -->
   <url>
     <loc>https://toolnook.net/tools/word-counter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/case-converter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/text-cleaner.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/text-sorter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/slug-generator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/lorem-ipsum.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/markdown-preview.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -100,37 +100,37 @@
   <!-- Calculator Tools -->
   <url>
     <loc>https://toolnook.net/tools/age-calculator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/bmi-calculator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/tip-calculator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/percentage-calculator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/unit-converter.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/compound-interest.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -138,25 +138,25 @@
   <!-- Generator Tools -->
   <url>
     <loc>https://toolnook.net/tools/password-generator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/qr-generator.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/color-palette.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/random-number.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -164,31 +164,31 @@
   <!-- New Developer Tools -->
   <url>
     <loc>https://toolnook.net/tools/uuid-generator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/hash-generator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/css-minifier.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/sql-formatter.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/cron-builder.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -196,31 +196,31 @@
   <!-- Date & Time Tools -->
   <url>
     <loc>https://toolnook.net/tools/date-difference.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/unix-timestamp.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/timezone-converter.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/countdown-timer.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/date-formatter.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -228,31 +228,31 @@
   <!-- Math & Science Tools -->
   <url>
     <loc>https://toolnook.net/tools/scientific-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/statistics-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/number-base-converter.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/fraction-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/roman-numerals.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -260,19 +260,19 @@
   <!-- Finance Tools -->
   <url>
     <loc>https://toolnook.net/tools/loan-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/mortgage-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/currency-converter.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -280,19 +280,19 @@
   <!-- Health & Fitness Tools -->
   <url>
     <loc>https://toolnook.net/tools/calorie-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/macro-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/body-fat-calculator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -300,19 +300,19 @@
   <!-- Image Tools -->
   <url>
     <loc>https://toolnook.net/tools/image-resizer.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/image-to-base64.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/image-color-picker.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -320,25 +320,25 @@
   <!-- Content & SEO Tools -->
   <url>
     <loc>https://toolnook.net/tools/meta-tag-generator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/reading-time.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/invoice-generator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/hashtag-generator.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -346,13 +346,13 @@
   <!-- Connected Tools -->
   <url>
     <loc>https://toolnook.net/tools/url-shortener.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://toolnook.net/tools/pastebin.html</loc>
-    <lastmod>2025-07-10</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -360,7 +360,7 @@
   <!-- Info Pages -->
   <url>
     <loc>https://toolnook.net/privacy-policy.html</loc>
-    <lastmod>2025-01-01</lastmod>
+    <lastmod>2026-03-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -372,100 +372,125 @@
   </url>
 
   <!-- New Developer Tools -->
-  <url><loc>https://toolnook.net/tools/json-to-csv.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/html-entity-encoder.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/chmod-calculator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/http-status-codes.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/api-response-formatter.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/json-to-csv.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/html-entity-encoder.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/chmod-calculator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/http-status-codes.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/api-response-formatter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- New Text Tools -->
-  <url><loc>https://toolnook.net/tools/text-to-speech.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/fancy-text-generator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/emoji-picker.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/whitespace-remover.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/text-to-speech.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/fancy-text-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/emoji-picker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/whitespace-remover.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Converter Tools -->
-  <url><loc>https://toolnook.net/tools/csv-to-json.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/yaml-to-json.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/markdown-to-html.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/image-to-pdf.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/pdf-to-image.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/csv-to-json.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/yaml-to-json.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/markdown-to-html.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/image-to-pdf.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pdf-to-image.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- SEO & Web Tools -->
-  <url><loc>https://toolnook.net/tools/meta-tag-analyzer.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/robots-txt-generator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/og-preview.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/redirect-checker.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/schema-generator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/meta-tag-analyzer.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/robots-txt-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/og-preview.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/redirect-checker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/schema-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Security Tools -->
-  <url><loc>https://toolnook.net/tools/password-strength.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/ip-lookup.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/user-agent.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/email-header-analyzer.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/privacy-policy-generator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/password-strength.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/ip-lookup.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/user-agent.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/email-header-analyzer.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/privacy-policy-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Social Media Tools -->
-  <url><loc>https://toolnook.net/tools/twitter-counter.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/instagram-caption.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/youtube-thumbnail.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/social-image-resizer.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/bio-link-generator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/twitter-counter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/instagram-caption.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/youtube-thumbnail.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/social-image-resizer.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/bio-link-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Math Tools (extra) -->
-  <url><loc>https://toolnook.net/tools/matrix-calculator.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/quadratic-solver.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/prime-checker.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/matrix-calculator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/quadratic-solver.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/prime-checker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Utility Tools -->
-  <url><loc>https://toolnook.net/tools/stopwatch.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/pomodoro-timer.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/notes-scratchpad.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/screen-resolution.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/typing-test.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/speed-test.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/random-color.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/stopwatch.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pomodoro-timer.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/notes-scratchpad.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/screen-resolution.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/typing-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/speed-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/random-color.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- CSS Generators -->
-  <url><loc>https://toolnook.net/tools/gradient-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/box-shadow-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/border-radius-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/flexbox-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/text-shadow-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/gradient-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/box-shadow-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/border-radius-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/flexbox-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/text-shadow-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Input Testing -->
-  <url><loc>https://toolnook.net/tools/microphone-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/webcam-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/keyboard-tester.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/click-speed-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/speaker-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/microphone-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/webcam-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/keyboard-tester.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/click-speed-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/speaker-test.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- New Converters -->
-  <url><loc>https://toolnook.net/tools/xml-to-json.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/json-to-xml.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/image-format-converter.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/svg-to-png.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/text-to-binary.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/xml-to-json.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/json-to-xml.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/image-format-converter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/svg-to-png.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/text-to-binary.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- New Developer Tools -->
-  <url><loc>https://toolnook.net/tools/js-minifier.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/html-beautifier.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/dns-lookup.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/morse-code.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/json-path-tester.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/js-minifier.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/html-beautifier.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/dns-lookup.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/morse-code.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/json-path-tester.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- Design Tools -->
-  <url><loc>https://toolnook.net/tools/color-contrast-checker.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/aspect-ratio-calculator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/px-converter.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/favicon-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/image-compressor.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/color-contrast-checker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/aspect-ratio-calculator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/px-converter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/favicon-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/image-compressor.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
   <!-- New Utility Tools -->
-  <url><loc>https://toolnook.net/tools/barcode-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/placeholder-image.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/wifi-qr-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/ip-subnet-calculator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://toolnook.net/tools/lorem-ipsum-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/barcode-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/placeholder-image.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/wifi-qr-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/ip-subnet-calculator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/lorem-ipsum-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Missing Tools Added 2026-03-10 -->
+  <url><loc>https://toolnook.net/tools/audio-converter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/binary-calculator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/chemical-equation-balancer.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/cors-tester.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/css-grid-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/document-to-pdf.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/encryption-tool.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/epoch-converter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/font-pairing.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/gamepad-input-tester.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/glassmorphism-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/graph-plotter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/mouse-input-tester.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/neumorphism-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pdf-converter.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pdf-to-pptx.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pdf-to-text.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/pdf-to-word.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/plagiarism-checker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/ssl-checker.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/svg-editor.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/totp-generator.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/video-to-gif.html</loc><lastmod>2026-03-10</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
 </urlset>

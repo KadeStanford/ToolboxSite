@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolNook — 140+ Free Online Tools for Developers & More</title>
   <meta name="description" content="140+ free browser tools: JSON formatter, image resizer, password generator, unit converter & more. No signup needed." />
-  <meta name="keywords" content="free online tools, developer tools, JSON formatter, password generator, unit converter, word counter, base64 encoder, regex tester, image resizer, hash generator, cron expression builder, invoice generator, url shortener, pastebin" />
+  <meta name="keywords" content="free online tools, developer tools, JSON formatter, password generator, unit converter, word counter, base64 encoder, regex tester, image resizer, hash generator, cron expression builder, invoice generator, url shortener, QR code generator, CSS gradient generator, box shadow generator, flexbox generator, PDF converter, PDF to Word, image compressor, color palette generator, mortgage calculator, loan calculator, calorie calculator, BMI calculator, typing speed test, barcode generator, SVG editor, scientific calculator, text to speech, markdown editor, color contrast checker, favicon generator, encryption tool, IP lookup, TOTP generator, uuid generator, meta tag generator, video to GIF converter, binary calculator, statistics calculator, free browser tools, no signup tools, privacy-first tools" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/" />
 
@@ -71,6 +71,10 @@
     <span class="search-icon" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
     <label for="tool-search" class="sr-only">Search tools</label>
     <input type="text" id="tool-search" placeholder="Search tools... (e.g. &quot;JSON&quot;, &quot;password&quot;, &quot;convert&quot;)" autocomplete="off" aria-label="Search tools" />
+  </div>
+  <div class="hero-ctas" id="heroCtas">
+    <button class="cta-btn cta-bookmark" onclick="promptBookmark()" title="Bookmark this site"><i class="fa-regular fa-bookmark"></i> Bookmark ToolNook</button>
+    <button class="cta-btn cta-share" onclick="shareToolNook()" title="Share with friends"><i class="fa-solid fa-share-nodes"></i> Share with Friends</button>
   </div>
 </section>
 
@@ -1015,6 +1019,47 @@
 
 <script src="/js/utils.js" defer></script>
 <script src="/js/components.js" defer></script>
+<script>
+/* ── CTA Functions ── */
+function promptBookmark() {
+  var ua = navigator.userAgent.toLowerCase();
+  var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  var shortcut = isMac ? '\u2318+D' : 'Ctrl+D';
+  if (window.sidebar && window.sidebar.addPanel) {
+    window.sidebar.addPanel(document.title, window.location.href, '');
+  } else {
+    var toast = document.getElementById('toast');
+    if (toast) {
+      toast.textContent = 'Press ' + shortcut + ' to bookmark this page!';
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    } else {
+      alert('Press ' + shortcut + ' to bookmark this page!');
+    }
+  }
+}
+function shareToolNook() {
+  var shareData = {
+    title: 'ToolNook — 140+ Free Online Tools',
+    text: 'Check out ToolNook — 140+ free browser-based tools for developers, writers, and everyone.',
+    url: 'https://toolnook.net'
+  };
+  if (navigator.share) {
+    navigator.share(shareData).catch(function() {});
+  } else {
+    navigator.clipboard.writeText(shareData.url).then(function() {
+      var toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = 'Link copied! Share it with your friends.';
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+      }
+    }).catch(function() {
+      prompt('Copy this link to share:', shareData.url);
+    });
+  }
+}
+</script>
 <script>
 /* ── Flip Counter (deferred to avoid blocking INP) ── */
 requestAnimationFrame(function() {

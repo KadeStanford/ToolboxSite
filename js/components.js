@@ -452,6 +452,41 @@ function enhanceSEO() {
 }
 enhanceSEO();
 
+/* ── Tool Page Share/Bookmark Bar ── */
+function renderToolCtas() {
+  const path = window.location.pathname;
+  if (!path.startsWith('/tools/')) return;
+  const slug = path.replace(/^\/tools\//, '').replace(/\.html$/, '');
+  const tool = TN_TOOLS.find(t => t.slug === slug);
+  if (!tool) return;
+  const bar = document.createElement('div');
+  bar.className = 'tool-cta-bar';
+  bar.innerHTML =
+    '<button class="cta-btn cta-share" onclick="shareTool()" title="Share this tool"><i class="fa-solid fa-share-nodes"></i> Share</button>' +
+    '<button class="cta-btn cta-bookmark" onclick="bookmarkTool()" title="Bookmark this tool"><i class="fa-regular fa-bookmark"></i> Bookmark</button>' +
+    '<button class="cta-btn cta-copy-link" onclick="copyToolLink()" title="Copy link"><i class="fa-solid fa-link"></i> Copy Link</button>';
+  const main = document.querySelector('.tool-container') || document.querySelector('main') || document.querySelector('.page-wrapper');
+  if (main) main.insertBefore(bar, main.firstChild);
+
+  window.shareTool = function() {
+    var data = { title: document.title, text: tool.desc, url: window.location.href };
+    if (navigator.share) { navigator.share(data).catch(function(){}); }
+    else { navigator.clipboard.writeText(data.url).then(function(){ showToast && showToast('Link copied — share it!'); }).catch(function(){ prompt('Copy this link:', data.url); }); }
+  };
+  window.bookmarkTool = function() {
+    var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    var key = isMac ? '\u2318+D' : 'Ctrl+D';
+    if (typeof showToast === 'function') showToast('Press ' + key + ' to bookmark!');
+    else alert('Press ' + key + ' to bookmark this page');
+  };
+  window.copyToolLink = function() {
+    navigator.clipboard.writeText(window.location.href).then(function(){
+      if (typeof showToast === 'function') showToast('Link copied to clipboard!');
+    }).catch(function(){ prompt('Copy this link:', window.location.href); });
+  };
+}
+renderToolCtas();
+
 function renderFooter() {
   const el = document.getElementById('site-footer');
   if (!el) return;
@@ -461,7 +496,7 @@ function renderFooter() {
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="/" class="footer-logo" aria-label="ToolNook home"><span aria-hidden="true"><i class="fa-solid fa-screwdriver-wrench"></i></span> ToolNook</a>
-          <p>90+ free online tools for developers, writers, and everyone in between. No signup. No tracking. Just tools.</p>
+          <p>140+ free online tools for developers, writers, and everyone in between. No signup. No tracking. Just tools.</p>
         </div>
         <nav class="footer-col" aria-label="Developer tools">
           <h4>Developer Tools</h4>
