@@ -1007,13 +1007,10 @@
   const container = document.getElementById('flipCounter');
   if (!container) return;
 
-  // Get or init count from localStorage
   let count = parseInt(localStorage.getItem(STORAGE_KEY)) || 0;
-  // Increment on every visit
   count++;
   localStorage.setItem(STORAGE_KEY, count);
 
-  // Seed a base so it looks substantial
   const BASE = 48372;
   let displayCount = BASE + count;
   let currentDigits = [];
@@ -1036,61 +1033,60 @@
       } else {
         const digit = document.createElement('div');
         digit.className = 'flip-digit';
-        digit.innerHTML =
-          '<div class="top"><span>' + ch + '</span></div>' +
-          '<div class="bottom"><span>' + ch + '</span></div>';
+        const inner = document.createElement('div');
+        inner.className = 'digit-inner';
+        const val = document.createElement('div');
+        val.className = 'digit-val';
+        val.textContent = ch;
+        inner.appendChild(val);
+        digit.appendChild(inner);
         container.appendChild(digit);
-        currentDigits.push({ type: 'digit', el: digit, value: ch });
+        currentDigits.push({ type: 'digit', el: digit, inner: inner, value: ch });
       }
     }
   }
 
   function animateDigit(entry, oldVal, newVal) {
-    const el = entry.el;
+    const inner = entry.inner;
     entry.value = newVal;
 
-    // Remove any leftover flaps
-    el.querySelectorAll('.flap').forEach(f => f.remove());
-    el.classList.remove('flipping');
+    // Reset: show old value with no transition
+    inner.classList.remove('rolling');
+    inner.style.transform = 'translateY(0)';
 
-    // Create front flap (old value, rotates down from top)
-    const flapFront = document.createElement('div');
-    flapFront.className = 'flap flap-front';
-    flapFront.innerHTML = '<span>' + oldVal + '</span>';
+    // Set the current visible cell to old value
+    inner.children[0].textContent = oldVal;
 
-    // Create back flap (new value, rotates up from bottom)
-    const flapBack = document.createElement('div');
-    flapBack.className = 'flap flap-back';
-    flapBack.innerHTML = '<span>' + newVal + '</span>';
+    // Add a second cell below with the new value
+    let newCell = inner.children[1];
+    if (!newCell) {
+      newCell = document.createElement('div');
+      newCell.className = 'digit-val';
+      inner.appendChild(newCell);
+    }
+    newCell.textContent = newVal;
 
-    // Update static halves to new value underneath
-    el.querySelector('.top span').textContent = newVal;
-    el.querySelector('.bottom span').textContent = newVal;
-
-    // Attach flaps and trigger animation
-    el.appendChild(flapFront);
-    el.appendChild(flapBack);
-
-    // Double rAF ensures browser has painted before triggering animation
+    // Next frame: enable transition and slide up
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        el.classList.add('flipping');
+        inner.classList.add('rolling');
+        inner.style.transform = 'translateY(-64px)';
       });
     });
 
-    // Cleanup after animation completes
+    // After transition, snap: show new value, reset position
     setTimeout(() => {
-      el.classList.remove('flipping');
-      flapFront.remove();
-      flapBack.remove();
-    }, 800);
+      inner.classList.remove('rolling');
+      inner.style.transform = 'translateY(0)';
+      inner.children[0].textContent = newVal;
+      if (inner.children[1]) inner.children[1].remove();
+    }, 500);
   }
 
   function flipTo(newNum) {
     const newStr = formatWithCommas(newNum);
     const oldStr = formatWithCommas(displayCount);
 
-    // If length changed, rebuild
     if (newStr.length !== oldStr.length) {
       displayCount = newNum;
       buildDigits(newStr);
@@ -1109,10 +1105,8 @@
     displayCount = newNum;
   }
 
-  // Initial render
   buildDigits(formatWithCommas(displayCount));
 
-  // Increment by exactly 1 every 2-5 seconds
   function scheduleNext() {
     const delay = 2000 + Math.random() * 3000;
     setTimeout(() => {
