@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* Google Fonts loaded via <link> in HTML for non-blocking performance */
 
 :root {
   --primary: #4f46e5;
@@ -544,6 +544,7 @@ input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance
 }
 .seo-content h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: var(--text); }
 .seo-content h3 { font-size: 1rem; font-weight: 600; margin: 18px 0 8px; color: var(--text); }
+.seo-content h4 { font-size: 0.92rem; font-weight: 600; margin: 14px 0 6px; color: var(--text); }
 .seo-content p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.75; margin-bottom: 12px; }
 .seo-content ul { list-style: disc; padding-left: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8; }
 
@@ -1051,8 +1052,13 @@ select:focus-visible { border-color: var(--primary) !important; box-shadow: 0 0 
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
 }
 @media (max-width: 640px) {
+  /* Hero */
+  .hero { padding: 36px 16px 28px; }
   .hero h1 { font-size: 1.9rem; }
-  .hamburger { display: block; }
+  .hero p { font-size: 1rem; margin-bottom: 20px; }
+
+  /* Navigation */
+  .hamburger { display: block; min-width: 48px; min-height: 48px; }
   .site-nav {
     display: none;
     position: absolute;
@@ -1067,8 +1073,44 @@ select:focus-visible { border-color: var(--primary) !important; box-shadow: 0 0 
     z-index: 99;
   }
   .site-nav.open { display: flex; }
+  .site-nav a { padding: 12px 16px; font-size: 1rem; min-height: 48px; display: flex; align-items: center; }
+
+  /* Layout */
+  .page-wrapper { padding: 20px 16px; }
   .footer-grid { grid-template-columns: 1fr; gap: 24px; }
   .tool-header h1 { font-size: 1.5rem; }
   .two-col { grid-template-columns: 1fr; }
   .ad-banner-top, .ad-banner-bottom { height: 60px; font-size: 0.65rem; }
+
+  /* Tool grid — larger cards with bigger tap targets */
+  .tools-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .tool-card { padding: 16px; min-height: 48px; }
+  .tool-card h3 { font-size: 0.95rem; }
+  .tool-card p { font-size: 0.85rem; line-height: 1.6; }
+  .tool-card-icon { font-size: 1.6rem; margin-bottom: 8px; }
+
+  /* Category headings */
+  .category-section h2 { font-size: 1.2rem; }
+
+  /* Search bar */
+  .search-bar input { padding: 14px 16px 14px 46px; font-size: 1rem; }
+
+  /* Buttons — minimum 48px tap target */
+  .btn { padding: 12px 20px; font-size: 0.95rem; min-height: 48px; }
+  .btn-sm { padding: 10px 16px; font-size: 0.88rem; min-height: 44px; }
+  .btn-group { gap: 10px; }
+
+  /* Form elements — larger tap targets */
+  .form-group label { font-size: 0.92rem; }
+  .form-group input,
+  .form-group textarea,
+  .form-group select { font-size: 1rem; padding: 12px; min-height: 48px; }
+
+  /* SEO content */
+  .seo-content h2 { font-size: 1.1rem; }
+  .seo-content p { font-size: 0.92rem; }
+  .seo-content ul { font-size: 0.92rem; }
+
+  /* Footer — larger tap targets for links */
+  .footer-col a { padding: 6px 0; font-size: 0.9rem; min-height: 44px; display: flex; align-items: center; }
 }

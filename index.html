@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ToolNook — 140+ Free Online Tools for Developers & More</title>
-  <meta name="description" content="Free browser-based tools: JSON formatter, password generator, hash generator, image resizer, cron builder, invoice maker & more. No signup required." />
+  <meta name="description" content="140+ free browser tools: JSON formatter, image resizer, password generator, unit converter & more. No signup needed." />
   <meta name="keywords" content="free online tools, developer tools, JSON formatter, password generator, unit converter, word counter, base64 encoder, regex tester, image resizer, hash generator, cron expression builder, invoice generator, url shortener, pastebin" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/" />
@@ -45,9 +45,14 @@
   }]
   </script>
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1543757982090409" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" /></noscript>
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" /></noscript>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1543757982090409" crossorigin="anonymous"></script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
 </head>
 <body>
@@ -972,19 +977,21 @@
     <h2>140+ Free Online Tools — No Signup Required</h2>
     <p>ToolNook is a collection of 140+ fast, free, browser-based tools designed for developers, writers, students, and anyone who needs a quick utility without the hassle of installing software or creating accounts. Every tool runs entirely in your browser — your data never leaves your device.</p>
 
-    <h3>Developer Tools</h3>
+    <h3>Browse Tools by Category</h3>
+
+    <h4>Developer Tools</h4>
     <p>Our developer tools include a <a href="/tools/json-formatter.html">JSON formatter and validator</a>, <a href="/tools/base64.html">Base64 encoder/decoder</a>, <a href="/tools/regex-tester.html">regex tester with live match highlighting</a>, <a href="/tools/color-converter.html">color code converter</a>, <a href="/tools/diff-checker.html">text diff checker</a>, <a href="/tools/jwt-decoder.html">JWT decoder</a>, <a href="/tools/uuid-generator.html">UUID generator</a>, <a href="/tools/hash-generator.html">SHA hash generator</a>, <a href="/tools/css-minifier.html">CSS minifier</a>, <a href="/tools/sql-formatter.html">SQL formatter</a>, and <a href="/tools/cron-builder.html">cron expression builder</a>.</p>
 
-    <h3>Text Processing Tools</h3>
+    <h4>Text Processing Tools</h4>
     <p>Our text tools include a <a href="/tools/word-counter.html">word and character counter</a> with reading time estimates, <a href="/tools/case-converter.html">case converter</a> (camelCase, Title Case, UPPER, lower), <a href="/tools/text-cleaner.html">text cleaner</a>, <a href="/tools/text-sorter.html">line sorter</a>, <a href="/tools/slug-generator.html">URL slug generator</a>, <a href="/tools/lorem-ipsum.html">lorem ipsum generator</a>, and a live <a href="/tools/markdown-preview.html">Markdown previewer</a>.</p>
 
-    <h3>Calculators &amp; Finance</h3>
+    <h4>Calculators &amp; Finance</h4>
     <p>Quick calculators that work instantly: <a href="/tools/age-calculator.html">age calculator</a>, <a href="/tools/bmi-calculator.html">BMI calculator</a>, <a href="/tools/tip-calculator.html">tip and bill splitter</a>, <a href="/tools/percentage-calculator.html">percentage calculator</a>, <a href="/tools/unit-converter.html">unit converter</a>, <a href="/tools/compound-interest.html">compound interest calculator</a>, <a href="/tools/loan-calculator.html">loan calculator</a>, <a href="/tools/mortgage-calculator.html">mortgage calculator</a>, and <a href="/tools/currency-converter.html">currency converter</a>.</p>
 
-    <h3>Image Tools</h3>
+    <h4>Image Tools</h4>
     <p>Browser-based image utilities: <a href="/tools/image-resizer.html">image resizer</a> with JPEG/PNG/WebP export, <a href="/tools/image-to-base64.html">image to Base64 converter</a> for embedding images in code, and an <a href="/tools/image-color-picker.html">image color picker</a> for extracting HEX, RGB and HSL values from any photo.</p>
 
-    <h3>Content &amp; SEO Tools</h3>
+    <h4>Content &amp; SEO Tools</h4>
     <p>Tools for content creators: <a href="/tools/meta-tag-generator.html">SEO meta tag generator</a> with Open Graph and Twitter Card support, <a href="/tools/reading-time.html">reading time calculator</a>, <a href="/tools/invoice-generator.html">free invoice generator</a> with PDF export, and a <a href="/tools/hashtag-generator.html">hashtag generator</a> for Instagram, TikTok, and Twitter.</p>
 
     <h3>Why Use ToolNook?</h3>
@@ -1006,10 +1013,11 @@
 <div id="site-footer"></div>
 <div class="toast" id="toast"></div>
 
-<script src="/js/utils.js"></script>
-<script src="/js/components.js"></script>
+<script src="/js/utils.js" defer></script>
+<script src="/js/components.js" defer></script>
 <script>
-/* ── Flip Counter ── */
+/* ── Flip Counter (deferred to avoid blocking INP) ── */
+requestAnimationFrame(function() {
 (function() {
   const STORAGE_KEY = 'toolnook_tools_used';
   const container = document.getElementById('flipCounter');
@@ -1127,6 +1135,7 @@
   }
   scheduleNext();
 })();
+});
 </script>
 </body>
 </html>
