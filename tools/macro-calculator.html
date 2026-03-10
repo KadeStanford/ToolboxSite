@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/macro-calculator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much protein do I need per day?","acceptedAnswer":{"@type":"Answer","text":"For active people, 0.7–1g of protein per lb of body weight (1.5–2.2g per kg) is commonly recommended. When cutting calories, higher protein (1g/lb) helps preserve muscle mass."}},{"@type":"Question","name":"What are macros?","acceptedAnswer":{"@type":"Answer","text":"Macros (macronutrients) are protein, carbohydrates, and fats — the three main nutrient categories that provide calories. Protein and carbs have 4 cal/g; fat has 9 cal/g."}},{"@type":"Question","name":"What is IIFYM?","acceptedAnswer":{"@type":"Answer","text":"IIFYM (If It Fits Your Macros) is a flexible dieting approach where you can eat any food as long as it fits within your daily macro targets, rather than following a strict food list."}}]}
   </script>
@@ -205,7 +205,7 @@ function calcMacros() {
     maintain: `A balanced split at your maintenance calories. Adjust activity level in the <a href="/tools/calorie-calculator.html">Calorie Calculator</a> if needed.`,
     bulk: `For bulking, high carbs fuel your workouts and recovery. Track progress and adjust calories every 2–3 weeks based on weight change.`
   };
-  document.getElementById('tip-box').innerHTML = `<strong>💡 Goal Tip:</strong> ${tips[goal]}`;
+  document.getElementById('tip-box').innerHTML = `<strong><i class="fa-solid fa-lightbulb"></i> Goal Tip:</strong> ${tips[goal]}`;
 
   document.getElementById('results').style.display = 'block';
 }

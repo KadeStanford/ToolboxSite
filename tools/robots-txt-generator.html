@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/robots-txt-generator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .builder { display:grid; gap:16px; }
     .rule-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
@@ -81,10 +81,10 @@
       <div class="section-title">Generated robots.txt</div>
       <div class="output-wrap">
         <textarea class="output-area" id="output" readonly></textarea>
-        <button class="btn btn-primary copy-output" onclick="copyOutput()">📋 Copy</button>
+        <button class="btn btn-primary copy-output" onclick="copyOutput()"><i class="fa-solid fa-clipboard"></i> Copy</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-secondary" onclick="downloadFile()">⬇ Download robots.txt</button>
+        <button class="btn btn-secondary" onclick="downloadFile()"><i class="fa-solid fa-download"></i> Download robots.txt</button>
       </div>
     </div>
     <div class="ad-banner ad-inline">Advertisement</div>
@@ -138,7 +138,7 @@ function renderRules() {
       <div class="rule-head">
         <div class="rule-num">${i+1}</div>
         <span class="rule-head-title">Rule Group</span>
-        <button class="rule-del" onclick="removeRule(${i})" title="Remove">✕</button>
+        <button class="rule-del" onclick="removeRule(${i})" title="Remove"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="rule-body">
         <div class="field-row">
@@ -148,14 +148,14 @@ function renderRules() {
         <div class="field-row">
           <span class="field-label">Disallow</span>
           <div class="path-list">
-            ${r.disallow.map((p,j)=>`<div class="path-row"><input class="field-input" value="${escapeHtml(p)}" onchange="rules[${i}].disallow[${j}]=this.value;generate()" placeholder="/path/"><button class="rm-btn" onclick="rules[${i}].disallow.splice(${j},1);renderRules()">✕</button></div>`).join('')}
+            ${r.disallow.map((p,j)=>`<div class="path-row"><input class="field-input" value="${escapeHtml(p)}" onchange="rules[${i}].disallow[${j}]=this.value;generate()" placeholder="/path/"><button class="rm-btn" onclick="rules[${i}].disallow.splice(${j},1);renderRules()"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
             <button class="add-path-btn" onclick="rules[${i}].disallow.push('');renderRules()">+ Add Disallow Path</button>
           </div>
         </div>
         <div class="field-row">
           <span class="field-label">Allow</span>
           <div class="path-list">
-            ${r.allow.map((p,j)=>`<div class="path-row"><input class="field-input" value="${escapeHtml(p)}" onchange="rules[${i}].allow[${j}]=this.value;generate()" placeholder="/path/"><button class="rm-btn" onclick="rules[${i}].allow.splice(${j},1);renderRules()">✕</button></div>`).join('')}
+            ${r.allow.map((p,j)=>`<div class="path-row"><input class="field-input" value="${escapeHtml(p)}" onchange="rules[${i}].allow[${j}]=this.value;generate()" placeholder="/path/"><button class="rm-btn" onclick="rules[${i}].allow.splice(${j},1);renderRules()"><i class="fa-solid fa-xmark"></i></button></div>`).join('')}
             <button class="add-path-btn" onclick="rules[${i}].allow.push('');renderRules()">+ Add Allow Path</button>
           </div>
         </div>
@@ -173,7 +173,7 @@ function addSitemap(url='') {
 
 function renderSitemaps() {
   const c = document.getElementById('sitemaps');
-  c.innerHTML = sitemaps.map((s,i)=>`<div class="path-row" style="margin-bottom:6px"><input class="field-input" value="${escapeHtml(s)}" placeholder="https://example.com/sitemap.xml" onchange="sitemaps[${i}]=this.value;generate()"><button class="rm-btn" onclick="sitemaps.splice(${i},1);renderSitemaps()">✕</button></div>`).join('');
+  c.innerHTML = sitemaps.map((s,i)=>`<div class="path-row" style="margin-bottom:6px"><input class="field-input" value="${escapeHtml(s)}" placeholder="https://example.com/sitemap.xml" onchange="sitemaps[${i}]=this.value;generate()"><button class="rm-btn" onclick="sitemaps.splice(${i},1);renderSitemaps()"><i class="fa-solid fa-xmark"></i></button></div>`).join('');
   generate();
 }
 

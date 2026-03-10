@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/pomodoro-timer.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .pomo-wrap{text-align:center;max-width:440px;margin:0 auto;}
     .mode-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:24px;}
@@ -57,9 +57,9 @@
     <div class="tool-container">
       <div class="pomo-wrap">
         <div class="mode-tabs">
-          <div class="mode-tab active focus" id="tabFocus" onclick="setMode('focus')">🎯 Focus</div>
-          <div class="mode-tab short" id="tabShort" onclick="setMode('short')">☕ Short Break</div>
-          <div class="mode-tab long" id="tabLong" onclick="setMode('long')">🌴 Long Break</div>
+          <div class="mode-tab active focus" id="tabFocus" onclick="setMode('focus')"><i class="fa-solid fa-bullseye"></i> Focus</div>
+          <div class="mode-tab short" id="tabShort" onclick="setMode('short')"><i class="fa-solid fa-mug-hot"></i> Short Break</div>
+          <div class="mode-tab long" id="tabLong" onclick="setMode('long')"><i class="fa-solid fa-umbrella-beach"></i> Long Break</div>
         </div>
         <div class="ring-container">
           <svg class="ring-svg" width="260" height="260">
@@ -79,7 +79,7 @@
         <div class="stats-row" id="statsRow"></div>
 
         <div class="settings-panel">
-          <h3>⚙️ Settings</h3>
+          <h3><i class="fa-solid fa-gear"></i> Settings</h3>
           <div class="setting-row"><label>Focus (min)</label><input id="sFocus" type="number" value="25" min="1" max="120" onchange="applySettings()"></div>
           <div class="setting-row"><label>Short Break (min)</label><input id="sShort" type="number" value="5" min="1" max="30" onchange="applySettings()"></div>
           <div class="setting-row"><label>Long Break (min)</label><input id="sLong" type="number" value="15" min="1" max="60" onchange="applySettings()"></div>
@@ -151,7 +151,7 @@ function toggleTimer(){
 function startTimer(){
   if(timeLeft<=0)return;
   running=true;
-  document.getElementById('btnMain').textContent='⏸ Pause';
+  document.getElementById('btnMain').textContent='<i class="fa-solid fa-pause"></i> Pause';
   intervalId=setInterval(()=>{
     timeLeft--;
     updateDisplay();
@@ -179,10 +179,10 @@ function timerComplete(){
     try{new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQQAAAAAAA==').play();}catch(e){}
     if(completedSessions%config.count===0) setMode('long');
     else setMode('short');
-    showToast('Focus session complete! Take a break 🎉');
+    showToast('Focus session complete! Take a break <i class="fa-solid fa-circle-check"></i>');
   }else{
     setMode('focus');
-    showToast('Break over! Time to focus 🎯');
+    showToast('Break over! Time to focus <i class="fa-solid fa-bullseye"></i>');
   }
 }
 
@@ -207,7 +207,7 @@ function renderDots(){
   document.getElementById('sessionTrack').innerHTML=html;
 }
 function updateStats(){
-  document.getElementById('statsRow').innerHTML=`<span class="stat-badge">🎯 ${completedSessions} sessions</span><span class="stat-badge">⏱ ${totalFocusTime} min focused</span>`;
+  document.getElementById('statsRow').innerHTML=`<span class="stat-badge"><i class="fa-solid fa-bullseye"></i> ${completedSessions} sessions</span><span class="stat-badge"><i class="fa-solid fa-stopwatch"></i> ${totalFocusTime} min focused</span>`;
 }
 </script>
 </body>

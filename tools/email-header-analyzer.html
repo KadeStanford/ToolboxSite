@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/email-header-analyzer.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .header-input { width:100%; min-height:200px; font-family:'Courier New',monospace; font-size:.78rem; padding:14px; border:2px solid var(--border); border-radius:var(--radius); resize:vertical; }
     .header-input:focus { border-color:var(--primary); outline:none; }
@@ -60,7 +60,7 @@
     <div class="tool-container">
       <textarea class="header-input" id="headers" placeholder='Paste your email headers here...&#10;&#10;How to find headers:&#10;• Gmail: Open email → ⋮ → "Show original"&#10;• Outlook: Open email → ⋯ → "View message source"&#10;• Yahoo: Open email → ⋯ → "View raw message"'></textarea>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="analyzeHeaders()">🔍 Analyze Headers</button>
+        <button class="btn btn-primary" onclick="analyzeHeaders()"><i class="fa-solid fa-magnifying-glass"></i> Analyze Headers</button>
         <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
         <button class="btn btn-secondary" onclick="document.getElementById('headers').value='';document.getElementById('results').innerHTML='';">Clear</button>
       </div>
@@ -153,7 +153,7 @@ function analyzeHeaders() {
   
   function authCard(name, status) {
     const cls = status === 'pass' ? 'auth-pass' : status === 'fail' ? 'auth-fail' : 'auth-none';
-    const icon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '➖';
+    const icon = status === 'pass' ? '<i class="fa-solid fa-circle-check"></i>' : status === 'fail' ? '<i class="fa-solid fa-circle-xmark"></i>' : '<i class="fa-solid fa-minus"></i>';
     return `<div class="auth-card ${cls}"><div class="auth-name">${name}</div><div class="auth-status">${icon}</div><div class="auth-detail">${status.toUpperCase()}</div></div>`;
   }
 
@@ -190,7 +190,7 @@ function analyzeHeaders() {
   });
 
   results.innerHTML = `
-    <div class="section-title">📋 Message Summary</div>
+    <div class="section-title"><i class="fa-solid fa-clipboard"></i> Message Summary</div>
     <div class="summary-grid">
       <div class="sum-card"><div class="sum-label">From</div><div class="sum-val">${escapeHtml(from||'N/A')}</div></div>
       <div class="sum-card"><div class="sum-label">To</div><div class="sum-val">${escapeHtml(to||'N/A')}</div></div>
@@ -200,14 +200,14 @@ function analyzeHeaders() {
       <div class="sum-card"><div class="sum-label">Message-ID</div><div class="sum-val">${escapeHtml(messageId||'N/A')}</div></div>
     </div>
     
-    <div class="section-title">🔐 Authentication</div>
+    <div class="section-title"><i class="fa-solid fa-shield-halved"></i> Authentication</div>
     <div class="auth-grid">
       ${authCard('SPF', spf)}
       ${authCard('DKIM', dkim)}
       ${authCard('DMARC', dmarc)}
     </div>
     
-    <div class="section-title">🔗 Delivery Path (${hops.length} hops)</div>
+    <div class="section-title"><i class="fa-solid fa-link"></i> Delivery Path (${hops.length} hops)</div>
     <div class="hop-list">${hopsHTML || '<p style="color:var(--text-muted)">No Received headers found</p>'}</div>
     
     <div class="raw-section">

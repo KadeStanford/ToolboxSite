@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/ip-lookup.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .lookup-bar { display:flex; gap:8px; margin-bottom:14px; }
     .lookup-bar input { flex:1; padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:.92rem; font-family:'Courier New',monospace; }
@@ -53,12 +53,12 @@
     </div>
     <div class="tool-container">
       <div class="your-ip" id="my-ip" onclick="lookupMyIP()" title="Click to look up your IP">
-        <span class="your-ip-icon">🌐</span>
+        <span class="your-ip-icon"><i class="fa-solid fa-globe"></i></span>
         <div><div class="your-ip-text">Your IP Address</div><div class="your-ip-addr" id="my-ip-addr">Detecting...</div></div>
       </div>
       <div class="lookup-bar">
         <input type="text" id="ip-input" placeholder="Enter an IP address (e.g., 8.8.8.8)" onkeydown="if(event.key==='Enter')lookup()">
-        <button class="btn btn-primary" onclick="lookup()">🔍 Look Up</button>
+        <button class="btn btn-primary" onclick="lookup()"><i class="fa-solid fa-magnifying-glass"></i> Look Up</button>
       </div>
       <div id="results"></div>
     </div>
@@ -131,7 +131,7 @@ async function lookup() {
     const d = await res.json();
     
     if (d.status === 'fail') {
-      results.innerHTML = `<div class="error-box">⚠ ${escapeHtml(d.message || 'Lookup failed')}</div>`;
+      results.innerHTML = `<div class="error-box"><i class="fa-solid fa-triangle-exclamation"></i> ${escapeHtml(d.message || 'Lookup failed')}</div>`;
       return;
     }
 
@@ -141,7 +141,7 @@ async function lookup() {
     results.innerHTML = `
       <div class="info-grid">
         <div class="info-card">
-          <div class="info-head"><div class="info-icon ico-loc">📍</div><span class="info-title">Location</span></div>
+          <div class="info-head"><div class="info-icon ico-loc"><i class="fa-solid fa-location-dot"></i></div><span class="info-title">Location</span></div>
           <div class="info-body">
             <div class="info-row"><span class="info-key">IP Address</span><span class="info-val">${escapeHtml(d.query)}</span></div>
             <div class="info-row"><span class="info-key">Country</span><span class="info-val">${flag} ${escapeHtml(d.country||'N/A')}</span></div>
@@ -153,7 +153,7 @@ async function lookup() {
           </div>
         </div>
         <div class="info-card">
-          <div class="info-head"><div class="info-icon ico-net">🔌</div><span class="info-title">Network</span></div>
+          <div class="info-head"><div class="info-icon ico-net"><i class="fa-solid fa-plug"></i></div><span class="info-title">Network</span></div>
           <div class="info-body">
             <div class="info-row"><span class="info-key">ISP</span><span class="info-val">${escapeHtml(d.isp||'N/A')}</span></div>
             <div class="info-row"><span class="info-key">Organization</span><span class="info-val">${escapeHtml(d.org||'N/A')}</span></div>
@@ -162,14 +162,14 @@ async function lookup() {
           </div>
         </div>
         <div class="info-card">
-          <div class="info-head"><div class="info-icon ico-time">🕐</div><span class="info-title">Timezone</span></div>
+          <div class="info-head"><div class="info-icon ico-time"><i class="fa-solid fa-clock"></i></div><span class="info-title">Timezone</span></div>
           <div class="info-body">
             <div class="info-row"><span class="info-key">Timezone</span><span class="info-val">${escapeHtml(d.timezone||'N/A')}</span></div>
             <div class="info-row"><span class="info-key">UTC Offset</span><span class="info-val">${utcOffset}</span></div>
           </div>
         </div>
         <div class="info-card">
-          <div class="info-head"><div class="info-icon ico-misc">🔒</div><span class="info-title">Connection Type</span></div>
+          <div class="info-head"><div class="info-icon ico-misc"><i class="fa-solid fa-lock"></i></div><span class="info-title">Connection Type</span></div>
           <div class="info-body">
             <div class="info-row"><span class="info-key">Mobile</span><span class="info-val">${d.mobile?'Yes':'No'}</span></div>
             <div class="info-row"><span class="info-key">Proxy/VPN</span><span class="info-val">${d.proxy?'Yes':'No'}</span></div>
@@ -178,7 +178,7 @@ async function lookup() {
         </div>
       </div>`;
   } catch(e) {
-    results.innerHTML = `<div class="error-box">⚠ Failed to look up IP. Please try again.</div>`;
+    results.innerHTML = `<div class="error-box"><i class="fa-solid fa-triangle-exclamation"></i> Failed to look up IP. Please try again.</div>`;
   }
 }
 </script>

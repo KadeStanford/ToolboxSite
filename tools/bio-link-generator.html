@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/bio-link-generator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .bio-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;}
     @media(max-width:800px){.bio-grid{grid-template-columns:1fr;}}
@@ -51,23 +51,23 @@
     <div class="tool-container">
       <div class="bio-grid">
         <div class="form-panel">
-          <h3>👤 Profile</h3>
+          <h3><i class="fa-solid fa-user"></i> Profile</h3>
           <div class="fg"><label>Display Name</label><input id="bName" placeholder="Your Name" value="Your Name" oninput="render()"></div>
-          <div class="fg"><label>Bio / Tagline</label><input id="bBio" placeholder="Developer, Creator, Dreamer" value="Developer · Creator · Dreamer ✨" oninput="render()"></div>
-          <div class="fg"><label>Avatar Emoji</label><input id="bAvatar" placeholder="😎" value="😎" maxlength="4" oninput="render()"></div>
+          <div class="fg"><label>Bio / Tagline</label><input id="bBio" placeholder="Developer, Creator, Dreamer" value="Developer · Creator · Dreamer <i class="fa-solid fa-wand-magic-sparkles"></i>" oninput="render()"></div>
+          <div class="fg"><label>Avatar Emoji</label><input id="bAvatar" placeholder="" value="" maxlength="4" oninput="render()"></div>
 
           <hr class="sep">
-          <h3>🎨 Theme</h3>
+          <h3><i class="fa-solid fa-palette"></i> Theme</h3>
           <div class="theme-grid" id="themeGrid"></div>
 
           <hr class="sep">
-          <h3>🔗 Links</h3>
+          <h3><i class="fa-solid fa-link"></i> Links</h3>
           <div id="linkList"></div>
           <button class="btn btn-secondary btn-sm" onclick="addLink()">+ Add Link</button>
 
           <div class="export-btns">
-            <button class="btn btn-primary" onclick="downloadHTML()">⬇ Download HTML</button>
-            <button class="btn btn-secondary" onclick="copyHTML()">📋 Copy HTML</button>
+            <button class="btn btn-primary" onclick="downloadHTML()"><i class="fa-solid fa-download"></i> Download HTML</button>
+            <button class="btn btn-secondary" onclick="copyHTML()"><i class="fa-solid fa-clipboard"></i> Copy HTML</button>
           </div>
         </div>
         <div class="preview-frame"><div class="bio-page" id="bioPreview"></div></div>
@@ -140,14 +140,14 @@ function removeLink(i){
 }
 function renderLinks(){
   document.getElementById('linkList').innerHTML=links.map((l,i)=>
-    `<div class="link-item"><button class="link-rm" onclick="removeLink(${i})">✕</button><div class="link-row"><input placeholder="Label" value="${escapeHtml(l.title)}" oninput="links[${i}].title=this.value;render()"><input placeholder="https://..." value="${escapeHtml(l.url)}" oninput="links[${i}].url=this.value;render()"></div></div>`
+    `<div class="link-item"><button class="link-rm" onclick="removeLink(${i})"><i class="fa-solid fa-xmark"></i></button><div class="link-row"><input placeholder="Label" value="${escapeHtml(l.title)}" oninput="links[${i}].title=this.value;render()"><input placeholder="https://..." value="${escapeHtml(l.url)}" oninput="links[${i}].url=this.value;render()"></div></div>`
   ).join('');
 }
 
 function render(){
   const name=document.getElementById('bName').value||'Your Name';
   const bio=document.getElementById('bBio').value||'';
-  const avatar=document.getElementById('bAvatar').value||'😎';
+  const avatar=document.getElementById('bAvatar').value||'';
   const t=activeTheme;
   const bp=document.getElementById('bioPreview');
   bp.style.background=t.bg;
@@ -166,7 +166,7 @@ function render(){
 function generateFullHTML(){
   const name=document.getElementById('bName').value||'Your Name';
   const bio=document.getElementById('bBio').value||'';
-  const avatar=document.getElementById('bAvatar').value||'😎';
+  const avatar=document.getElementById('bAvatar').value||'';
   const t=activeTheme;
   let linkHTML=links.filter(l=>l.title||l.url).map(l=>{
     const border=t.btnBorder?`border:1px solid ${t.btnBorder};`:'';

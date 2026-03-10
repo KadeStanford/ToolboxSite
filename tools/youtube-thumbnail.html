@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/youtube-thumbnail.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .upload-zone{border:3px dashed var(--border);border-radius:var(--radius-lg);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;}
     .upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:#eff6ff;}
@@ -69,7 +69,7 @@
     </div>
     <div class="tool-container">
       <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size:2.5rem;">🖼️</div>
+        <div style="font-size:2.5rem;"><i class="fa-solid fa-image"></i></div>
         <p>Click or drag & drop your thumbnail image<br><small>Recommended: 1280×720 (16:9)</small></p>
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
       </div>
@@ -81,7 +81,7 @@
         <input id="mDuration" placeholder="Duration" value="12:34" oninput="renderPreview()">
       </div>
       <div class="preview-section" id="previewSection">
-        <h3>📺 Preview Modes</h3>
+        <h3><i class="fa-solid fa-tv"></i> Preview Modes</h3>
         <div class="preview-modes">
           <button class="mode-btn active" onclick="setMode('search',this)">Search Result</button>
           <button class="mode-btn" onclick="setMode('home',this)">Homepage</button>
@@ -130,7 +130,7 @@ function handleFile(f){
     img.onload=()=>{
       const info=document.getElementById('imgInfo');
       info.classList.remove('hidden');
-      info.innerHTML=`<span>${img.width}×${img.height}</span><span>${(f.size/1024).toFixed(1)} KB</span><span>${f.type}</span><span>${img.width===1280&&img.height===720?'✅ Perfect size':'⚠️ Recommended: 1280×720'}</span>`;
+      info.innerHTML=`<span>${img.width}×${img.height}</span><span>${(f.size/1024).toFixed(1)} KB</span><span>${f.type}</span><span>${img.width===1280&&img.height===720?'<i class="fa-solid fa-circle-check"></i> Perfect size':'<i class="fa-solid fa-triangle-exclamation"></i> Recommended: 1280×720'}</span>`;
       renderPreview();
     };
     img.src=e.target.result;
@@ -148,7 +148,7 @@ function renderPreview(){
   const ch=document.getElementById('mChannel').value||'Channel';
   const v=document.getElementById('mViews').value||'0 views';
   const d=document.getElementById('mDuration').value||'0:00';
-  const imgTag=thumbSrc?`<img src="${thumbSrc}" alt="thumb">`:'<div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;">🖼️</div>';
+  const imgTag=thumbSrc?`<img src="${thumbSrc}" alt="thumb">`:'<div style="width:100%;height:100%;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;"><i class="fa-solid fa-image"></i></div>';
   const te=escapeHtml(t), che=escapeHtml(ch), ve=escapeHtml(v), de=escapeHtml(d);
   let html='';
   const searchHtml=`<div class="yt-card yt-search"><div class="yt-thumb">${imgTag}<span class="yt-duration">${de}</span></div><div class="yt-meta"><div class="yt-title">${te}</div><div class="yt-channel">${che}</div><div class="yt-views">${ve} • 2 days ago</div></div></div>`;

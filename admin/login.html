@@ -6,6 +6,7 @@
   <title>Admin Login — ToolNook</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     body {
       min-height: 100vh;
@@ -92,7 +93,7 @@
   if (!TN_FIREBASE_ENABLED) {
     errEl.style.display = 'block';
     errEl.innerHTML = `
-      ⚠️ <strong>Firebase is not configured yet.</strong><br>
+      <i class="fa-solid fa-triangle-exclamation"></i> <strong>Firebase is not configured yet.</strong><br>
       Edit <code>/js/firebase-config.js</code>, paste your Firebase project credentials,
       and set <code>TN_FIREBASE_ENABLED = true</code>.<br><br>
       See the <a href="/admin/dashboard.html">dashboard</a> for full setup instructions.`;

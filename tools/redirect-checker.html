@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/redirect-checker.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .url-bar { display:flex; gap:8px; margin-bottom:14px; }
     .url-bar input { flex:1; padding:12px 16px; border:2px solid var(--border); border-radius:var(--radius); font-size:.92rem; }
@@ -66,17 +66,17 @@
     </div>
     <div class="tool-container">
       <div class="info-banner">
-        <span class="i">💡</span>
+        <span class="i"><i class="fa-solid fa-lightbulb"></i></span>
         <p>Due to browser security (CORS), we can't trace live redirects from the browser. Instead, use the <strong>Redirect Chain Simulator</strong> below to plan and visualize your redirect chains, or build chains by entering known redirect hops.</p>
       </div>
 
       <div class="sim-section">
-        <div class="sim-title">🔗 Redirect Chain Builder</div>
+        <div class="sim-title"><i class="fa-solid fa-link"></i> Redirect Chain Builder</div>
         <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Add URLs in sequence to see how your redirect chain works.</p>
         <div id="sim-steps"></div>
         <button class="btn btn-secondary" onclick="addStep()" style="margin-top:8px">+ Add Redirect Step</button>
         <div style="margin-top:12px">
-          <button class="btn btn-primary" onclick="buildChain()">🔍 Visualize Chain</button>
+          <button class="btn btn-primary" onclick="buildChain()"><i class="fa-solid fa-magnifying-glass"></i> Visualize Chain</button>
           <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
         </div>
       </div>
@@ -145,7 +145,7 @@ function renderSteps() {
           <option value="307" ${s.code==='307'?'selected':''}>307</option>
           <option value="308" ${s.code==='308'?'selected':''}>308</option>
         </select>` : `<span style="font-size:.72rem;font-weight:600;color:#10b981;min-width:40px">FINAL</span>`}
-      ${steps.length > 2 ? `<button class="rm-btn" onclick="steps.splice(${i},1);renderSteps()">✕</button>` : ''}
+      ${steps.length > 2 ? `<button class="rm-btn" onclick="steps.splice(${i},1);renderSteps()"><i class="fa-solid fa-xmark"></i></button>` : ''}
     </div>`).join('');
 }
 
@@ -181,7 +181,7 @@ function buildChain() {
             <span class="step-label">${label}</span>
           </div>
           <div class="step-url">${escapeHtml(s.url)}</div>
-          ${!isLast ? `<div class="step-meta">→ Redirects to next URL</div>` : `<div class="step-meta">✓ Page loads here</div>`}
+          ${!isLast ? `<div class="step-meta">→ Redirects to next URL</div>` : `<div class="step-meta"><i class="fa-solid fa-check"></i> Page loads here</div>`}
         </div>
       </div>`;
   });
@@ -190,11 +190,11 @@ function buildChain() {
     <div class="summary-grid">
       <div class="summary-item"><div class="summary-val" style="color:#3b82f6">${hops}</div><div class="summary-label">REDIRECT HOPS</div></div>
       <div class="summary-item"><div class="summary-val" style="color:${hops > 2 ? '#ef4444' : '#10b981'}">${hops > 2 ? 'Long' : hops > 1 ? 'OK' : 'Good'}</div><div class="summary-label">CHAIN LENGTH</div></div>
-      <div class="summary-item"><div class="summary-val" style="color:${hasLoop ? '#ef4444' : '#10b981'}">${hasLoop ? '⚠ Yes' : '✓ No'}</div><div class="summary-label">LOOP DETECTED</div></div>
+      <div class="summary-item"><div class="summary-val" style="color:${hasLoop ? '#ef4444' : '#10b981'}">${hasLoop ? '<i class="fa-solid fa-triangle-exclamation"></i> Yes' : '<i class="fa-solid fa-check"></i> No'}</div><div class="summary-label">LOOP DETECTED</div></div>
       <div class="summary-item"><div class="summary-val">~${hops * 50}-${hops * 200}ms</div><div class="summary-label">EST. DELAY</div></div>
     </div>
-    ${hasLoop ? '<div class="info-banner" style="background:#fef2f2;border-color:#fecaca"><span class="i">⚠️</span><p style="color:#dc2626">Redirect loop detected! This will cause an infinite loop and the page will never load.</p></div>' : ''}
-    ${hops > 2 ? '<div class="info-banner" style="background:#fffbeb;border-color:#fed7aa"><span class="i">⚠️</span><p style="color:#92400e">Long redirect chain detected. Google typically follows up to 5 hops but recommends keeping chains as short as possible.</p></div>' : ''}
+    ${hasLoop ? '<div class="info-banner" style="background:#fef2f2;border-color:#fecaca"><span class="i"><i class="fa-solid fa-triangle-exclamation"></i></span><p style="color:#dc2626">Redirect loop detected! This will cause an infinite loop and the page will never load.</p></div>' : ''}
+    ${hops > 2 ? '<div class="info-banner" style="background:#fffbeb;border-color:#fed7aa"><span class="i"><i class="fa-solid fa-triangle-exclamation"></i></span><p style="color:#92400e">Long redirect chain detected. Google typically follows up to 5 hops but recommends keeping chains as short as possible.</p></div>' : ''}
     <div class="chain-wrap">${chain}</div>`;
 }
 

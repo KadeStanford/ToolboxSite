@@ -58,5 +58,5 @@ const TN_FIREBASE_CONFIG = {
   measurementId:     "G-4VCJE92Z2J"
 };
 
-// ⚠️  Change to true ONLY after replacing ALL values above with real ones
+// WARNING: Change to true ONLY after replacing ALL values above with real ones
 const TN_FIREBASE_ENABLED = true;

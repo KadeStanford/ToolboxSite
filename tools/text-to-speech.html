@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/text-to-speech.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .tts-card { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
     .tts-top { background:linear-gradient(135deg,#6366f1,#8b5cf6); padding:24px; display:flex; align-items:center; gap:16px; }
@@ -52,7 +52,7 @@
     <div class="tool-container">
       <div class="tts-card">
         <div class="tts-top">
-          <div class="tts-icon">🔊</div>
+          <div class="tts-icon"><i class="fa-solid fa-volume-high"></i></div>
           <div class="tts-status">
             <h3 id="status-text">Ready to Speak</h3>
             <p id="status-sub">Enter text and click "Speak"</p>
@@ -87,7 +87,7 @@
           </div>
           <div class="btn-row">
             <button class="btn-speak" id="btn-speak" onclick="speak()">▶ Speak</button>
-            <button class="btn-pause" onclick="pauseResume()" id="btn-pause" style="display:none">⏸ Pause</button>
+            <button class="btn-pause" onclick="pauseResume()" id="btn-pause" style="display:none"><i class="fa-solid fa-pause"></i> Pause</button>
             <button class="btn-stop" onclick="stopSpeech()" id="btn-stop" style="display:none">■ Stop</button>
           </div>
           <div class="visualizer" id="visualizer"></div>
@@ -149,7 +149,7 @@ function loadVoices() {
   voices.forEach((v, i) => {
     const opt = document.createElement('option');
     opt.value = i;
-    opt.textContent = v.name + ' (' + v.lang + ')' + (v.default ? ' ★' : '');
+    opt.textContent = v.name + ' (' + v.lang + ')' + (v.default ? ' <i class="fa-solid fa-star"></i>' : '');
     voiceSel.appendChild(opt);
     langs.add(v.lang);
   });
@@ -202,7 +202,7 @@ function speak() {
 function pauseResume() {
   if (synth.paused) {
     synth.resume();
-    document.getElementById('btn-pause').textContent = '⏸ Pause';
+    document.getElementById('btn-pause').textContent = '<i class="fa-solid fa-pause"></i> Pause';
     document.getElementById('status-text').textContent = 'Speaking...';
     startViz();
   } else {

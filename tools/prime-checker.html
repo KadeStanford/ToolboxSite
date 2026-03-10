@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/prime-checker.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .input-row{display:flex;gap:10px;align-items:center;max-width:500px;margin:0 auto 16px;}
     .num-input{flex:1;padding:14px 18px;border:2px solid var(--border);border-radius:var(--radius-lg);font-size:1.2rem;font-weight:600;text-align:center;}
@@ -58,7 +58,7 @@
       <div id="nearbySection"></div>
 
       <div class="range-section">
-        <h3>🔢 Find Primes in Range</h3>
+        <h3><i class="fa-solid fa-hashtag"></i> Find Primes in Range</h3>
         <div class="range-row">
           <input id="rangeFrom" type="number" value="1" placeholder="From">
           <span>to</span>
@@ -148,9 +148,9 @@ function check(){
   const isFib = (() => { let a=0,b=1; while(b<n){[a,b]=[b,a+b];} return b===n; })();
 
   if(prime){
-    document.getElementById('verdict').innerHTML=`<div class="verdict prime"><span class="big">✅ ${n}</span>is a PRIME number!</div>`;
+    document.getElementById('verdict').innerHTML=`<div class="verdict prime"><span class="big"><i class="fa-solid fa-circle-check"></i> ${n}</span>is a PRIME number!</div>`;
   } else {
-    document.getElementById('verdict').innerHTML=`<div class="verdict not-prime"><span class="big">❌ ${n}</span>is NOT a prime number</div>`;
+    document.getElementById('verdict').innerHTML=`<div class="verdict not-prime"><span class="big"><i class="fa-solid fa-circle-xmark"></i> ${n}</span>is NOT a prime number</div>`;
   }
 
   let cards=`<div class="info-card"><h4>Prime Factorization</h4><div class="factor-tags">${factors.length?factors.map(f=>`<span class="factor-tag">${f}</span>`).join(''):'N/A'}</div></div>`;

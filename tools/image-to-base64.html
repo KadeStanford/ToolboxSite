@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/image-to-base64.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Base64 image encoding?","acceptedAnswer":{"@type":"Answer","text":"Base64 encoding converts binary image data into ASCII text. This lets you embed images directly in HTML, CSS, or JSON without needing a separate image file or URL."}},{"@type":"Question","name":"How do I use a Base64 image in HTML?","acceptedAnswer":{"@type":"Answer","text":"Use the data URL as an img src: <img src=\"data:image/png;base64,iVBOR...\">. Or in CSS: background-image: url('data:image/png;base64,...')."}},{"@type":"Question","name":"Does Base64 increase file size?","acceptedAnswer":{"@type":"Answer","text":"Yes, Base64 encoding increases file size by approximately 33% because it encodes 3 bytes of binary data as 4 ASCII characters. Inline images for small icons are often worthwhile despite this overhead."}}]}
   </script>
@@ -43,7 +43,7 @@
     <div class="tool-container">
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
         <input type="file" id="file-in" accept="image/*" onchange="convertFile(event)" />
-        <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
+        <div style="font-size:2.5rem;margin-bottom:10px;"><i class="fa-solid fa-image"></i></div>
         <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to select</p>
         <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF supported</p>
       </div>

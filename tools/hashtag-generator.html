@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/hashtag-generator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many hashtags should I use on Instagram?","acceptedAnswer":{"@type":"Answer","text":"Instagram allows up to 30 hashtags per post. However, studies show that 3–5 highly relevant hashtags often outperform using 30 generic ones. Mix broad, niche, and brand-specific hashtags."}},{"@type":"Question","name":"Do hashtags work on TikTok?","acceptedAnswer":{"@type":"Answer","text":"Yes. TikTok hashtags help the algorithm categorize your content and show it to interested users. Use 3–5 relevant hashtags plus 1–2 trending ones. Avoid using only massive hashtags with billions of views."}},{"@type":"Question","name":"Are hashtags case-sensitive?","acceptedAnswer":{"@type":"Answer","text":"Hashtags are not case-sensitive on most platforms. However, using CamelCase (like #SocialMediaMarketing) makes multi-word hashtags more accessible for screen readers."}}]}
   </script>
@@ -52,10 +52,10 @@
 
       <div class="platform-tabs" id="plat-tabs" style="display:none;">
         <button class="plat-btn active" onclick="setPlatform('all',this)">All Platforms</button>
-        <button class="plat-btn" onclick="setPlatform('instagram',this)">📸 Instagram</button>
-        <button class="plat-btn" onclick="setPlatform('tiktok',this)">🎵 TikTok</button>
-        <button class="plat-btn" onclick="setPlatform('twitter',this)">🐦 Twitter/X</button>
-        <button class="plat-btn" onclick="setPlatform('linkedin',this)">💼 LinkedIn</button>
+        <button class="plat-btn" onclick="setPlatform('instagram',this)"><i class="fa-solid fa-camera"></i> Instagram</button>
+        <button class="plat-btn" onclick="setPlatform('tiktok',this)"><i class="fa-solid fa-music"></i> TikTok</button>
+        <button class="plat-btn" onclick="setPlatform('twitter',this)"><i class="fa-brands fa-x-twitter"></i> Twitter/X</button>
+        <button class="plat-btn" onclick="setPlatform('linkedin',this)"><i class="fa-solid fa-briefcase"></i> LinkedIn</button>
       </div>
 
       <div id="hashtag-results" style="display:none;"></div>
@@ -66,7 +66,7 @@
           <div style="display:flex;gap:6px;flex-wrap:wrap;">
             <button class="btn btn-secondary" style="font-size:.78rem;" onclick="selectAll()">Select All</button>
             <button class="btn btn-secondary" style="font-size:.78rem;" onclick="clearSel()">Clear</button>
-            <button class="btn btn-primary" style="font-size:.78rem;" onclick="copySelected()">📋 Copy</button>
+            <button class="btn btn-primary" style="font-size:.78rem;" onclick="copySelected()"><i class="fa-solid fa-clipboard"></i> Copy</button>
           </div>
         </div>
         <div class="copied-area" id="selected-display">Click hashtags above to select them...</div>

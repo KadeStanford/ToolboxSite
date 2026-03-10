@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/image-to-pdf.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .drop-zone { border:3px dashed var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center; transition:.2s; cursor:pointer; background:#fafafa; }
     .drop-zone:hover, .drop-zone.drag-over { border-color:var(--primary); background:#eff6ff; }
@@ -47,7 +47,7 @@
     </div>
     <div class="tool-container">
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-        <div class="drop-icon">🖼️</div>
+        <div class="drop-icon"><i class="fa-solid fa-image"></i></div>
         <div class="drop-text">Drag & drop images here or <strong>click to browse</strong></div>
         <div style="font-size:.75rem;color:var(--text-muted);margin-top:6px;">Supports JPG, PNG, GIF, WebP, BMP</div>
       </div>
@@ -91,7 +91,7 @@
         </div>
       </div>
       <div class="act-row">
-        <button class="btn btn-primary" onclick="generatePDF()" id="btn-gen" disabled>📄 Generate PDF</button>
+        <button class="btn btn-primary" onclick="generatePDF()" id="btn-gen" disabled><i class="fa-solid fa-file"></i> Generate PDF</button>
         <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
       </div>
       <div class="progress-bar" id="progress"><div class="progress-fill" id="progress-fill"></div></div>
@@ -162,7 +162,7 @@ function renderImages() {
       <img src="${img.src}" alt="${escapeHtml(img.name)}" />
       <div class="img-info">
         <span>${img.width}×${img.height}</span>
-        <button class="img-remove" onclick="removeImg(${i})">✕</button>
+        <button class="img-remove" onclick="removeImg(${i})"><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
   `).join('');

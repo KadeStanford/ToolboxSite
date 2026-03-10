@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/screen-resolution.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .hero-display{text-align:center;padding:30px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:var(--radius-lg);color:#fff;margin-bottom:20px;}
     .hero-res{font-size:3rem;font-weight:800;letter-spacing:1px;}
@@ -53,7 +53,7 @@
       <div class="info-grid" id="infoGrid"></div>
       <div class="visual-box" id="visualBox"></div>
       <div class="bp-section">
-        <h3>📐 Responsive Breakpoints</h3>
+        <h3><i class="fa-solid fa-ruler-combined"></i> Responsive Breakpoints</h3>
         <div class="bp-grid" id="bpGrid"></div>
       </div>
     </div>
@@ -106,14 +106,14 @@ function detect(){
   document.getElementById('heroSub').textContent=`Screen Resolution (${orient})`;
 
   const cards=[
-    {icon:'🖥️',label:'Screen Size',val:`${sw} × ${sh}`,note:'Physical screen pixels'},
-    {icon:'📐',label:'Viewport Size',val:`${vw} × ${vh}`,note:'CSS viewport (browser window)'},
-    {icon:'📏',label:'Available Area',val:`${aw} × ${ah}`,note:'Minus taskbar / system bars'},
-    {icon:'🔍',label:'Device Pixel Ratio',val:`${dpr}x`,note:dpr>1?'High DPI / Retina display':'Standard display'},
-    {icon:'🎨',label:'Color Depth',val:`${cd}-bit`,note:`${Math.pow(2,cd).toLocaleString()} colors`},
-    {icon:'🔄',label:'Orientation',val:orient,note:`Aspect ratio: ${(sw/sh).toFixed(2)}`},
-    {icon:'📱',label:'Touch Support',val:('ontouchstart' in window)?'Yes':'No',note:'Touch events available'},
-    {icon:'🖼️',label:'Physical Resolution',val:`${Math.round(sw*dpr)} × ${Math.round(sh*dpr)}`,note:'Hardware pixels'},
+    {icon:'<i class="fa-solid fa-desktop"></i>',label:'Screen Size',val:`${sw} × ${sh}`,note:'Physical screen pixels'},
+    {icon:'<i class="fa-solid fa-ruler-combined"></i>',label:'Viewport Size',val:`${vw} × ${vh}`,note:'CSS viewport (browser window)'},
+    {icon:'<i class="fa-solid fa-ruler"></i>',label:'Available Area',val:`${aw} × ${ah}`,note:'Minus taskbar / system bars'},
+    {icon:'<i class="fa-solid fa-magnifying-glass"></i>',label:'Device Pixel Ratio',val:`${dpr}x`,note:dpr>1?'High DPI / Retina display':'Standard display'},
+    {icon:'<i class="fa-solid fa-palette"></i>',label:'Color Depth',val:`${cd}-bit`,note:`${Math.pow(2,cd).toLocaleString()} colors`},
+    {icon:'<i class="fa-solid fa-rotate"></i>',label:'Orientation',val:orient,note:`Aspect ratio: ${(sw/sh).toFixed(2)}`},
+    {icon:'<i class="fa-solid fa-mobile-screen"></i>',label:'Touch Support',val:('ontouchstart' in window)?'Yes':'No',note:'Touch events available'},
+    {icon:'<i class="fa-solid fa-image"></i>',label:'Physical Resolution',val:`${Math.round(sw*dpr)} × ${Math.round(sh*dpr)}`,note:'Hardware pixels'},
   ];
   document.getElementById('infoGrid').innerHTML=cards.map(c=>`<div class="info-card"><div class="ic-icon">${c.icon}</div><div class="ic-label">${c.label}</div><div class="ic-val">${c.val}</div><div class="ic-note">${c.note}</div></div>`).join('');
 
@@ -126,7 +126,7 @@ function detect(){
   // Breakpoints
   document.getElementById('bpGrid').innerHTML=BREAKPOINTS.map(bp=>{
     const match=vw>=bp.min&&vw<=bp.max;
-    return `<div class="bp-card${match?' match':''}"><span class="bp-name">${match?'✅ ':''} ${bp.name}</span><span class="bp-range">${bp.min}${bp.max===Infinity?'+':'–'+bp.max}px</span></div>`;
+    return `<div class="bp-card${match?' match':''}"><span class="bp-name">${match?'<i class="fa-solid fa-circle-check"></i> ':''} ${bp.name}</span><span class="bp-range">${bp.min}${bp.max===Infinity?'+':'–'+bp.max}px</span></div>`;
   }).join('');
 }
 </script>

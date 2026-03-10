@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/schema-generator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .schema-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
     @media(max-width:800px) { .schema-grid { grid-template-columns:1fr; } }
@@ -59,15 +59,15 @@
 
       <div class="schema-grid">
         <div class="fields-panel" id="fields-panel">
-          <div class="fields-title" id="fields-title">📝 Fill in the fields</div>
+          <div class="fields-title" id="fields-title"><i class="fa-solid fa-pen-to-square"></i> Fill in the fields</div>
           <div id="fields"></div>
         </div>
         <div class="output-panel">
           <div class="output-actions">
-            <button class="btn btn-primary" onclick="copyOutput()">📋 Copy</button>
+            <button class="btn btn-primary" onclick="copyOutput()"><i class="fa-solid fa-clipboard"></i> Copy</button>
           </div>
           <textarea class="output-area" id="output" readonly></textarea>
-          <button class="btn btn-secondary" onclick="validateSchema()" style="margin-top:8px;width:100%">✓ Validate JSON-LD</button>
+          <button class="btn btn-secondary" onclick="validateSchema()" style="margin-top:8px;width:100%"><i class="fa-solid fa-check"></i> Validate JSON-LD</button>
           <div id="validate-msg" style="margin-top:8px;font-size:.82rem;"></div>
         </div>
       </div>
@@ -111,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const TYPES = [
-  { id:'Article', icon:'📰', name:'Article' },
-  { id:'FAQPage', icon:'❓', name:'FAQ Page' },
-  { id:'Product', icon:'🛍️', name:'Product' },
-  { id:'LocalBusiness', icon:'🏪', name:'Local Business' },
-  { id:'Organization', icon:'🏢', name:'Organization' },
-  { id:'Person', icon:'👤', name:'Person' },
-  { id:'Event', icon:'📅', name:'Event' },
-  { id:'Recipe', icon:'🍳', name:'Recipe' },
+  { id:'Article', icon:'<i class="fa-solid fa-newspaper"></i>', name:'Article' },
+  { id:'FAQPage', icon:'<i class="fa-solid fa-circle-question"></i>', name:'FAQ Page' },
+  { id:'Product', icon:'<i class="fa-solid fa-bag-shopping"></i>', name:'Product' },
+  { id:'LocalBusiness', icon:'<i class="fa-solid fa-store"></i>', name:'Local Business' },
+  { id:'Organization', icon:'<i class="fa-solid fa-building"></i>', name:'Organization' },
+  { id:'Person', icon:'<i class="fa-solid fa-user"></i>', name:'Person' },
+  { id:'Event', icon:'<i class="fa-solid fa-calendar"></i>', name:'Event' },
+  { id:'Recipe', icon:'<i class="fa-solid fa-utensils"></i>', name:'Recipe' },
 ];
 
 let currentType = 'Article';
@@ -145,7 +145,7 @@ function f(label, id, type='text', req=false, ph='') {
 function renderFields() {
   const title = document.getElementById('fields-title');
   const fields = document.getElementById('fields');
-  title.textContent = `📝 ${currentType} Fields`;
+  title.textContent = `<i class="fa-solid fa-pen-to-square"></i> ${currentType} Fields`;
   
   let html = '';
   switch(currentType) {
@@ -237,7 +237,7 @@ function renderFAQ() {
   if (!list) return;
   list.innerHTML = faqItems.map((item, i) => `
     <div class="faq-item">
-      <div class="faq-head"><span class="faq-label">Q${i+1}</span>${faqItems.length>1?`<button class="faq-del" onclick="faqItems.splice(${i},1);renderFAQ()">✕</button>`:''}</div>
+      <div class="faq-head"><span class="faq-label">Q${i+1}</span>${faqItems.length>1?`<button class="faq-del" onclick="faqItems.splice(${i},1);renderFAQ()"><i class="fa-solid fa-xmark"></i></button>`:''}</div>
       <input placeholder="Question" value="${escapeHtml(item.q)}" onchange="faqItems[${i}].q=this.value;generate()">
       <textarea placeholder="Answer" onchange="faqItems[${i}].a=this.value;generate()">${escapeHtml(item.a)}</textarea>
     </div>`).join('');
@@ -342,9 +342,9 @@ function validateSchema() {
     if (!match) throw new Error('No JSON found');
     const obj = JSON.parse(match[0]);
     if (!obj['@context'] || !obj['@type']) throw new Error('Missing @context or @type');
-    msg.innerHTML = '<span style="color:#15803d;font-weight:600">✓ Valid JSON-LD structure. The markup is syntactically correct.</span>';
+    msg.innerHTML = '<span style="color:#15803d;font-weight:600"><i class="fa-solid fa-check"></i> Valid JSON-LD structure. The markup is syntactically correct.</span>';
   } catch(e) {
-    msg.innerHTML = `<span style="color:#dc2626;font-weight:600">✕ Invalid: ${escapeHtml(e.message)}</span>`;
+    msg.innerHTML = `<span style="color:#dc2626;font-weight:600"><i class="fa-solid fa-xmark"></i> Invalid: ${escapeHtml(e.message)}</span>`;
   }
 }
 </script>

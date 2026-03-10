@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/user-agent.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .ua-current { padding:16px 20px; background:linear-gradient(135deg,#1e3a5f,#0f172a); border-radius:var(--radius-lg); margin-bottom:16px; }
     .ua-label { color:#94a3b8; font-size:.72rem; font-weight:600; text-transform:uppercase; margin-bottom:6px; }
@@ -64,14 +64,14 @@
         <textarea class="ua-input" id="ua-input" placeholder="Paste a user agent string here, or click Parse to analyze your current one..."></textarea>
       </div>
       <div class="btn-row">
-        <button class="btn btn-primary" onclick="parseUA()">🔍 Parse User Agent</button>
+        <button class="btn btn-primary" onclick="parseUA()"><i class="fa-solid fa-magnifying-glass"></i> Parse User Agent</button>
         <button class="btn btn-secondary" onclick="useCurrent()">Use My User Agent</button>
         <button class="btn btn-secondary" onclick="document.getElementById('ua-input').value='';document.getElementById('results').innerHTML='';">Clear</button>
       </div>
       <div id="results"></div>
 
       <div class="samples-section">
-        <div class="samples-title">📱 Sample User Agents</div>
+        <div class="samples-title"><i class="fa-solid fa-mobile-screen"></i> Sample User Agents</div>
         <div id="samples"></div>
       </div>
     </div>
@@ -140,7 +140,7 @@ function parseUA() {
   results.innerHTML = `
     <div class="info-grid">
       <div class="info-card">
-        <div class="card-head"><div class="card-icon ico-browser">🌐</div><span class="card-title">Browser</span></div>
+        <div class="card-head"><div class="card-icon ico-browser"><i class="fa-solid fa-globe"></i></div><span class="card-title">Browser</span></div>
         <div class="card-body">
           <div class="card-big">${escapeHtml(info.browser)}</div>
           <div class="card-sub">Version ${escapeHtml(info.browserVersion)}</div>
@@ -149,7 +149,7 @@ function parseUA() {
         </div>
       </div>
       <div class="info-card">
-        <div class="card-head"><div class="card-icon ico-os">💻</div><span class="card-title">Operating System</span></div>
+        <div class="card-head"><div class="card-icon ico-os"><i class="fa-solid fa-laptop"></i></div><span class="card-title">Operating System</span></div>
         <div class="card-body">
           <div class="card-big">${escapeHtml(info.os)}</div>
           <div class="card-sub">Version ${escapeHtml(info.osVersion)}</div>
@@ -158,7 +158,7 @@ function parseUA() {
         </div>
       </div>
       <div class="info-card">
-        <div class="card-head"><div class="card-icon ico-device">📱</div><span class="card-title">Device</span></div>
+        <div class="card-head"><div class="card-icon ico-device"><i class="fa-solid fa-mobile-screen"></i></div><span class="card-title">Device</span></div>
         <div class="card-body">
           <div class="card-big">${escapeHtml(info.device)}</div>
           <div class="card-sub">${escapeHtml(info.deviceType)}</div>
@@ -167,7 +167,7 @@ function parseUA() {
         </div>
       </div>
       <div class="info-card">
-        <div class="card-head"><div class="card-icon ico-engine">⚙️</div><span class="card-title">Engine</span></div>
+        <div class="card-head"><div class="card-icon ico-engine"><i class="fa-solid fa-gear"></i></div><span class="card-title">Engine</span></div>
         <div class="card-body">
           <div class="card-big">${escapeHtml(info.engine)}</div>
           <div class="card-sub">Version ${escapeHtml(info.engineVersion)}</div>

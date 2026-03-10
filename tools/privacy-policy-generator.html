@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/privacy-policy-generator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .gen-grid { display:grid; grid-template-columns:340px 1fr; gap:20px; }
     @media(max-width:800px) { .gen-grid { grid-template-columns:1fr; } }
@@ -42,11 +42,11 @@
       <p>Generate a privacy policy for your website or app. Customize it to match your data practices.</p>
     </div>
     <div class="tool-container">
-      <div class="disclaimer">⚠️ <strong>Disclaimer:</strong> This tool generates a template privacy policy for informational purposes only. It is not legal advice. Consult a qualified attorney to ensure full compliance with applicable laws.</div>
+      <div class="disclaimer"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Disclaimer:</strong> This tool generates a template privacy policy for informational purposes only. It is not legal advice. Consult a qualified attorney to ensure full compliance with applicable laws.</div>
 
       <div class="gen-grid">
         <div class="form-panel">
-          <div class="form-title">⚙️ Configuration</div>
+          <div class="form-title"><i class="fa-solid fa-gear"></i> Configuration</div>
           <div class="fg"><label>Website / App Name *</label><input id="p-name" placeholder="My Website" oninput="generate()"></div>
           <div class="fg"><label>Website URL *</label><input id="p-url" placeholder="https://example.com" oninput="generate()"></div>
           <div class="fg"><label>Company / Owner Name</label><input id="p-company" placeholder="Your Company Inc." oninput="generate()"></div>
@@ -93,9 +93,9 @@
 
         <div class="output-panel">
           <div class="output-actions">
-            <button class="btn btn-primary" onclick="copyPolicy()">📋 Copy</button>
-            <button class="btn btn-secondary" onclick="downloadPolicy()">⬇ Download .txt</button>
-            <button class="btn btn-secondary" onclick="downloadHTML()">⬇ Download .html</button>
+            <button class="btn btn-primary" onclick="copyPolicy()"><i class="fa-solid fa-clipboard"></i> Copy</button>
+            <button class="btn btn-secondary" onclick="downloadPolicy()"><i class="fa-solid fa-download"></i> Download .txt</button>
+            <button class="btn btn-secondary" onclick="downloadHTML()"><i class="fa-solid fa-download"></i> Download .html</button>
           </div>
           <textarea class="output-area" id="output" readonly></textarea>
         </div>

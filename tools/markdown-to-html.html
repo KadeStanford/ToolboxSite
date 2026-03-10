@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/markdown-to-html.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .view-tabs { display:flex; gap:0; margin-bottom:14px; }
     .v-tab { padding:10px 20px; font-weight:600; font-size:.82rem; border:2px solid var(--border); background:#fff; cursor:pointer; transition:.15s; }
@@ -78,9 +78,9 @@
             <button class="tb-btn" onclick="ins('~~','~~')" title="Strikethrough"><s>S</s></button>
             <button class="tb-btn" onclick="ins('`','`')" title="Code">&lt;&gt;</button>
             <button class="tb-btn" onclick="ins('# ','')" title="Heading">H</button>
-            <button class="tb-btn" onclick="ins('[','](url)')" title="Link">🔗</button>
-            <button class="tb-btn" onclick="ins('![alt](',')')" title="Image">🖼</button>
-            <button class="tb-btn" onclick="ins('> ','')" title="Blockquote">❝</button>
+            <button class="tb-btn" onclick="ins('[','](url)')" title="Link"><i class="fa-solid fa-link"></i></button>
+            <button class="tb-btn" onclick="ins('![alt](',')')" title="Image"><i class="fa-solid fa-image"></i></button>
+            <button class="tb-btn" onclick="ins('> ','')" title="Blockquote"><i class="fa-solid fa-quote-left"></i></button>
             <button class="tb-btn" onclick="ins('- ','')" title="List">•</button>
             <button class="tb-btn" onclick="ins('---\n','')" title="Horizontal Rule">—</button>
           </div>
@@ -92,8 +92,8 @@
         </div>
       </div>
       <div class="act-row">
-        <button class="btn btn-primary" onclick="copyHTML()">📋 Copy HTML</button>
-        <button class="btn btn-secondary" onclick="download()">💾 Download HTML</button>
+        <button class="btn btn-primary" onclick="copyHTML()"><i class="fa-solid fa-clipboard"></i> Copy HTML</button>
+        <button class="btn btn-secondary" onclick="download()"><i class="fa-solid fa-floppy-disk"></i> Download HTML</button>
         <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
       </div>
       <div class="stat-bar" id="stats"></div>
@@ -252,14 +252,14 @@ function greet(name) {
 
 | Feature | Status |
 |---------|--------|
-| Headings | ✅ |
-| Lists | ✅ |
-| Code | ✅ |
-| Tables | ✅ |
+| Headings | <i class="fa-solid fa-circle-check"></i> |
+| Lists | <i class="fa-solid fa-circle-check"></i> |
+| Code | <i class="fa-solid fa-circle-check"></i> |
+| Tables | <i class="fa-solid fa-circle-check"></i> |
 
 ---
 
-Made with ❤️ by ToolNook`;
+Made with <i class="fa-solid fa-heart"></i> by ToolNook`;
   render();
 }
 </script>

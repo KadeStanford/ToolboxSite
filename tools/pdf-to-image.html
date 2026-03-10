@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/pdf-to-image.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .drop-zone { border:3px dashed var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center; transition:.2s; cursor:pointer; background:#fafafa; }
     .drop-zone:hover, .drop-zone.active { border-color:#e11d48; background:#fff1f2; }
@@ -50,9 +50,9 @@
       <p>Convert PDF pages to high-quality PNG or JPG images. All processing happens in your browser.</p>
     </div>
     <div class="tool-container">
-      <div class="notice">⚠️ This tool uses the PDF.js library from Mozilla. For best results, use PDFs with standard fonts and formatting.</div>
+      <div class="notice"><i class="fa-solid fa-triangle-exclamation"></i> This tool uses the PDF.js library from Mozilla. For best results, use PDFs with standard fonts and formatting.</div>
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-        <div class="drop-icon">📄</div>
+        <div class="drop-icon"><i class="fa-solid fa-file"></i></div>
         <div class="drop-text">Drag & drop a PDF file here or <strong>click to browse</strong></div>
       </div>
       <input type="file" id="file-input" accept=".pdf" style="display:none" />
@@ -76,8 +76,8 @@
         </div>
       </div>
       <div class="act-row">
-        <button class="btn btn-primary" onclick="convertAll()" id="btn-convert" disabled>🖼 Convert All Pages</button>
-        <button class="btn btn-secondary" onclick="downloadAll()" id="btn-dl-all" disabled>💾 Download All</button>
+        <button class="btn btn-primary" onclick="convertAll()" id="btn-convert" disabled><i class="fa-solid fa-image"></i> Convert All Pages</button>
+        <button class="btn btn-secondary" onclick="downloadAll()" id="btn-dl-all" disabled><i class="fa-solid fa-floppy-disk"></i> Download All</button>
       </div>
       <div class="progress-bar" id="progress"><div class="progress-fill" id="progress-fill"></div></div>
       <div class="stat-bar" id="stats"></div>

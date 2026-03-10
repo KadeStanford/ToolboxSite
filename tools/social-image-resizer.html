@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/social-image-resizer.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .upload-zone{border:3px dashed var(--border);border-radius:var(--radius-lg);padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;}
     .upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:#eff6ff;}
@@ -46,7 +46,7 @@
     </div>
     <div class="tool-container">
       <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-        <div style="font-size:2.2rem;">📐</div>
+        <div style="font-size:2.2rem;"><i class="fa-solid fa-ruler-combined"></i></div>
         <p>Click or drag & drop an image to resize</p>
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="loadImage(this.files[0])">
       </div>
@@ -61,7 +61,7 @@
             <div class="ctrl-group"><label>Fit Mode</label><select id="fitMode" onchange="redraw()"><option value="cover">Cover (fill, crop)</option><option value="contain">Contain (fit, bars)</option><option value="stretch">Stretch</option></select></div>
             <div class="ctrl-group"><label>Background Color</label><input type="color" id="bgColor" value="#ffffff" onchange="redraw()"></div>
             <div class="ctrl-group"><label>Quality</label><input type="range" id="quality" min="10" max="100" value="90"><span id="qualVal">90%</span></div>
-            <button class="btn btn-primary" onclick="downloadImage()" style="width:100%;margin-top:10px;">⬇ Download</button>
+            <button class="btn btn-primary" onclick="downloadImage()" style="width:100%;margin-top:10px;"><i class="fa-solid fa-download"></i> Download</button>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ let activePlat='instagram', activeSize=null, sourceImg=null;
 
 function buildPlatforms(){
   const tabs=document.getElementById('platTabs');
-  const icons={instagram:'📷',facebook:'📘',twitter:'🐦',youtube:'▶️',linkedin:'💼',pinterest:'📌'};
+  const icons={instagram:'<i class="fa-solid fa-camera"></i>',facebook:'<i class="fa-brands fa-facebook"></i>',twitter:'<i class="fa-brands fa-x-twitter"></i>',youtube:'<i class="fa-brands fa-youtube"></i>',linkedin:'<i class="fa-solid fa-briefcase"></i>',pinterest:'<i class="fa-solid fa-thumbtack"></i>'};
   tabs.innerHTML=Object.keys(PLATFORMS).map(p=>`<div class="plat-tab${p===activePlat?' active':''}" onclick="selectPlatform('${p}',this)">${icons[p]||''} ${p.charAt(0).toUpperCase()+p.slice(1)}</div>`).join('');
   renderSizes();
 }

@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/image-resizer.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this image resizer upload my image?","acceptedAnswer":{"@type":"Answer","text":"No. All image processing happens entirely in your browser using the HTML5 Canvas API. Your image never leaves your device."}},{"@type":"Question","name":"What image formats are supported?","acceptedAnswer":{"@type":"Answer","text":"You can upload JPEG, PNG, WebP, GIF, and BMP images. You can download the result as JPEG, PNG, or WebP."}},{"@type":"Question","name":"How do I maintain aspect ratio when resizing?","acceptedAnswer":{"@type":"Answer","text":"Check the 'Lock Aspect Ratio' checkbox before entering dimensions. When you change width, height will adjust automatically to preserve the original proportions."}}]}
   </script>
@@ -45,7 +45,7 @@
     <div class="tool-container">
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
         <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
-        <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
+        <div style="font-size:2.5rem;margin-bottom:10px;"><i class="fa-solid fa-image"></i></div>
         <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to browse</p>
         <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF, BMP supported</p>
       </div>
@@ -104,7 +104,7 @@
           </div>
         </div>
 
-        <button class="btn btn-primary" id="dl-btn" style="display:none;margin-top:14px;" onclick="downloadResult()">⬇️ Download Resized Image</button>
+        <button class="btn btn-primary" id="dl-btn" style="display:none;margin-top:14px;" onclick="downloadResult()"><i class="fa-solid fa-download"></i> Download Resized Image</button>
       </div>
     </div>
 

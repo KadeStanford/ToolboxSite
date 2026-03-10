@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/instagram-caption.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .ig-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
     @media(max-width:768px){.ig-grid{grid-template-columns:1fr;}}
@@ -57,15 +57,15 @@
     <div class="tool-container">
       <div class="ig-grid">
         <div class="ig-panel">
-          <h3>✏️ Write Your Caption</h3>
+          <h3><i class="fa-solid fa-pencil"></i> Write Your Caption</h3>
           <textarea class="cap-input" id="capInput" placeholder="Write your caption here...&#10;&#10;Use the buttons below to add invisible line breaks." oninput="updatePreview()"></textarea>
           <div class="break-btns">
             <button class="btn btn-secondary btn-sm" onclick="insertBreaks(1)" title="Insert an invisible line break">+ Line Break</button>
             <button class="btn btn-secondary btn-sm" onclick="insertBreaks(5)" title="Hide hashtags below the fold">+ Spacer (5 lines)</button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('📸')">📸</button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('✨')">✨</button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('🔥')">🔥</button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('💡')">💡</button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-camera"></i>')"><i class="fa-solid fa-camera"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-wand-magic-sparkles"></i>')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-fire"></i>')"><i class="fa-solid fa-fire"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-lightbulb"></i>')"><i class="fa-solid fa-lightbulb"></i></button>
           </div>
           <input class="hash-input" id="hashInput" placeholder="#hashtag1 #hashtag2 #hashtag3 ..." oninput="updatePreview()">
           <div class="stat-row">
@@ -74,30 +74,30 @@
             <span class="stat-chip">Words: <span id="sWords">0</span></span>
           </div>
           <div class="btn-row">
-            <button class="btn btn-primary" onclick="copyCaption()">📋 Copy Full Caption</button>
+            <button class="btn btn-primary" onclick="copyCaption()"><i class="fa-solid fa-clipboard"></i> Copy Full Caption</button>
             <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
           </div>
 
           <div class="template-sec">
-            <h4>📝 Quick Templates</h4>
+            <h4><i class="fa-solid fa-pen-to-square"></i> Quick Templates</h4>
             <div class="tmpl-grid">
-              <div class="tmpl-card" onclick="applyTemplate('engage')"><strong>Engagement</strong>Double tap if you agree! 👇 What do you think?</div>
-              <div class="tmpl-card" onclick="applyTemplate('promo')"><strong>Promotion</strong>Limited time offer 🔥 Link in bio!</div>
+              <div class="tmpl-card" onclick="applyTemplate('engage')"><strong>Engagement</strong>Double tap if you agree! <i class="fa-solid fa-arrow-down"></i> What do you think?</div>
+              <div class="tmpl-card" onclick="applyTemplate('promo')"><strong>Promotion</strong>Limited time offer <i class="fa-solid fa-fire"></i> Link in bio!</div>
               <div class="tmpl-card" onclick="applyTemplate('story')"><strong>Storytelling</strong>Here's the thing nobody tells you about...</div>
-              <div class="tmpl-card" onclick="applyTemplate('quote')"><strong>Quote</strong>"Your quote here" — Author ✨</div>
+              <div class="tmpl-card" onclick="applyTemplate('quote')"><strong>Quote</strong>"Your quote here" — Author <i class="fa-solid fa-wand-magic-sparkles"></i></div>
             </div>
           </div>
         </div>
 
         <div class="ig-panel">
-          <h3>👁️ Live Preview</h3>
+          <h3><i class="fa-solid fa-eye"></i> Live Preview</h3>
           <div class="ig-preview">
             <div class="ig-prev-header">
               <div class="ig-avatar"><div class="ig-avatar-inner">U</div></div>
               <div class="ig-username">username</div>
             </div>
-            <div class="ig-image">📷</div>
-            <div class="ig-actions"><span>♡</span><span>💬</span><span>➤</span></div>
+            <div class="ig-image"><i class="fa-solid fa-camera"></i></div>
+            <div class="ig-actions"><span><i class="fa-regular fa-heart"></i></span><span><i class="fa-solid fa-comment"></i></span><span><i class="fa-solid fa-arrow-right"></i></span></div>
             <div class="ig-caption-area">
               <span class="ig-user-inline">username</span>
               <span class="ig-caption-text" id="previewText">Your caption preview...</span>
@@ -176,10 +176,10 @@ function clearAll(){
   updatePreview();
 }
 const templates={
-  engage:"Double tap if you agree! 👇\n\nWhat do you think? Let me know in the comments below! 💬\n\nSave this for later ➡️",
-  promo:"🔥 LIMITED TIME OFFER 🔥\n\nDon't miss out on this amazing deal!\n\n👉 Link in bio\n\n⏰ Offer ends soon!",
-  story:"Here's the thing nobody tells you about...\n\nI used to think [old belief]. But then I realized something that changed everything.\n\n[Share your story]\n\nHas this happened to you? 👇",
-  quote:'"Your inspiring quote goes here."\n\n— Author Name ✨\n\nDo you agree? Tag someone who needs to hear this! 💭'
+  engage:"Double tap if you agree! <i class="fa-solid fa-arrow-down"></i>\n\nWhat do you think? Let me know in the comments below! <i class="fa-solid fa-comment"></i>\n\nSave this for later <i class="fa-solid fa-arrow-right"></i>",
+  promo:"<i class="fa-solid fa-fire"></i> LIMITED TIME OFFER <i class="fa-solid fa-fire"></i>\n\nDon't miss out on this amazing deal!\n\n<i class="fa-solid fa-arrow-right"></i> Link in bio\n\n<i class="fa-solid fa-clock"></i> Offer ends soon!",
+  story:"Here's the thing nobody tells you about...\n\nI used to think [old belief]. But then I realized something that changed everything.\n\n[Share your story]\n\nHas this happened to you? <i class="fa-solid fa-arrow-down"></i>",
+  quote:'"Your inspiring quote goes here."\n\n— Author Name <i class="fa-solid fa-wand-magic-sparkles"></i>\n\nDo you agree? Tag someone who needs to hear this! <i class="fa-solid fa-comment-dots"></i>'
 };
 function applyTemplate(key){
   document.getElementById('capInput').value=templates[key];

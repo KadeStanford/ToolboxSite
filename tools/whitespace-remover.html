@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/whitespace-remover.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .ws-panels { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     .ws-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
@@ -76,9 +76,9 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn btn-primary" onclick="clean()">🧹 Clean Text</button>
-        <button class="btn btn-secondary" onclick="analyze()">🔍 Analyze Only</button>
-        <button class="btn btn-secondary" onclick="copyOutput()">📋 Copy Output</button>
+        <button class="btn btn-primary" onclick="clean()"><i class="fa-solid fa-broom"></i> Clean Text</button>
+        <button class="btn btn-secondary" onclick="analyze()"><i class="fa-solid fa-magnifying-glass"></i> Analyze Only</button>
+        <button class="btn btn-secondary" onclick="copyOutput()"><i class="fa-solid fa-clipboard"></i> Copy Output</button>
         <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
       </div>
       <div class="stats-bar" id="stats"></div>
@@ -169,7 +169,7 @@ function analyze() {
   if (!text) return showToast('Please paste some text');
   const found = findInvisible(text);
   renderFound(found);
-  if (!Object.keys(found).length) showToast('No hidden characters found! ✨');
+  if (!Object.keys(found).length) showToast('No hidden characters found! <i class="fa-solid fa-wand-magic-sparkles"></i>');
 }
 
 function clean() {
@@ -207,7 +207,7 @@ function clean() {
     <span class="stat-chip">Output: ${text.length} chars</span>
     <span class="stat-chip ${removed > 0 ? 'danger' : ''}">${removed} characters removed</span>
   `;
-  showToast(removed > 0 ? `Removed ${removed} characters!` : 'Text is clean! ✨');
+  showToast(removed > 0 ? `Removed ${removed} characters!` : 'Text is clean! <i class="fa-solid fa-wand-magic-sparkles"></i>');
 }
 
 function renderFound(found) {
@@ -218,7 +218,7 @@ function renderFound(found) {
   document.getElementById('found-list').innerHTML = keys.map(k => {
     const f = found[k];
     return `<div class="found-item">
-      <div class="found-char">${f.code.length <= 6 ? f.code : '⚠'}</div>
+      <div class="found-char">${f.code.length <= 6 ? f.code : '<i class="fa-solid fa-triangle-exclamation"></i>'}</div>
       <span class="found-name">${f.name}</span>
       <span class="found-count">×${f.count}</span>
     </div>`;

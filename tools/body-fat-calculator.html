@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/body-fat-calculator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How accurate is the Navy body fat method?","acceptedAnswer":{"@type":"Answer","text":"The US Navy method is accurate to within 3-5% of DEXA scans, making it one of the most reliable non-invasive body fat estimation methods. It was developed by the US Department of Defense."}},{"@type":"Question","name":"What is a healthy body fat percentage?","acceptedAnswer":{"@type":"Answer","text":"For men: 6-17% is athletic/fitness range, 18-24% is acceptable. For women: 14-24% is athletic/fitness range, 25-31% is acceptable. Over 25% (men) or 32% (women) is considered obese."}},{"@type":"Question","name":"Where do I measure my waist for body fat?","acceptedAnswer":{"@type":"Answer","text":"For men: measure at the navel. For women: measure at the narrowest point of the waist. Measure at the same location every time for consistency. Take measurements in the morning before eating."}}]}
   </script>
@@ -70,17 +70,17 @@
         <div class="form-group">
           <label>Neck Circumference (inches)</label>
           <input type="number" class="tool-input" id="bf-neck" value="15" min="8" max="30" step="0.5" />
-          <div class="measure-tip">📏 Measure below the larynx, sloping downward</div>
+          <div class="measure-tip"><i class="fa-solid fa-ruler"></i> Measure below the larynx, sloping downward</div>
         </div>
         <div class="form-group">
           <label>Waist Circumference (inches)</label>
           <input type="number" class="tool-input" id="bf-waist" value="34" min="20" max="70" step="0.5" />
-          <div class="measure-tip" id="waist-tip">📏 Measure at navel level (men)</div>
+          <div class="measure-tip" id="waist-tip"><i class="fa-solid fa-ruler"></i> Measure at navel level (men)</div>
         </div>
         <div class="form-group" id="hip-group" style="display:none;">
           <label>Hip Circumference (inches)</label>
           <input type="number" class="tool-input" id="bf-hip" value="38" min="20" max="70" step="0.5" />
-          <div class="measure-tip">📏 Measure at widest point</div>
+          <div class="measure-tip"><i class="fa-solid fa-ruler"></i> Measure at widest point</div>
         </div>
       </div>
       <button class="btn btn-primary" style="margin-top:14px;" onclick="calcBodyFat()">Calculate</button>
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleHip() {
   const isFemale = document.getElementById('bf-sex').value === 'female';
   document.getElementById('hip-group').style.display = isFemale ? 'block' : 'none';
-  document.getElementById('waist-tip').textContent = isFemale ? '📏 Measure at narrowest point' : '📏 Measure at navel level (men)';
+  document.getElementById('waist-tip').textContent = isFemale ? '<i class="fa-solid fa-ruler"></i> Measure at narrowest point' : '<i class="fa-solid fa-ruler"></i> Measure at navel level (men)';
 }
 
 function calcBodyFat() {

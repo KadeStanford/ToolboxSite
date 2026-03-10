@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/matrix-calculator.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .op-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
     .op-tab{padding:8px 16px;border:2px solid var(--border);border-radius:var(--radius);font-size:.8rem;cursor:pointer;background:#fff;font-weight:600;transition:all .15s;}
@@ -145,7 +145,7 @@ function showResult(m,label){
   html+=`</div></div>`;
   document.getElementById('resultArea').innerHTML=html;
 }
-function showError(msg){document.getElementById('resultArea').innerHTML=`<div class="error-msg">❌ ${msg}</div>`;}
+function showError(msg){document.getElementById('resultArea').innerHTML=`<div class="error-msg"><i class="fa-solid fa-circle-xmark"></i> ${msg}</div>`;}
 
 function calculate(){
   const A=getMatrix('A');

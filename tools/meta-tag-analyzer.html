@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/meta-tag-analyzer.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .input-section textarea { width:100%; min-height:160px; font-family:'Courier New',monospace; font-size:.82rem; border:2px solid var(--border); border-radius:var(--radius); padding:14px; resize:vertical; }
     .input-section textarea:focus { border-color:var(--primary); outline:none; }
@@ -64,7 +64,7 @@
         <textarea id="html-input" placeholder='Paste your HTML source code here...&#10;&#10;Tip: Right-click any webpage → "View Page Source" → Copy all → Paste here'></textarea>
       </div>
       <div class="act-row">
-        <button class="btn btn-primary" onclick="analyze()">🔍 Analyze Meta Tags</button>
+        <button class="btn btn-primary" onclick="analyze()"><i class="fa-solid fa-magnifying-glass"></i> Analyze Meta Tags</button>
         <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
         <button class="btn btn-secondary" onclick="document.getElementById('html-input').value='';document.getElementById('results').innerHTML='';">Clear</button>
       </div>
@@ -152,7 +152,7 @@ function analyze() {
   
   function tagRow(name, val, ideal) {
     const len = val ? val.length : 0;
-    const lenBadge = val ? `<span class="tag-len">${len} chars${ideal ? (len >= ideal[0] && len <= ideal[1] ? ' ✓' : ' ⚠') : ''}</span>` : '';
+    const lenBadge = val ? `<span class="tag-len">${len} chars${ideal ? (len >= ideal[0] && len <= ideal[1] ? ' <i class="fa-solid fa-check"></i>' : ' <i class="fa-solid fa-triangle-exclamation"></i>') : ''}</span>` : '';
     return `<div class="tag-row"><span class="tag-name">${name}</span><span class="tag-val ${val?'':'empty'}">${val || 'Not set'}</span>${lenBadge}</div>`;
   }
   
@@ -180,7 +180,7 @@ function analyze() {
     
     <div class="results-grid">
       <div class="result-card">
-        <div class="card-head"><div class="card-icon basic">🔍</div><span class="card-title">Basic SEO</span><span class="card-status status-${cardStatus([title,desc,canonical,viewport])}">${cardStatus([title,desc,canonical,viewport])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-head"><div class="card-icon basic"><i class="fa-solid fa-magnifying-glass"></i></div><span class="card-title">Basic SEO</span><span class="card-status status-${cardStatus([title,desc,canonical,viewport])}">${cardStatus([title,desc,canonical,viewport])==='good'?'<i class="fa-solid fa-check"></i> Good':'<i class="fa-solid fa-triangle-exclamation"></i> Needs work'}</span></div>
         <div class="card-body">
           ${tagRow('Title',title,[30,60])}
           ${tagRow('Description',desc,[120,160])}
@@ -191,7 +191,7 @@ function analyze() {
       </div>
       
       <div class="result-card">
-        <div class="card-head"><div class="card-icon og">📱</div><span class="card-title">Open Graph</span><span class="card-status status-${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])}">${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-head"><div class="card-icon og"><i class="fa-solid fa-mobile-screen"></i></div><span class="card-title">Open Graph</span><span class="card-status status-${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])}">${cardStatus([ogTitle,ogDesc,ogImage,ogUrl])==='good'?'<i class="fa-solid fa-check"></i> Good':'<i class="fa-solid fa-triangle-exclamation"></i> Needs work'}</span></div>
         <div class="card-body">
           ${tagRow('og:title',ogTitle)}
           ${tagRow('og:description',ogDesc)}
@@ -203,7 +203,7 @@ function analyze() {
       </div>
       
       <div class="result-card">
-        <div class="card-head"><div class="card-icon tw">🐦</div><span class="card-title">Twitter Cards</span><span class="card-status status-${cardStatus([twCard,twTitle,twDesc,twImage])}">${cardStatus([twCard,twTitle,twDesc,twImage])==='good'?'✓ Good':'⚠ Needs work'}</span></div>
+        <div class="card-head"><div class="card-icon tw"><i class="fa-brands fa-x-twitter"></i></div><span class="card-title">Twitter Cards</span><span class="card-status status-${cardStatus([twCard,twTitle,twDesc,twImage])}">${cardStatus([twCard,twTitle,twDesc,twImage])==='good'?'<i class="fa-solid fa-check"></i> Good':'<i class="fa-solid fa-triangle-exclamation"></i> Needs work'}</span></div>
         <div class="card-body">
           ${tagRow('twitter:card',twCard)}
           ${tagRow('twitter:title',twTitle)}
@@ -214,7 +214,7 @@ function analyze() {
       </div>
       
       <div class="result-card">
-        <div class="card-head"><div class="card-icon tech">⚙️</div><span class="card-title">Technical</span></div>
+        <div class="card-head"><div class="card-icon tech"><i class="fa-solid fa-gear"></i></div><span class="card-title">Technical</span></div>
         <div class="card-body">
           ${tagRow('Charset',charset)}
           ${tagRow('Viewport',viewport)}

@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/random-number.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .big-result { font-size:5rem; font-weight:800; text-align:center; color:var(--primary); line-height:1; padding:24px 0; font-variant-numeric:tabular-nums; }
     .multi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:10px; margin-top:12px; }
@@ -99,7 +99,7 @@
           <label>dice at once</label>
         </div>
         <div class="dice-result-wrap">
-          <div class="dice-face" id="dice-face">🎲</div>
+          <div class="dice-face" id="dice-face"><i class="fa-solid fa-dice"></i></div>
           <div class="dice-roll-val" id="dice-val"></div>
           <div style="font-size:.85rem;color:var(--text-muted);margin-top:4px;" id="dice-breakdown"></div>
         </div>
@@ -242,8 +242,8 @@
     const count = Math.min(100, parseInt(document.getElementById('dice-count').value)||1);
     const rolls = Array.from({length:count}, () => randInt(1,sides));
     const total = rolls.reduce((a,b)=>a+b,0);
-    const diceIcons = {4:'🔺',6:'🎲',8:'🎱',10:'🔟',12:'🔷',20:'🎯',100:'💯'};
-    document.getElementById('dice-face').textContent = diceIcons[sides] || '🎲';
+    const diceIcons = {4:'<i class="fa-solid fa-dice"></i>',6:'<i class="fa-solid fa-dice"></i>',8:'<i class="fa-solid fa-dice"></i>',10:'<i class="fa-solid fa-dice"></i>',12:'<i class="fa-solid fa-dice"></i>',20:'<i class="fa-solid fa-dice"></i>',100:'<i class="fa-solid fa-dice"></i>'};
+    document.getElementById('dice-face').innerHTML = diceIcons[sides] || '<i class="fa-solid fa-dice"></i>';
     document.getElementById('dice-val').textContent = `Total: ${total}`;
     document.getElementById('dice-breakdown').textContent = count>1 ? `Rolls: [${rolls.join(', ')}]` : '';
     addHistory(`${count}d${sides} → ${total}${count>1?' ('+rolls.join(',')+')':''}`);

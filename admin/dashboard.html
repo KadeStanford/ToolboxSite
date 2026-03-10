@@ -6,6 +6,7 @@
   <title>Admin Dashboard — ToolNook</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <style>
     /* ── Layout ── */
@@ -132,15 +133,15 @@
 
   <!-- ── Sidebar ── -->
   <aside class="admin-sidebar">
-    <div class="adm-logo">&#128736; <span>ToolNook</span></div>
+    <div class="adm-logo"><i class="fa-solid fa-screwdriver-wrench"></i> <span>ToolNook</span></div>
     <nav class="adm-nav">
       <div class="adm-sec">Analytics</div>
-      <button class="adm-btn active" id="nav-overview" onclick="showPage('overview')">📊 Overview</button>
-      <button class="adm-btn"        id="nav-tools"    onclick="showPage('tools')">🔧 By Tool</button>
-      <button class="adm-btn"        id="nav-daily"    onclick="showPage('daily')">📅 Daily Stats</button>
+      <button class="adm-btn active" id="nav-overview" onclick="showPage('overview')"><i class="fa-solid fa-chart-line"></i> Overview</button>
+      <button class="adm-btn"        id="nav-tools"    onclick="showPage('tools')"><i class="fa-solid fa-wrench"></i> By Tool</button>
+      <button class="adm-btn"        id="nav-daily"    onclick="showPage('daily')"><i class="fa-solid fa-calendar-days"></i> Daily Stats</button>
       <div class="adm-sec">Site</div>
-      <a class="adm-btn" href="/" target="_blank">🌐 View Live Site</a>
-      <a class="adm-btn" href="/sitemap.xml" target="_blank">🗺 Sitemap</a>
+      <a class="adm-btn" href="/" target="_blank"><i class="fa-solid fa-globe"></i> View Live Site</a>
+      <a class="adm-btn" href="/sitemap.xml" target="_blank"><i class="fa-solid fa-sitemap"></i> Sitemap</a>
     </nav>
     <div class="adm-footer">
       <div class="adm-user" id="user-email">—</div>
@@ -163,7 +164,7 @@
 
       <!-- Setup banner (shown when Firebase not configured) -->
       <div class="setup-card" id="setup-card" style="display:none;">
-        <h3>⚙️ Firebase Setup Required</h3>
+        <h3><i class="fa-solid fa-gear"></i> Firebase Setup Required</h3>
         <p>Edit <code>/js/firebase-config.js</code> and fill in your Firebase credentials, then set <code>TN_FIREBASE_ENABLED = true</code>.</p>
         <ol>
           <li>Go to <strong>console.firebase.google.com</strong> → Create project</li>
@@ -195,10 +196,10 @@ service cloud.firestore {
         <div class="ld-wrap" id="ov-load"><div class="ld-spin"></div><span>Fetching analytics…</span></div>
         <div id="ov-content" style="display:none;">
           <div class="stat-grid">
-            <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-lbl">Total Page Views</div><div class="stat-val" id="s-total">—</div><div class="stat-sub">All time, all tools</div></div>
-            <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-lbl">Views Today</div><div class="stat-val" id="s-today">—</div><div class="stat-sub" id="s-today-d">—</div></div>
-            <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-lbl">Top Tool</div><div class="stat-val" style="font-size:1rem;margin-top:6px;" id="s-top">—</div><div class="stat-sub" id="s-top-ct">—</div></div>
-            <div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-lbl">Active Tools</div><div class="stat-val" id="s-active">—</div><div class="stat-sub">Tools with ≥1 view</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-chart-line"></i></div><div class="stat-lbl">Total Page Views</div><div class="stat-val" id="s-total">—</div><div class="stat-sub">All time, all tools</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div><div class="stat-lbl">Views Today</div><div class="stat-val" id="s-today">—</div><div class="stat-sub" id="s-today-d">—</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-trophy"></i></div><div class="stat-lbl">Top Tool</div><div class="stat-val" style="font-size:1rem;margin-top:6px;" id="s-top">—</div><div class="stat-sub" id="s-top-ct">—</div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-wrench"></i></div><div class="stat-lbl">Active Tools</div><div class="stat-val" id="s-active">—</div><div class="stat-sub">Tools with ≥1 view</div></div>
           </div>
           <div class="charts-grid">
             <div class="chart-card"><h3>Top 10 Tools — All Time</h3><div class="chart-wrap"><canvas id="c-top"></canvas></div></div>

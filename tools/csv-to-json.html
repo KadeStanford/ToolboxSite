@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/csv-to-json.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .converter-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     .conv-panel { background:#fff; border:2px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
@@ -90,8 +90,8 @@
       </div>
       <div class="act-row">
         <button class="btn btn-primary" onclick="convert()">Convert to JSON</button>
-        <button class="btn btn-secondary" onclick="copyJSON()">📋 Copy JSON</button>
-        <button class="btn btn-secondary" onclick="download()">💾 Download</button>
+        <button class="btn btn-secondary" onclick="copyJSON()"><i class="fa-solid fa-clipboard"></i> Copy JSON</button>
+        <button class="btn btn-secondary" onclick="download()"><i class="fa-solid fa-floppy-disk"></i> Download</button>
         <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
       </div>
       <div class="stat-bar" id="stats"></div>

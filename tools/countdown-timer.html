@@ -13,7 +13,7 @@
   <meta property="og:url" content="https://toolnook.net/tools/countdown-timer.html" />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .cd-display { background:linear-gradient(135deg,var(--primary),var(--secondary)); color:#fff; border-radius:var(--radius-lg); padding:32px 20px; text-align:center; margin:16px 0; }
     .cd-units { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
@@ -77,7 +77,7 @@
       </div>
 
       <div id="cd-done" class="cd-display cd-done" style="display:none;">
-        🎉 <strong id="done-label">Time's up!</strong>
+        <i class="fa-solid fa-circle-check"></i> <strong id="done-label">Time's up!</strong>
       </div>
 
       <div id="saved-list-wrap" style="display:none;">
@@ -140,9 +140,9 @@ function getQuickDates() {
     { label:'Tomorrow',       date:in1 },
     { label:'In 7 days',      date:in7 },
     { label:'In 30 days',     date:in30 },
-    { label:'Christmas 🎄',   date:christmas },
-    { label:'New Year 🎆',    date:ny },
-    { label:'Halloween 🎃',   date:halloween },
+    { label:'Christmas Christmas',   date:christmas },
+    { label:'New Year New Year',    date:ny },
+    { label:'Halloween Halloween',   date:halloween },
   ];
 }
 
@@ -195,7 +195,7 @@ function tick() {
   if (diff <= 0) {
     clearInterval(cdInterval);
     document.getElementById('cd-output').style.display = 'none';
-    document.getElementById('done-label').textContent  = (document.getElementById('ev-name').value || 'Time') + '\'s up! 🎉';
+    document.getElementById('done-label').textContent  = (document.getElementById('ev-name').value || 'Time') + '\'s up! <i class="fa-solid fa-circle-check"></i>';
     document.getElementById('cd-done').style.display   = 'flex';
     return;
   }
@@ -232,7 +232,7 @@ function loadSaved() {
     const daysLeft = diff > 0 ? Math.ceil(diff / 86400000) + ' days left' : 'Passed';
     return `<div class="saved-item" onclick="loadCountdown(${i})">
       <span>&#9200; <strong>${s.name}</strong> — ${new Date(s.date).toLocaleDateString()}</span>
-      <span style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);font-size:.8rem;">${daysLeft}</span><span class="rm" onclick="removeCountdown(event,${i})">✕</span></span>
+      <span style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);font-size:.8rem;">${daysLeft}</span><span class="rm" onclick="removeCountdown(event,${i})"><i class="fa-solid fa-xmark"></i></span></span>
     </div>`;
   }).join('');
 }

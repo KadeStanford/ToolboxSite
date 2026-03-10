@@ -9,7 +9,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/image-color-picker.html" />
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does the image color picker work?","acceptedAnswer":{"@type":"Answer","text":"The tool draws your image on an HTML5 canvas, then uses getImageData() to read the exact pixel color at your mouse position when you click or hover. No image data is sent to any server."}},{"@type":"Question","name":"What color formats are supported?","acceptedAnswer":{"@type":"Answer","text":"The tool shows HEX (e.g. #3B82F6), RGB (e.g. rgb(59, 130, 246)), and HSL (e.g. hsl(217, 91%, 60%)) values simultaneously for every picked color."}},{"@type":"Question","name":"Can I copy the picked colors?","acceptedAnswer":{"@type":"Answer","text":"Yes. Click any color swatch in the history or the current HEX/RGB/HSL display to copy that value to your clipboard."}}]}
   </script>
@@ -49,13 +49,13 @@
     <div class="tool-container">
       <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
         <input type="file" id="file-in" accept="image/*" />
-        <div style="font-size:2.5rem;margin-bottom:10px;">🎨</div>
+        <div style="font-size:2.5rem;margin-bottom:10px;"><i class="fa-solid fa-palette"></i></div>
         <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to select</p>
         <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF — stays in your browser</p>
       </div>
 
       <div id="picker-section" style="display:none;">
-        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;">🖱️ Hover to preview &bull; Click to pick a color</p>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;"><i class="fa-solid fa-computer-mouse"></i> Hover to preview &bull; Click to pick a color</p>
         <div id="canvas-wrap">
           <canvas id="pick-canvas"></canvas>
           <canvas id="mag-canvas"></canvas>
