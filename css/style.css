@@ -39,6 +39,7 @@ body {
 }
 
 /* ===== HEADER ===== */
+#site-header { min-height: var(--header-height); }
 .site-header {
   background: var(--bg-white);
   border-bottom: 1px solid var(--border);
@@ -114,6 +115,7 @@ body {
 
 /* ===== LAYOUT ===== */
 .page-wrapper { max-width: var(--max-width); margin: 0 auto; padding: 28px 20px; }
+.page-wrapper-top { padding-bottom: 0; }
 .page-with-sidebar {
   display: grid;
   grid-template-columns: 1fr 300px;
@@ -157,7 +159,7 @@ body {
   color: var(--text-muted);
 }
 /* ── Flip Counter ── */
-.hero-counter { text-align: center; margin-bottom: 28px; }
+.hero-counter { text-align: center; margin-bottom: 28px; min-height: 86px; }
 .hero-counter-label {
   display: block;
   font-size: 0.78rem;
@@ -171,6 +173,7 @@ body {
   display: inline-flex;
   gap: 4px;
   justify-content: center;
+  min-height: 64px;
 }
 .flip-digit {
   position: relative;

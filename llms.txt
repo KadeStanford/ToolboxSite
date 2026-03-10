@@ -1,0 +1,29 @@
+# ToolNook
+
+> Free browser-based tools for developers, writers, and everyday tasks. All tools run client-side with no data sent to servers.
+
+ToolNook is a collection of 140+ free online utility tools. No signup or account required. Everything runs entirely in your browser for maximum privacy.
+
+## Categories
+
+- Developer Tools: JSON formatter, Base64 encoder, regex tester, diff checker, JWT decoder, URL encoder, UUID generator, hash generator, CSS minifier, SQL formatter, cron builder, HTML beautifier, JS minifier, DNS lookup, HTTP status codes, API response formatter, JSON path tester, chmod calculator, Morse code converter
+- Text Tools: Word counter, case converter, text cleaner, text sorter, slug generator, Lorem Ipsum generator, Markdown preview, text-to-speech, fancy text generator, emoji picker, whitespace remover, plagiarism checker, reading time estimator
+- Calculators: Age calculator, BMI calculator, tip calculator, percentage calculator, unit converter, compound interest, scientific calculator, statistics calculator, number base converter, fraction calculator, Roman numerals, matrix calculator, quadratic solver, prime checker, graph plotter, chemical equation balancer, binary calculator
+- Finance: Loan calculator, mortgage calculator, currency converter
+- Health & Fitness: Calorie calculator, macro calculator, body fat calculator
+- Image Tools: Image resizer, image-to-Base64, image color picker, image compressor, image format converter, SVG to PNG, SVG editor, favicon generator, placeholder image generator
+- SEO & Web: Meta tag generator, meta tag analyzer, robots.txt generator, Open Graph preview, redirect checker, schema generator, reading time
+- Content & Marketing: Invoice generator, hashtag generator, Instagram caption generator, Twitter/X character counter, YouTube thumbnail downloader, social image resizer, bio link generator
+- Converter Tools: CSV to JSON, YAML to JSON, Markdown to HTML, PDF converter, XML to JSON, JSON to XML, image format converter, SVG to PNG, text to binary, audio converter, epoch converter, video to GIF
+- Security & Privacy: Password generator, password strength checker, IP lookup, user agent detector, email header analyzer, privacy policy generator, CORS tester, SSL checker, encryption tool, TOTP generator
+- Date & Time: Date difference calculator, Unix timestamp converter, timezone converter, countdown timer, date formatter, stopwatch, Pomodoro timer, epoch converter
+- CSS Generators: Gradient generator, box shadow generator, border radius generator, flexbox generator, text shadow generator, CSS grid generator, glassmorphism generator, neumorphism generator
+- Design Tools: Color contrast checker, aspect ratio calculator, px/rem converter, font pairing tool, color palette generator
+- Device Testing: Microphone test, webcam test, keyboard tester, mouse input tester, gamepad tester, click speed test, speaker test
+- Utilities: Notes/scratchpad, screen resolution checker, typing test, speed test, random color generator, barcode generator, WiFi QR generator, IP subnet calculator, QR code generator
+
+## Links
+
+- Homepage: https://toolnook.net/
+- Privacy Policy: https://toolnook.net/privacy-policy.html
+- Accessibility: https://toolnook.net/accessibility.html
