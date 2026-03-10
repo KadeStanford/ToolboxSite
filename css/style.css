@@ -213,7 +213,7 @@ body {
   line-height: 64px;
 }
 .flip-digit .top span { transform: translateY(0); }
-.flip-digit .bottom span { transform: translateY(-100%); }
+.flip-digit .bottom span { transform: translateY(-50%); }
 /* Flap animation pieces */
 .flip-digit .flap {
   position: absolute;
@@ -239,7 +239,7 @@ body {
   transform: rotateX(90deg);
   z-index: 2;
 }
-.flip-digit .flap-back span { transform: translateY(-100%); }
+.flip-digit .flap-back span { transform: translateY(-50%); }
 @keyframes flapDown {
   0%   { transform: rotateX(0deg); }
   100% { transform: rotateX(-90deg); }
