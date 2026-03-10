@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Minifier & Beautifier — Minify CSS Online | ToolNook</title>
+  <meta name="description" content="Minify or beautify CSS code online. Compress CSS by removing whitespace and comments to reduce file size. Free CSS minifier and formatter tool." />
+  <meta name="keywords" content="CSS minifier, minify CSS online, CSS beautifier, CSS formatter, compress CSS, CSS uglifier, optimize CSS" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/css-minifier.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does CSS minification do?","acceptedAnswer":{"@type":"Answer","text":"CSS minification removes whitespace, comments, and unnecessary characters from CSS files without changing how the styles work. This reduces file size, which improves page load speed."}},{"@type":"Question","name":"How much does minifying CSS reduce file size?","acceptedAnswer":{"@type":"Answer","text":"Typical CSS files shrink by 20–40% after minification, depending on how many comments and whitespace characters are in the original. Combined with gzip compression, savings can be 80%+."}},{"@type":"Question","name":"What is the difference between minifying and uglifying CSS?","acceptedAnswer":{"@type":"Answer","text":"Minifying removes comments and extra whitespace. Uglifying further shortens class names and property values. This tool performs minification (safe for production) rather than class name mangling."}}]}
+  </script>
+  <style>
+    .editors { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:680px) { .editors { grid-template-columns:1fr; } }
+    .editor-pane { display:flex; flex-direction:column; gap:6px; }
+    .editor-pane label { font-size:.82rem; font-weight:700; }
+    .editor-pane textarea { font-family:monospace; font-size:.78rem; resize:vertical; min-height:240px; }
+    .stats-bar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:10px; }
+    .stat-pill { font-size:.76rem; background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; padding:3px 10px; }
+    .stat-pill b { color:var(--primary); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › CSS Minifier</div>
+      <h1>CSS Minifier &amp; Beautifier</h1>
+      <p>Minify CSS to compress file size, or beautify minified CSS to make it readable again.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="doMinify()">&#9660; Minify CSS</button>
+        <button class="btn btn-secondary" onclick="doBeautify()">&#9650; Beautify CSS</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+      </div>
+
+      <div class="stats-bar" id="stats-bar" style="display:none">
+        <span class="stat-pill">Input: <b id="s-in">0</b> bytes</span>
+        <span class="stat-pill">Output: <b id="s-out">0</b> bytes</span>
+        <span class="stat-pill">Savings: <b id="s-save">0%</b></span>
+      </div>
+
+      <div class="editors">
+        <div class="editor-pane">
+          <label for="css-input">Input CSS</label>
+          <textarea id="css-input" placeholder="/* Paste your CSS here */
+.container {
+  display: flex;
+  /* a comment */
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}"></textarea>
+          <button class="btn btn-secondary" style="font-size:.8rem;" onclick="pasteInput()">Paste</button>
+        </div>
+        <div class="editor-pane">
+          <label for="css-output">Output CSS</label>
+          <textarea id="css-output" readonly placeholder="Result appears here..."></textarea>
+          <button class="btn btn-secondary" style="font-size:.8rem;" onclick="copyOutput()">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>CSS Minification Tips</h2>
+      <ul>
+        <li><strong>Always keep an unminified source file.</strong> Use a build tool (webpack, Vite, Parcel) to auto-minify on deploy.</li>
+        <li><strong>Combine CSS files</strong> to reduce HTTP requests. Multiple small files can be worse than one minified file.</li>
+        <li><strong>Use gzip/Brotli compression</strong> on your server. Minifying + compressing can reduce CSS transfer size by 80–90%.</li>
+        <li><strong>Remove unused CSS</strong> with tools like PurgeCSS or UnCSS before minifying for even smaller files.</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('css-minifier');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('css-minifier','developer');
+});
+
+function doMinify() {
+  let css = document.getElementById('css-input').value;
+  if (!css.trim()) return;
+  // Remove block comments
+  css = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Remove line comments (// style not valid CSS but handle anyway)
+  css = css.replace(/\/\/[^\n]*/g, '');
+  // Remove newlines, tabs
+  css = css.replace(/\s+/g, ' ');
+  // Remove spaces around selectors, declarations
+  css = css.replace(/\s*([{}:;,>~+])\s*/g, '$1');
+  // Remove last semicolon before }
+  css = css.replace(/;}/g, '}');
+  css = css.trim();
+  document.getElementById('css-output').value = css;
+  showStats(document.getElementById('css-input').value, css);
+}
+
+function doBeautify() {
+  let css = document.getElementById('css-input').value.trim();
+  if (!css) return;
+  // Normalize whitespace first
+  css = css.replace(/\s+/g, ' ');
+  css = css.replace(/\s*{\s*/g, ' {\n  ');
+  css = css.replace(/;\s*/g, ';\n  ');
+  css = css.replace(/\s*}\s*/g, '\n}\n');
+  css = css.replace(/,\s*([^\s])/g, ',\n$1');
+  document.getElementById('css-output').value = css.trim();
+  showStats(css, css);
+}
+
+function showStats(input, output) {
+  const iLen = new TextEncoder().encode(input).length;
+  const oLen = new TextEncoder().encode(output).length;
+  const pct  = iLen ? Math.round((1 - oLen/iLen) * 100) : 0;
+  document.getElementById('s-in').textContent   = iLen.toLocaleString();
+  document.getElementById('s-out').textContent  = oLen.toLocaleString();
+  document.getElementById('s-save').textContent = pct + '%';
+  document.getElementById('stats-bar').style.display = 'flex';
+}
+
+function clearAll() {
+  document.getElementById('css-input').value = '';
+  document.getElementById('css-output').value = '';
+  document.getElementById('stats-bar').style.display = 'none';
+}
+
+function pasteInput() { navigator.clipboard.readText().then(t => { document.getElementById('css-input').value = t; }); }
+function copyOutput() {
+  const v = document.getElementById('css-output').value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).then(() => showToast('Copied!'));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hashtag Generator — Instagram, TikTok & Twitter Tags | ToolNook</title>
+  <meta name="description" content="Generate relevant hashtags for Instagram, TikTok, Twitter, and LinkedIn from a keyword or topic. Copy hashtag sets instantly. Free hashtag generator tool." />
+  <meta name="keywords" content="hashtag generator, Instagram hashtags, TikTok hashtags, Twitter hashtags, hashtag ideas, best hashtags, social media tags" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/hashtag-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many hashtags should I use on Instagram?","acceptedAnswer":{"@type":"Answer","text":"Instagram allows up to 30 hashtags per post. However, studies show that 3–5 highly relevant hashtags often outperform using 30 generic ones. Mix broad, niche, and brand-specific hashtags."}},{"@type":"Question","name":"Do hashtags work on TikTok?","acceptedAnswer":{"@type":"Answer","text":"Yes. TikTok hashtags help the algorithm categorize your content and show it to interested users. Use 3–5 relevant hashtags plus 1–2 trending ones. Avoid using only massive hashtags with billions of views."}},{"@type":"Question","name":"Are hashtags case-sensitive?","acceptedAnswer":{"@type":"Answer","text":"Hashtags are not case-sensitive on most platforms. However, using CamelCase (like #SocialMediaMarketing) makes multi-word hashtags more accessible for screen readers."}}]}
+  </script>
+  <style>
+    .category-block { margin-bottom:16px; }
+    .cat-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .cat-header h3 { font-size:.9rem; margin:0; }
+    .tag-cloud { display:flex; flex-wrap:wrap; gap:6px; }
+    .tag-pill { display:inline-block; padding:5px 12px; border:1px solid var(--border); border-radius:20px; font-size:.78rem; background:var(--bg-alt); cursor:pointer; transition:background .12s; user-select:none; }
+    .tag-pill:hover, .tag-pill.selected { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .platform-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+    .plat-btn { padding:6px 14px; border:1px solid var(--border); border-radius:20px; font-size:.82rem; cursor:pointer; background:var(--bg-alt); }
+    .plat-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .copied-area { background:#f1f5f9; border:1px solid var(--border); border-radius:var(--radius); padding:12px; font-size:.8rem; min-height:56px; font-family:monospace; word-break:break-word; }
+    .topic-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+    .topic-chip { padding:4px 12px; background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; font-size:.8rem; cursor:pointer; }
+    .topic-chip:hover { border-color:var(--primary); }
+    .count-badge { font-size:.7rem; background:var(--primary-light); border:1px solid var(--primary); color:var(--primary); border-radius:20px; padding:1px 7px; margin-left:4px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#content-tools">Content & SEO</a> › Hashtag Generator</div>
+      <h1>Hashtag Generator</h1>
+      <p>Enter a keyword or topic to get curated hashtags for Instagram, TikTok, Twitter, and LinkedIn.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <input type="text" id="kw-input" placeholder="Enter keyword or topic (e.g. fitness, travel, coding)" style="flex:1;min-width:200px;" />
+        <button class="btn btn-primary" onclick="generate()">Generate</button>
+      </div>
+
+      <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:6px;">Quick topics:</p>
+      <div class="topic-chips" id="topic-chips"></div>
+
+      <div class="platform-tabs" id="plat-tabs" style="display:none;">
+        <button class="plat-btn active" onclick="setPlatform('all',this)">All Platforms</button>
+        <button class="plat-btn" onclick="setPlatform('instagram',this)">📸 Instagram</button>
+        <button class="plat-btn" onclick="setPlatform('tiktok',this)">🎵 TikTok</button>
+        <button class="plat-btn" onclick="setPlatform('twitter',this)">🐦 Twitter/X</button>
+        <button class="plat-btn" onclick="setPlatform('linkedin',this)">💼 LinkedIn</button>
+      </div>
+
+      <div id="hashtag-results" style="display:none;"></div>
+
+      <div id="copy-section" style="display:none;margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px;">
+          <span style="font-size:.84rem;font-weight:700;">Selected Tags <span class="count-badge" id="sel-count">0</span></span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-secondary" style="font-size:.78rem;" onclick="selectAll()">Select All</button>
+            <button class="btn btn-secondary" style="font-size:.78rem;" onclick="clearSel()">Clear</button>
+            <button class="btn btn-primary" style="font-size:.78rem;" onclick="copySelected()">📋 Copy</button>
+          </div>
+        </div>
+        <div class="copied-area" id="selected-display">Click hashtags above to select them...</div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Hashtag Strategy by Platform</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:.84rem;">
+        <thead><tr><th style="padding:8px;border:1px solid var(--border);background:var(--bg-alt);">Platform</th><th style="padding:8px;border:1px solid var(--border);background:var(--bg-alt);">Recommended #</th><th style="padding:8px;border:1px solid var(--border);background:var(--bg-alt);">Best Practice</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px;border:1px solid var(--border);">Instagram</td><td style="padding:8px;border:1px solid var(--border);">3–10</td><td style="padding:8px;border:1px solid var(--border);">Mix niche + broad, avoid banned tags</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border);">TikTok</td><td style="padding:8px;border:1px solid var(--border);">3–5</td><td style="padding:8px;border:1px solid var(--border);">Include 1 trending tag, 2–3 niche</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border);">Twitter / X</td><td style="padding:8px;border:1px solid var(--border);">1–2</td><td style="padding:8px;border:1px solid var(--border);">Avoid cluttering tweets; use sparingly</td></tr>
+          <tr><td style="padding:8px;border:1px solid var(--border);">LinkedIn</td><td style="padding:8px;border:1px solid var(--border);">3–5</td><td style="padding:8px;border:1px solid var(--border);">Professional niche tags, no spam</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+const HASHTAG_DB = {
+  fitness:    { broad:['#fitness','#workout','#gym','#health','#exercise','#fitlife','#fitnessgoals'], niche:['#strengthtraining','#hiitworkout','#crossfit','#bodybuilding','#homeworkout','#fitnessmotivation','#personaltrainer'], trending:['#fitcheck','#gymmotivation','#gaintrain','#sweatyselfie','#fitfam'] },
+  travel:     { broad:['#travel','#wanderlust','#explore','#adventure','#vacation','#travelgram','#travelphotography'], niche:['#solotraveler','#backpacking','#luxurytravel','#roadtrip','#travelblogger','#hiddengemstravel','#traveltips'], trending:['#travelgoals','#worldtravel','#travellife','#gotravel','#travelinspiration'] },
+  food:       { broad:['#food','#foodie','#foodphotography','#cooking','#recipe','#homemade','#delicious'], niche:['#healthyeating','#veganfood','#mealprep','#foodblogger','#easyrecipes','#comfortfood','#instafood'], trending:['#foodlover','#cookingtips','#whatsonmyplate','#tasty','#foodiegram'] },
+  coding:     { broad:['#coding','#programming','#developer','#tech','#software','#webdev','#code'], niche:['#javascript','#python','#reactjs','#fullstackdeveloper','#100daysofcode','#openSource','#devlife'], trending:['#coderlife','#learntocode','#buildinpublic','#techtwitter','#devhumor'] },
+  fashion:    { broad:['#fashion','#style','#ootd','#outfit','#clothes','#fashionista','#streetstyle'], niche:['#sustainablefashion','#thriftedfinds','#capsulewardrobe','#minimalstyle','#fashionblogger','#vintagefashion','#slowfashion'], trending:['#styleinspo','#outfitcheck','#fashionpost','#trendyoutfits','#wiwt'] },
+  photography:{ broad:['#photography','#photo','#photographer','#photooftheday','#picoftheday','#instagood','#artofvisuals'], niche:['#portraitphotography','#landscapephotography','#streetphotography','#goldenhour','#naturephotography','#blackandwhitephotography','#photoedit'], trending:['#shotoniphone','#travelphoto','#photoshoot','#photographylovers','#instaphoto'] },
+  business:   { broad:['#business','#entrepreneur','#success','#motivation','#startup','#marketing','#leadership'], niche:['#smallbusiness','#digitalnomad','#personalbranding','#ecommerce','#b2b','#growthhacking','#businessowner'], trending:['#hustle','#mindset','#buildinpublic','#futureofwork','#sidehustle'] },
+  music:      { broad:['#music','#musician','#song','#newmusic','#hiphop','#pop','#indie'], niche:['#producer','#beatmaker','#guitarplayer','#singersongwriter','#musicproduction','#recordingstudio','#musicvideo'], trending:['#musicislife','#nowplaying','#musiclovers','#upcominartist','#spotify'] },
+  nature:     { broad:['#nature','#outdoors','#hiking','#mountains','#wildlife','#landscape','#earth'], niche:['#nationalpark','#trailrunning','#camping','#birdwatching','#wildlifephotography','#conservation','#sustainableliving'], trending:['#getoutside','#exploremore','#naturelover','#into_the_wild','#earthpix'] },
+  art:        { broad:['#art','#artist','#artwork','#drawing','#illustration','#painting','#creative'], niche:['#digitalart','#conceptart','#watercolor','#sketchbook','#procreate','#fanart','#abstractart'], trending:['#artoftheday','#artstagram','#artprocess','#nftart','#contemporaryart'] },
+};
+
+const QUICK_TOPICS = Object.keys(HASHTAG_DB);
+let platform = 'all';
+let selectedTags = new Set();
+let currentTags = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('hashtag-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('hashtag-generator','content');
+  const tc = document.getElementById('topic-chips');
+  QUICK_TOPICS.forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'topic-chip';
+    el.textContent = '#' + t;
+    el.onclick = () => { document.getElementById('kw-input').value = t; generate(); };
+    tc.appendChild(el);
+  });
+});
+
+function setPlatform(p, btn) {
+  platform = p;
+  document.querySelectorAll('.plat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHashtags();
+}
+
+function generate() {
+  const kw = document.getElementById('kw-input').value.trim().toLowerCase().replace(/\s+/g,'');
+  if (!kw) return;
+  const data = HASHTAG_DB[kw] || buildGeneric(kw);
+  currentTags = buildTagList(data);
+  selectedTags.clear();
+  document.getElementById('plat-tabs').style.display = 'flex';
+  document.getElementById('copy-section').style.display = 'block';
+  document.getElementById('hashtag-results').style.display = 'block';
+  renderHashtags();
+  updateCopyDisplay();
+}
+
+function buildGeneric(kw) {
+  const base = kw.replace(/[^a-z0-9]/gi,'');
+  return {
+    broad:    [`#${base}`,`#${base}life`,`#${base}community`,`#${base}lover`,`#${base}goals`,`#${base}gram`,`#best${base}`],
+    niche:    [`#${base}tips`,`#${base}inspo`,`#${base}blog`,`#${base}zone`,`#${base}daily`,`#${base}world`,`#${base}vibes`],
+    trending: [`#${base}check`,`#${base}post`,`#${base}moment`,`#${base}time`,`#${base}style`]
+  };
+}
+
+function buildTagList(data) {
+  return [
+    { category:'Broad / High-volume', tags: data.broad || [] },
+    { category:'Niche / Targeted',    tags: data.niche || [] },
+    { category:'Trending / Viral',    tags: data.trending || [] },
+  ];
+}
+
+function renderHashtags() {
+  const res = document.getElementById('hashtag-results');
+  res.innerHTML = currentTags.map(group => `
+    <div class="category-block">
+      <div class="cat-header">
+        <h3>${group.category}</h3>
+        <button class="btn btn-secondary" style="font-size:.75rem;padding:4px 10px;" onclick="selectGroup(${JSON.stringify(group.tags).replace(/"/g,'&quot;')})">Select All</button>
+      </div>
+      <div class="tag-cloud">
+        ${group.tags.map(t => `<span class="tag-pill ${selectedTags.has(t)?'selected':''}" onclick="toggleTag('${t}',this)">${t}</span>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function toggleTag(tag, el) {
+  if (selectedTags.has(tag)) { selectedTags.delete(tag); el.classList.remove('selected'); }
+  else { selectedTags.add(tag); el.classList.add('selected'); }
+  updateCopyDisplay();
+}
+
+function selectGroup(tags) {
+  tags.forEach(t => selectedTags.add(t));
+  renderHashtags();
+  updateCopyDisplay();
+}
+
+function selectAll() {
+  currentTags.forEach(g => g.tags.forEach(t => selectedTags.add(t)));
+  renderHashtags();
+  updateCopyDisplay();
+}
+
+function clearSel() {
+  selectedTags.clear();
+  renderHashtags();
+  updateCopyDisplay();
+}
+
+function updateCopyDisplay() {
+  const arr = Array.from(selectedTags);
+  document.getElementById('sel-count').textContent = arr.length;
+  document.getElementById('selected-display').textContent = arr.length ? arr.join(' ') : 'Click hashtags above to select them...';
+}
+
+function copySelected() {
+  const arr = Array.from(selectedTags);
+  if (!arr.length) return showToast('Select some hashtags first');
+  navigator.clipboard.writeText(arr.join(' ')).then(() => showToast(`Copied ${arr.length} hashtags!`));
+}
+</script>
+</body>
+</html>

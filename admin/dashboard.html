@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — ToolNook</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Layout ── */
+    body { background: #f1f5f9; margin: 0; }
+    .admin-shell { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .admin-sidebar {
+      width: 230px; flex-shrink: 0;
+      background: #0f172a; color: #e2e8f0;
+      display: flex; flex-direction: column;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .adm-logo { padding: 22px 20px; font-size: 1.1rem; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .adm-logo span { color: #38bdf8; }
+    .adm-nav { flex: 1; padding: 10px 0; }
+    .adm-sec { padding: 14px 20px 4px; font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: #475569; }
+    .adm-btn {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 9px 20px;
+      background: none; border: none; border-right: 3px solid transparent;
+      color: #94a3b8; font-size: .875rem; font-weight: 500;
+      cursor: pointer; text-align: left; text-decoration: none;
+      transition: .15s;
+    }
+    .adm-btn:hover  { background: rgba(255,255,255,.05); color: #e2e8f0; }
+    .adm-btn.active { background: rgba(99,102,241,.2); color: #fff; border-right-color: #6366f1; }
+    .adm-footer { padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.08); }
+    .adm-user   { font-size: .78rem; color: #64748b; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .btn-so     { width: 100%; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); color: #f87171; border-radius: var(--radius); padding: 6px 0; font-size: .8rem; cursor: pointer; }
+    .btn-so:hover { background: rgba(239,68,68,.22); }
+
+    /* ── Main ── */
+    .admin-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .adm-topbar {
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 14px 28px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 10;
+    }
+    .adm-topbar h1 { font-size: 1.15rem; font-weight: 700; }
+    .adm-status { font-size: .78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    .adm-body { padding: 28px; flex: 1; }
+
+    /* ── Pages ── */
+    .adm-page { display: none; }
+    .adm-page.vis { display: block; }
+
+    /* ── Setup banner ── */
+    .setup-card {
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: var(--radius-lg); padding: 22px 24px;
+      margin-bottom: 24px; line-height: 1.7; color: #78350f;
+    }
+    .setup-card h3 { margin-bottom: 10px; font-size: 1rem; }
+    .setup-card ol  { padding-left: 20px; }
+    .setup-card pre {
+      background: #fef3c7; border-radius: 6px;
+      padding: 12px 14px; font-size: .8rem;
+      overflow-x: auto; margin-top: 10px;
+      white-space: pre; color: #1e293b;
+    }
+    .setup-card code { background: #fef3c7; padding: 1px 5px; border-radius: 3px; font-size: .85em; }
+
+    /* ── Stat cards ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px 22px;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .stat-lbl  { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 600; }
+    .stat-val  { font-size: 2.2rem; font-weight: 800; line-height: 1; color: var(--text); }
+    .stat-sub  { font-size: .8rem; color: var(--text-muted); }
+    .stat-icon { font-size: 1.4rem; }
+
+    /* ── Charts ── */
+    .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+    .chart-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px 22px;
+    }
+    .chart-card h3 { font-size: .92rem; font-weight: 600; margin-bottom: 16px; }
+    .chart-wrap { position: relative; height: 250px; }
+
+    /* ── Table ── */
+    .tbl-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .tbl-hdr  { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .tbl-hdr h3 { font-size: .92rem; font-weight: 600; }
+    .tbl-search input { border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 10px; font-size: .84rem; outline: none; }
+    .adm-tbl  { width: 100%; border-collapse: collapse; }
+    .adm-tbl th {
+      padding: 9px 14px; font-size: .73rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted);
+      background: #f8fafc; border-bottom: 1px solid var(--border);
+      text-align: left; cursor: pointer; user-select: none; white-space: nowrap;
+    }
+    .adm-tbl th:hover { color: var(--primary); }
+    .adm-tbl td { padding: 11px 14px; font-size: .875rem; border-bottom: 1px solid #f1f5f9; }
+    .adm-tbl tr:last-child td { border-bottom: none; }
+    .adm-tbl tr:hover td { background: #f8fafc; }
+    .rank { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; background: var(--primary-light); color: var(--primary); }
+    .rank.gold { background: #fef3c7; color: #d97706; }
+    .use-bar { display: flex; align-items: center; gap: 8px; min-width: 160px; }
+    .use-track { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+    .use-fill  { height: 100%; background: linear-gradient(90deg,#6366f1,#38bdf8); border-radius: 3px; }
+    .cat-pill  { font-size: .72rem; background: #f1f5f9; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+
+    /* ── Loading ── */
+    .ld-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px; gap: 12px; color: var(--text-muted); }
+    .ld-spin { width: 34px; height: 34px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .admin-sidebar { display: none; } .adm-body { padding: 16px; } }
+    @media (max-width: 480px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+<div class="admin-shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="admin-sidebar">
+    <div class="adm-logo">&#128736; <span>ToolNook</span></div>
+    <nav class="adm-nav">
+      <div class="adm-sec">Analytics</div>
+      <button class="adm-btn active" id="nav-overview" onclick="showPage('overview')">📊 Overview</button>
+      <button class="adm-btn"        id="nav-tools"    onclick="showPage('tools')">🔧 By Tool</button>
+      <button class="adm-btn"        id="nav-daily"    onclick="showPage('daily')">📅 Daily Stats</button>
+      <div class="adm-sec">Site</div>
+      <a class="adm-btn" href="/" target="_blank">🌐 View Live Site</a>
+      <a class="adm-btn" href="/sitemap.xml" target="_blank">🗺 Sitemap</a>
+    </nav>
+    <div class="adm-footer">
+      <div class="adm-user" id="user-email">—</div>
+      <button class="btn-so" onclick="doSignOut()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="admin-main">
+    <div class="adm-topbar">
+      <h1 id="page-title">Overview</h1>
+      <div class="adm-status">
+        <div class="live-dot"></div>
+        <span id="refresh-ts">—</span>
+        <button onclick="loadData()" style="margin-left:8px;background:none;border:1px solid var(--border);border-radius:var(--radius);padding:4px 10px;font-size:.78rem;cursor:pointer;">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="adm-body">
+
+      <!-- Setup banner (shown when Firebase not configured) -->
+      <div class="setup-card" id="setup-card" style="display:none;">
+        <h3>⚙️ Firebase Setup Required</h3>
+        <p>Edit <code>/js/firebase-config.js</code> and fill in your Firebase credentials, then set <code>TN_FIREBASE_ENABLED = true</code>.</p>
+        <ol>
+          <li>Go to <strong>console.firebase.google.com</strong> → Create project</li>
+          <li>Project Settings → Add Web App → copy <code>firebaseConfig</code> values</li>
+          <li>Build → <strong>Firestore Database</strong> → Create database (production mode)</li>
+          <li>Build → <strong>Authentication</strong> → Sign-in method → Email/Password → Enable</li>
+          <li>Authentication → Users → <strong>Add user</strong> (your admin email + password)</li>
+          <li>Firestore → <strong>Rules</strong> tab → paste the security rules from <code>firebase-config.js</code></li>
+          <li>Paste the config into <code>js/firebase-config.js</code> and set <code>TN_FIREBASE_ENABLED = true</code></li>
+          <li>Redeploy to AWS Amplify (push to GitHub)</li>
+        </ol>
+        <pre>// Recommended Firestore Security Rules:
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /analytics/{doc} {
+      allow write: if true;
+      allow read:  if request.auth != null;
+    }
+    match /shorts/{doc}  { allow read, write: if true; }
+    match /pastes/{doc}  { allow read, write: if true; }
+    match /{document=**} { allow read, write: if request.auth != null; }
+  }
+}</pre>
+      </div>
+
+      <!-- ── Overview page ── -->
+      <div class="adm-page vis" id="page-overview">
+        <div class="ld-wrap" id="ov-load"><div class="ld-spin"></div><span>Fetching analytics…</span></div>
+        <div id="ov-content" style="display:none;">
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-icon">📈</div><div class="stat-lbl">Total Page Views</div><div class="stat-val" id="s-total">—</div><div class="stat-sub">All time, all tools</div></div>
+            <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-lbl">Views Today</div><div class="stat-val" id="s-today">—</div><div class="stat-sub" id="s-today-d">—</div></div>
+            <div class="stat-card"><div class="stat-icon">🏆</div><div class="stat-lbl">Top Tool</div><div class="stat-val" style="font-size:1rem;margin-top:6px;" id="s-top">—</div><div class="stat-sub" id="s-top-ct">—</div></div>
+            <div class="stat-card"><div class="stat-icon">🔧</div><div class="stat-lbl">Active Tools</div><div class="stat-val" id="s-active">—</div><div class="stat-sub">Tools with ≥1 view</div></div>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-card"><h3>Top 10 Tools — All Time</h3><div class="chart-wrap"><canvas id="c-top"></canvas></div></div>
+            <div class="chart-card"><h3>Last 30 Days — Daily Views</h3><div class="chart-wrap"><canvas id="c-trend"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── By Tool page ── -->
+      <div class="adm-page" id="page-tools">
+        <div class="ld-wrap" id="tl-load"><div class="ld-spin"></div><span>Loading…</span></div>
+        <div id="tl-content" style="display:none;">
+          <div class="tbl-card">
+            <div class="tbl-hdr">
+              <h3>All Tools — Usage Counts</h3>
+              <div class="tbl-search"><input id="ts-q" type="text" placeholder="Search…" oninput="filterTools()" /></div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="adm-tbl">
+                <thead><tr>
+                  <th onclick="sortBy('rank')">#</th>
+                  <th onclick="sortBy('name')">Tool ↕</th>
+                  <th onclick="sortBy('category')">Category ↕</th>
+                  <th onclick="sortBy('views')">Total Views ↕</th>
+                  <th>Usage Bar</th>
+                </tr></thead>
+                <tbody id="tl-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Daily Stats page ── -->
+      <div class="adm-page" id="page-daily">
+        <div class="ld-wrap" id="dy-load"><div class="ld-spin"></div><span>Loading…</span></div>
+        <div id="dy-content" style="display:none;">
+          <div class="chart-card" style="margin-bottom:20px;">
+            <h3>Views Per Day — Last 30 Days</h3>
+            <div class="chart-wrap" style="height:300px;"><canvas id="c-daily"></canvas></div>
+          </div>
+          <div class="tbl-card">
+            <div class="tbl-hdr"><h3>Daily Breakdown</h3></div>
+            <div style="overflow-x:auto;">
+              <table class="adm-tbl">
+                <thead><tr><th>Date</th><th>Total Views</th><th>Top Tool That Day</th></tr></thead>
+                <tbody id="dy-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /adm-body -->
+  </div><!-- /admin-main -->
+</div><!-- /admin-shell -->
+
+<script src="/js/firebase-config.js"></script>
+<script type="module">
+  import { initializeApp, getApps }       from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, onAuthStateChanged,
+           signOut as fbSignOut }          from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+  import { getFirestore, doc, getDoc }    from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+  // ── Tool metadata ──
+  const NAMES = {"json-formatter":"JSON Formatter","base64":"Base64 Encoder","regex-tester":"Regex Tester","color-converter":"Color Converter","diff-checker":"Diff Checker","jwt-decoder":"JWT Decoder","url-encoder":"URL Encoder","uuid-generator":"UUID Generator","hash-generator":"Hash Generator","css-minifier":"CSS Minifier","sql-formatter":"SQL Formatter","cron-builder":"Cron Builder","word-counter":"Word Counter","case-converter":"Case Converter","text-cleaner":"Text Cleaner","text-sorter":"Text Sorter","slug-generator":"Slug Generator","lorem-ipsum":"Lorem Ipsum","markdown-preview":"Markdown Preview","age-calculator":"Age Calculator","bmi-calculator":"BMI Calculator","tip-calculator":"Tip Calculator","percentage-calculator":"Percentage Calc","unit-converter":"Unit Converter","compound-interest":"Compound Interest","password-generator":"Password Generator","qr-generator":"QR Code Generator","color-palette":"Color Palette","random-number":"Random Number","date-difference":"Date Difference","timezone-converter":"Timezone Converter","unix-timestamp":"Unix Timestamp","countdown-timer":"Countdown Timer","date-formatter":"Date Formatter","scientific-calculator":"Scientific Calc","statistics-calculator":"Statistics Calc","number-base-converter":"Base Converter","fraction-calculator":"Fraction Calc","roman-numerals":"Roman Numerals","loan-calculator":"Loan Calculator","mortgage-calculator":"Mortgage Calc","currency-converter":"Currency Converter","calorie-calculator":"Calorie Calculator","macro-calculator":"Macro Calculator","body-fat-calculator":"Body Fat Calc","image-resizer":"Image Resizer","image-to-base64":"Image to Base64","image-color-picker":"Image Color Picker","meta-tag-generator":"Meta Tag Generator","reading-time":"Reading Time","invoice-generator":"Invoice Generator","hashtag-generator":"Hashtag Generator","url-shortener":"URL Shortener","pastebin":"Text Share","_homepage":"Homepage"};
+  const CATS  = {"json-formatter":"Developer","base64":"Developer","regex-tester":"Developer","color-converter":"Developer","diff-checker":"Developer","jwt-decoder":"Developer","url-encoder":"Developer","uuid-generator":"Developer","hash-generator":"Developer","css-minifier":"Developer","sql-formatter":"Developer","cron-builder":"Developer","word-counter":"Text","case-converter":"Text","text-cleaner":"Text","text-sorter":"Text","slug-generator":"Text","lorem-ipsum":"Text","markdown-preview":"Text","age-calculator":"Calculator","bmi-calculator":"Calculator","tip-calculator":"Calculator","percentage-calculator":"Calculator","unit-converter":"Calculator","compound-interest":"Calculator","password-generator":"Generator","qr-generator":"Generator","color-palette":"Generator","random-number":"Generator","date-difference":"Date & Time","timezone-converter":"Date & Time","unix-timestamp":"Date & Time","countdown-timer":"Date & Time","date-formatter":"Date & Time","scientific-calculator":"Math","statistics-calculator":"Math","number-base-converter":"Math","fraction-calculator":"Math","roman-numerals":"Math","loan-calculator":"Finance","mortgage-calculator":"Finance","currency-converter":"Finance","calorie-calculator":"Health","macro-calculator":"Health","body-fat-calculator":"Health","image-resizer":"Image","image-to-base64":"Image","image-color-picker":"Image","meta-tag-generator":"Content","reading-time":"Content","invoice-generator":"Content","hashtag-generator":"Content","url-shortener":"Connected","pastebin":"Connected","_homepage":"—"};
+
+  // ── State ──
+  let db, auth;
+  let totals = {}, daily = [];
+  let allRows = [], sortKey = 'views', sortDir = -1;
+
+  // ── Firebase init ──
+  if (!TN_FIREBASE_ENABLED) {
+    document.getElementById('setup-card').style.display = 'block';
+    hide('ov-load'); hide('tl-load'); hide('dy-load');
+    document.getElementById('user-email').textContent = 'Not configured';
+  } else {
+    const app = getApps().length ? getApps()[0] : initializeApp(TN_FIREBASE_CONFIG);
+    auth = getAuth(app);
+    db   = getFirestore(app);
+    onAuthStateChanged(auth, user => {
+      if (!user) { location.replace('/admin/login.html'); return; }
+      document.getElementById('user-email').textContent = user.email;
+      loadData();
+    });
+  }
+
+  // ── Data loading ──
+  window.loadData = async function () {
+    if (!db) return;
+    try {
+      // Totals doc
+      const tSnap = await getDoc(doc(db, 'analytics', 'totals'));
+      totals = tSnap.exists() ? { ...tSnap.data() } : {};
+      delete totals._updated;
+
+      // Last 30 daily docs
+      daily = [];
+      const now = new Date();
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(now); d.setDate(d.getDate() - i);
+        const ds = d.toISOString().slice(0,10);
+        const sn = await getDoc(doc(db, 'analytics', 'daily_' + ds));
+        if (sn.exists()) {
+          const data = { ...sn.data() }; delete data._date;
+          const sum  = Object.values(data).reduce((a,v) => a + (typeof v==='number'?v:0), 0);
+          const top  = Object.entries(data).sort((a,b)=>b[1]-a[1])[0];
+          daily.push({ date: ds, total: sum, data, topTool: top?.[0] || null });
+        } else {
+          daily.push({ date: ds, total: 0, data: {}, topTool: null });
+        }
+      }
+      daily.reverse();
+
+      document.getElementById('refresh-ts').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      renderOverview();
+      renderTools();
+      renderDaily();
+    } catch (e) {
+      document.getElementById('ov-load').innerHTML = `<div style="color:var(--error);text-align:center;">Error: ${e.message}</div>`;
+    }
+  };
+
+  function renderOverview() {
+    hide('ov-load'); show('ov-content');
+    const total   = numTotal();
+    const todayD  = daily[daily.length-1] || { total:0, date:'—' };
+    const topE    = Object.entries(totals).filter(([k])=>!k.startsWith('_')).sort((a,b)=>b[1]-a[1])[0];
+    const active  = Object.keys(totals).filter(k=>!k.startsWith('_')).length;
+
+    set('s-total',  total.toLocaleString());
+    set('s-today',  todayD.total.toLocaleString());
+    set('s-today-d','For ' + todayD.date);
+    set('s-top',    topE ? (NAMES[topE[0]]||topE[0]) : '—');
+    set('s-top-ct', topE ? topE[1].toLocaleString()+' total views' : '');
+    set('s-active', active.toString());
+
+    const top10 = Object.entries(totals).filter(([k])=>!k.startsWith('_')).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    drawBar('c-top', top10.map(([k])=>NAMES[k]||k), top10.map(([,v])=>v), '#6366f1');
+    drawLine('c-trend', daily.map(d=>d.date.slice(5)), daily.map(d=>d.total), '#06b6d4');
+  }
+
+  function renderTools() {
+    hide('tl-load'); show('tl-content');
+    const max = Math.max(...Object.values(totals).filter(v=>typeof v==='number'), 1);
+    allRows = Object.entries(totals)
+      .filter(([k])=>!k.startsWith('_'))
+      .map(([slug,views])=>({ slug, views: typeof views==='number'?views:0, name: NAMES[slug]||slug, category: CATS[slug]||'—' }))
+      .sort((a,b)=>b.views-a.views)
+      .map((r,i)=>({...r, rank:i+1}));
+    paintRows(allRows, max);
+  }
+
+  function paintRows(rows, maxV) {
+    const mx = maxV || Math.max(...rows.map(r=>r.views),1);
+    document.getElementById('tl-body').innerHTML = rows.map(r=>`
+      <tr>
+        <td><span class="rank ${r.rank<=3?'gold':''}">${r.rank}</span></td>
+        <td><a href="/tools/${r.slug}.html" target="_blank" style="color:var(--primary);font-weight:500;text-decoration:none;">${r.name}</a></td>
+        <td><span class="cat-pill">${r.category}</span></td>
+        <td><strong>${r.views.toLocaleString()}</strong></td>
+        <td><div class="use-bar"><div class="use-track"><div class="use-fill" style="width:${Math.round(r.views/mx*100)}%"></div></div><span style="font-size:.72rem;color:var(--text-muted);min-width:30px;">${Math.round(r.views/mx*100)}%</span></div></td>
+      </tr>`).join('');
+  }
+
+  function renderDaily() {
+    hide('dy-load'); show('dy-content');
+    drawBar('c-daily', daily.map(d=>d.date.slice(5)), daily.map(d=>d.total), '#6366f1');
+    document.getElementById('dy-body').innerHTML = [...daily].reverse().map(d=>`
+      <tr>
+        <td>${d.date}</td>
+        <td><strong>${d.total.toLocaleString()}</strong></td>
+        <td>${d.topTool ? `${NAMES[d.topTool]||d.topTool} <span style="color:var(--text-muted);font-size:.8rem;">(${d.data[d.topTool]||0})</span>` : '—'}</td>
+      </tr>`).join('');
+  }
+
+  // ── Chart helpers ──
+  function drawBar(id, labels, data, color) {
+    const existing = Chart.getChart(id);
+    if (existing) existing.destroy();
+    new Chart(document.getElementById(id), { type:'bar', data:{ labels, datasets:[{ data, backgroundColor: color+'cc', borderRadius:4 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{ font:{size:10}, maxTicksLimit:12 } }, y:{ beginAtZero:true } } } });
+  }
+  function drawLine(id, labels, data, color) {
+    const existing = Chart.getChart(id);
+    if (existing) existing.destroy();
+    new Chart(document.getElementById(id), { type:'line', data:{ labels, datasets:[{ data, borderColor: color, backgroundColor: color+'22', fill:true, tension:.4, pointRadius:3 }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, scales:{ x:{ ticks:{ font:{size:10}, maxTicksLimit:10 } }, y:{ beginAtZero:true } } } });
+  }
+
+  // ── Navigation ──
+  window.showPage = function(p) {
+    document.querySelectorAll('.adm-page').forEach(el=>el.classList.remove('vis'));
+    document.querySelectorAll('.adm-btn').forEach(el=>el.classList.remove('active'));
+    document.getElementById('page-'+p).classList.add('vis');
+    const nb = document.getElementById('nav-'+p);
+    if (nb) nb.classList.add('active');
+    const titles = { overview:'Overview', tools:'By Tool', daily:'Daily Stats' };
+    document.getElementById('page-title').textContent = titles[p]||p;
+  };
+
+  window.filterTools = function() {
+    const q = document.getElementById('ts-q').value.toLowerCase();
+    const filtered = allRows.filter(r=> r.name.toLowerCase().includes(q)||r.category.toLowerCase().includes(q)||r.slug.includes(q));
+    paintRows(filtered);
+  };
+
+  window.sortBy = function(key) {
+    if (sortKey===key) sortDir*=-1; else { sortKey=key; sortDir=-1; }
+    allRows.sort((a,b)=> typeof a[key]==='number' ? (a[key]-b[key])*sortDir : String(a[key]).localeCompare(String(b[key]))*sortDir);
+    paintRows(allRows);
+  };
+
+  window.doSignOut = async function() {
+    if (auth) await fbSignOut(auth);
+    location.replace('/admin/login.html');
+  };
+
+  // ── Utils ──
+  function numTotal() { return Object.entries(totals).filter(([k])=>!k.startsWith('_')).reduce((s,[,v])=>s+(typeof v==='number'?v:0),0); }
+  function show(id) { const el=document.getElementById(id); if(el) el.style.display=''; }
+  function hide(id) { const el=document.getElementById(id); if(el) el.style.display='none'; }
+  function set(id,v) { const el=document.getElementById(id); if(el) el.textContent=v; }
+</script>
+</body>
+</html>

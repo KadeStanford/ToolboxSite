@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cron Expression Builder — Create & Explain Cron Jobs | ToolNook</title>
+  <meta name="description" content="Build and explain cron expressions with a visual editor. Select minute, hour, day, month, and weekday fields and see a human-readable schedule description instantly." />
+  <meta name="keywords" content="cron builder, cron expression generator, cron job scheduler, cron syntax, cron to human readable, linux cron tab, cron expression explainer" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/cron-builder.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a cron expression?","acceptedAnswer":{"@type":"Answer","text":"A cron expression is a string of 5 fields (minute, hour, day-of-month, month, day-of-week) that defines a recurring schedule for automated tasks. For example, '0 9 * * 1-5' means every weekday at 9:00 AM."}},{"@type":"Question","name":"What does * mean in cron?","acceptedAnswer":{"@type":"Answer","text":"An asterisk (*) in a cron field means 'every valid value' for that field. For example, * in the minute field means the job runs every minute. 0 * * * * means every hour on the hour."}},{"@type":"Question","name":"What is the difference between cron day-of-month and day-of-week?","acceptedAnswer":{"@type":"Answer","text":"Day-of-month (field 3) is 1–31 and specifies which day of the month. Day-of-week (field 5) is 0–7 (0 and 7 = Sunday) and specifies which day of the week. If both are set, most cron implementations trigger if EITHER matches."}}]}
+  </script>
+  <style>
+    .cron-display { font-family:monospace; font-size:1.4rem; font-weight:700; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; letter-spacing:.1em; text-align:center; }
+    .human { font-size:1rem; color:var(--primary); font-weight:600; text-align:center; margin:8px 0 14px; min-height:1.4em; }
+    .cron-fields { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:14px 0; }
+    @media(max-width:600px) { .cron-fields { grid-template-columns:1fr 1fr; } }
+    .cron-field { display:flex; flex-direction:column; gap:4px; }
+    .cron-field label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); }
+    .cron-field input { font-family:monospace; font-size:1rem; text-align:center; }
+    .preset-list { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+    .preset-btn { font-size:.76rem; font-family:monospace; background:var(--bg-alt); border:1px solid var(--border); border-radius:6px; padding:5px 10px; cursor:pointer; }
+    .preset-btn:hover { border-color:var(--primary); background:var(--primary-light); }
+    .next-runs { font-size:.8rem; }
+    .next-runs td, .next-runs th { padding:4px 8px; border-bottom:1px solid var(--border); }
+    .next-runs th { font-size:.72rem; text-transform:uppercase; color:var(--text-muted); }
+    .field-error { border-color:#ef4444 !important; background:#fef2f2 !important; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Cron Builder</div>
+      <h1>Cron Expression Builder</h1>
+      <p>Build cron expressions visually and see a plain English description of the schedule.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="cron-display" id="cron-expr">* * * * *</div>
+      <div class="human" id="cron-human">Every minute</div>
+      <div style="text-align:center;margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="copyCron()">&#128203; Copy Expression</button>
+      </div>
+
+      <div class="cron-fields">
+        <div class="cron-field"><label>Minute<br/><small>0–59</small></label><input type="text" id="f-min" value="*" oninput="update()" /></div>
+        <div class="cron-field"><label>Hour<br/><small>0–23</small></label><input type="text" id="f-hr" value="*" oninput="update()" /></div>
+        <div class="cron-field"><label>Day (month)<br/><small>1–31</small></label><input type="text" id="f-dom" value="*" oninput="update()" /></div>
+        <div class="cron-field"><label>Month<br/><small>1–12</small></label><input type="text" id="f-mon" value="*" oninput="update()" /></div>
+        <div class="cron-field"><label>Day (week)<br/><small>0–7 (0=Sun)</small></label><input type="text" id="f-dow" value="*" oninput="update()" /></div>
+      </div>
+
+      <p style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Common Presets</p>
+      <div class="preset-list" id="preset-list"></div>
+
+      <div style="margin-top:16px;">
+        <p style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Next 5 Scheduled Runs</p>
+        <table class="next-runs">
+          <thead><tr><th>#</th><th>Date &amp; Time</th></tr></thead>
+          <tbody id="next-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>Cron Syntax Reference</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:.83rem;">
+        <thead><tr><th style="padding:6px;border:1px solid var(--border);background:var(--bg-alt);">Field</th><th style="padding:6px;border:1px solid var(--border);background:var(--bg-alt);">Range</th><th style="padding:6px;border:1px solid var(--border);background:var(--bg-alt);">Special Values</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:6px;border:1px solid var(--border);">Minute</td><td style="padding:6px;border:1px solid var(--border);">0–59</td><td style="padding:6px;border:1px solid var(--border);">*, 0-30, */5 (every 5)</td></tr>
+          <tr><td style="padding:6px;border:1px solid var(--border);">Hour</td><td style="padding:6px;border:1px solid var(--border);">0–23</td><td style="padding:6px;border:1px solid var(--border);">*, 9-17 (business hours), */6</td></tr>
+          <tr><td style="padding:6px;border:1px solid var(--border);">Day of Month</td><td style="padding:6px;border:1px solid var(--border);">1–31</td><td style="padding:6px;border:1px solid var(--border);">*, 1 (first), 15 (mid-month)</td></tr>
+          <tr><td style="padding:6px;border:1px solid var(--border);">Month</td><td style="padding:6px;border:1px solid var(--border);">1–12</td><td style="padding:6px;border:1px solid var(--border);">*, 1-3 (Q1), 6,12</td></tr>
+          <tr><td style="padding:6px;border:1px solid var(--border);">Day of Week</td><td style="padding:6px;border:1px solid var(--border);">0–7 (0&amp;7=Sun)</td><td style="padding:6px;border:1px solid var(--border);">*, 1-5 (weekdays), 6,0 (wknd)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+const PRESETS = [
+  { label:'Every minute',         expr:'* * * * *' },
+  { label:'Every 5 minutes',      expr:'*/5 * * * *' },
+  { label:'Every 15 minutes',     expr:'*/15 * * * *' },
+  { label:'Every 30 minutes',     expr:'*/30 * * * *' },
+  { label:'Every hour',           expr:'0 * * * *' },
+  { label:'Every 6 hours',        expr:'0 */6 * * *' },
+  { label:'Daily at midnight',    expr:'0 0 * * *' },
+  { label:'Daily at noon',        expr:'0 12 * * *' },
+  { label:'Every weekday 9am',    expr:'0 9 * * 1-5' },
+  { label:'Weekly (Mon midnight)',expr:'0 0 * * 1' },
+  { label:'Monthly (1st midnight)',expr:'0 0 1 * *' },
+  { label:'Yearly (Jan 1 midnight)',expr:'0 0 1 1 *' },
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('cron-builder');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('cron-builder','developer');
+  const pl = document.getElementById('preset-list');
+  PRESETS.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'preset-btn';
+    b.textContent = p.expr + ' — ' + p.label;
+    b.onclick = () => applyPreset(p.expr);
+    pl.appendChild(b);
+  });
+  update();
+});
+
+function applyPreset(expr) {
+  const parts = expr.split(' ');
+  document.getElementById('f-min').value = parts[0];
+  document.getElementById('f-hr').value  = parts[1];
+  document.getElementById('f-dom').value = parts[2];
+  document.getElementById('f-mon').value = parts[3];
+  document.getElementById('f-dow').value = parts[4];
+  update();
+}
+
+function update() {
+  const f = ['f-min','f-hr','f-dom','f-mon','f-dow'].map(id => document.getElementById(id).value.trim() || '*');
+  const expr = f.join(' ');
+  document.getElementById('cron-expr').textContent = expr;
+  document.getElementById('cron-human').textContent = humanize(f);
+  computeNextRuns(f);
+}
+
+function humanize([min, hr, dom, mon, dow]) {
+  const parts = [];
+  // Minute
+  if (min === '*') parts.push('every minute');
+  else if (min.startsWith('*/')) parts.push(`every ${min.slice(2)} minutes`);
+  else parts.push(`at minute ${min}`);
+  // Hour
+  if (hr === '*') { if (min !== '*' && !min.startsWith('*/')) parts.push('every hour'); }
+  else if (hr.startsWith('*/')) parts.push(`every ${hr.slice(2)} hours`);
+  else parts.push(`at ${fmtHour(hr)}`);
+  // DOM
+  if (dom !== '*') parts.push(`on the ${ordinal(dom)} of the month`);
+  // Month
+  const MONTHS = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  if (mon !== '*') { const m = parseInt(mon); parts.push(`in ${MONTHS[m] || mon}`); }
+  // DOW
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  if (dow !== '*') {
+    if (dow === '1-5') parts.push('on weekdays');
+    else if (dow === '6,0' || dow === '0,6') parts.push('on weekends');
+    else { const d = parseInt(dow); parts.push('on ' + (DAYS[d % 7] || dow)); }
+  }
+  return parts.join(', ').replace(/^./, c => c.toUpperCase());
+}
+
+function fmtHour(hr) {
+  if (hr.includes('-') || hr.includes('/') || hr.includes(',')) return 'hour ' + hr;
+  const h = parseInt(hr);
+  if (isNaN(h)) return 'hour ' + hr;
+  const period = h < 12 ? 'AM' : 'PM';
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${h12}:00 ${period}`;
+}
+
+function ordinal(n) {
+  const s = ['th','st','nd','rd'];
+  const v = parseInt(n) % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+
+function computeNextRuns(fields) {
+  const tbody = document.getElementById('next-tbody');
+  try {
+    const runs = getNextRuns(fields, 5);
+    tbody.innerHTML = runs.map((d,i) => `<tr><td>${i+1}</td><td>${d.toLocaleString()}</td></tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="2">Could not compute runs</td></tr>'; }
+}
+
+function getNextRuns([minF, hrF, domF, monF, dowF], count) {
+  const results = [];
+  const now = new Date();
+  now.setSeconds(0,0);
+  const cur = new Date(now.getTime() + 60000);
+  let iter = 0;
+  while (results.length < count && iter++ < 500000) {
+    if (matchField(cur.getMonth()+1, monF, 1, 12) &&
+        matchField(cur.getDate(), domF, 1, 31) &&
+        matchField(cur.getDay(), dowF, 0, 6) &&
+        matchField(cur.getHours(), hrF, 0, 23) &&
+        matchField(cur.getMinutes(), minF, 0, 59)) {
+      results.push(new Date(cur));
+    }
+    cur.setMinutes(cur.getMinutes() + 1);
+  }
+  return results;
+}
+
+function matchField(val, expr, min, max) {
+  if (expr === '*') return true;
+  for (const part of expr.split(',')) {
+    if (part.includes('/')) {
+      const [range, step] = part.split('/');
+      const s = parseInt(step);
+      const [rMin, rMax] = range === '*' ? [min, max] : range.split('-').map(Number);
+      for (let i = rMin; i <= rMax; i += s) if (i === val) return true;
+    } else if (part.includes('-')) {
+      const [lo, hi] = part.split('-').map(Number);
+      if (val >= lo && val <= hi) return true;
+    } else {
+      if (parseInt(part) === val) return true;
+    }
+  }
+  return false;
+}
+
+function copyCron() {
+  navigator.clipboard.writeText(document.getElementById('cron-expr').textContent).then(() => showToast('Copied!'));
+}
+</script>
+</body>
+</html>

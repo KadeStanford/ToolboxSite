@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Number Base Converter — Binary, Decimal, Hex, Octal | ToolNook</title>
+  <meta name="description" content="Free online number base converter. Instantly convert between binary (base 2), decimal (base 10), hexadecimal (base 16), and octal (base 8). Also supports custom bases 2–36." />
+  <meta name="keywords" content="number base converter, binary to decimal, decimal to binary, hex to decimal, binary to hex, octal converter, base converter, number system converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/number-base-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I convert binary to decimal?","acceptedAnswer":{"@type":"Answer","text":"Type your binary number in the Binary field and the decimal equivalent appears instantly in the other fields. For example, binary 1101 = decimal 13."}},{"@type":"Question","name":"What is hexadecimal (hex)?","acceptedAnswer":{"@type":"Answer","text":"Hexadecimal uses 16 symbols: 0-9 and A-F. It's the most common way to represent binary data in a human-readable form, used heavily in programming, color codes, and memory addresses."}},{"@type":"Question","name":"Can I convert negative numbers?","acceptedAnswer":{"@type":"Answer","text":"This tool handles positive integers. Negative numbers in binary use methods like two's complement which depend on the bit width — typically handled in specific programming contexts."}}]}
+  </script>
+  <style>
+    .base-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .base-label { font-size:.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+    .base-badge { display:inline-block; background:var(--primary); color:#fff; font-size:.7rem; border-radius:20px; padding:1px 7px; margin-left:4px; vertical-align:middle; }
+    .base-input { font-family:monospace; font-size:1rem; letter-spacing:.05em; }
+    @media(max-width:540px){ .base-grid{grid-template-columns:1fr;} }
+    .custom-row { display:flex; gap:10px; align-items:center; margin-top:14px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#math-tools">Math &amp; Science</a> › Number Base Converter</div>
+      <h1>Number Base Converter</h1>
+      <p>Convert numbers between binary, decimal, hexadecimal, octal, and any base from 2 to 36.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="base-grid">
+        <div class="form-group">
+          <div class="base-label">Binary <span class="base-badge">Base 2</span></div>
+          <input type="text" class="tool-input base-input" id="b2" placeholder="e.g. 1101" oninput="convert(2,'b2')" />
+        </div>
+        <div class="form-group">
+          <div class="base-label">Octal <span class="base-badge">Base 8</span></div>
+          <input type="text" class="tool-input base-input" id="b8" placeholder="e.g. 15" oninput="convert(8,'b8')" />
+        </div>
+        <div class="form-group">
+          <div class="base-label">Decimal <span class="base-badge">Base 10</span></div>
+          <input type="text" class="tool-input base-input" id="b10" placeholder="e.g. 255" oninput="convert(10,'b10')" />
+        </div>
+        <div class="form-group">
+          <div class="base-label">Hexadecimal <span class="base-badge">Base 16</span></div>
+          <input type="text" class="tool-input base-input" id="b16" placeholder="e.g. FF" oninput="convert(16,'b16')" />
+        </div>
+      </div>
+
+      <div class="custom-row">
+        <div class="form-group" style="margin:0;flex:1;">
+          <label>Custom Base (2–36)</label>
+          <input type="number" class="tool-input" id="custom-base" min="2" max="36" value="32" style="width:90px;" />
+        </div>
+        <div class="form-group" style="margin:0;flex:2;">
+          <label>Value in Custom Base</label>
+          <input type="text" class="tool-input base-input" id="b-custom" placeholder="—" oninput="convertCustom()" />
+        </div>
+      </div>
+
+      <div id="bit-breakdown" style="margin-top:14px;display:none;">
+        <h3 style="font-size:.88rem;font-weight:700;margin-bottom:8px;">Bit Representation</h3>
+        <div id="bit-vis" style="font-family:monospace;background:#f1f5f9;padding:10px;border-radius:var(--radius);letter-spacing:.1em;word-break:break-all;font-size:1.1rem;"></div>
+      </div>
+
+      <div id="err" class="error-box" style="display:none;margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>Number Systems Explained</h2>
+      <p>Computers process data in <strong>binary (base 2)</strong> — only 1s and 0s. Humans commonly use <strong>decimal (base 10)</strong>. Programmers frequently work with <strong>hexadecimal (base 16)</strong> since one hex digit represents exactly 4 bits, and <strong>octal (base 8)</strong> which represents 3 bits per digit.</p>
+      <h3>Quick Reference</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;margin-top:8px;">
+        <tr style="background:var(--primary-light);"><th style="padding:8px;text-align:left;">Decimal</th><th style="padding:8px;text-align:left;">Binary</th><th style="padding:8px;text-align:left;">Hex</th><th style="padding:8px;text-align:left;">Octal</th></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 8px;">0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 8px;">8</td><td>1000</td><td>8</td><td>10</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 8px;">15</td><td>1111</td><td>F</td><td>17</td></tr>
+        <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px 8px;">16</td><td>10000</td><td>10</td><td>20</td></tr>
+        <tr><td style="padding:6px 8px;">255</td><td>11111111</td><td>FF</td><td>377</td></tr>
+      </table>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('number-base-converter');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('number-base-converter','math');
+  document.getElementById('b10').value = '255';
+  convert(10,'b10');
+});
+
+function convert(fromBase, srcId) {
+  const raw = document.getElementById(srcId).value.trim().toUpperCase();
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  if (!raw) { ['b2','b8','b10','b16'].forEach(id => { if (id !== srcId) document.getElementById(id).value = ''; }); return; }
+  const dec = parseInt(raw, fromBase);
+  if (isNaN(dec) || dec < 0) { err.textContent = `"${raw}" is not a valid base-${fromBase} number.`; err.style.display = 'block'; return; }
+  if (srcId !== 'b2')  document.getElementById('b2').value  = dec.toString(2);
+  if (srcId !== 'b8')  document.getElementById('b8').value  = dec.toString(8);
+  if (srcId !== 'b10') document.getElementById('b10').value = dec.toString(10);
+  if (srcId !== 'b16') document.getElementById('b16').value = dec.toString(16).toUpperCase();
+  const cb = parseInt(document.getElementById('custom-base').value);
+  if (cb >= 2 && cb <= 36) document.getElementById('b-custom').value = dec.toString(cb).toUpperCase();
+  // Bit representation
+  const bits = dec.toString(2);
+  const padded = bits.padStart(Math.ceil(bits.length/8)*8, '0');
+  const vis    = padded.match(/.{1,4}/g).join(' ');
+  document.getElementById('bit-vis').textContent = vis + ` (${padded.length} bits)`;
+  document.getElementById('bit-breakdown').style.display = 'block';
+}
+
+function convertCustom() {
+  const raw  = document.getElementById('b-custom').value.trim().toUpperCase();
+  const base = parseInt(document.getElementById('custom-base').value);
+  if (!raw || isNaN(base) || base < 2 || base > 36) return;
+  const dec = parseInt(raw, base);
+  if (isNaN(dec)) return;
+  document.getElementById('b2').value  = dec.toString(2);
+  document.getElementById('b8').value  = dec.toString(8);
+  document.getElementById('b10').value = dec.toString(10);
+  document.getElementById('b16').value = dec.toString(16).toUpperCase();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Countdown Timer — Free Online Countdown to Any Date | ToolNook</title>
+  <meta name="description" content="Free online countdown timer. Create a live countdown to any date and event — birthday, holiday, deadline, product launch, wedding, or New Year. Counts days, hours, minutes and seconds." />
+  <meta name="keywords" content="countdown timer, countdown to date, days until, countdown clock, event countdown, birthday countdown, new year countdown, deadline countdown" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/countdown-timer.html" />
+  <meta property="og:title" content="Countdown Timer — ToolNook" />
+  <meta property="og:description" content="Live countdown to any date or event — birthdays, holidays, deadlines, and more." />
+  <meta property="og:url" content="https://toolnook.net/tools/countdown-timer.html" />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .cd-display { background:linear-gradient(135deg,var(--primary),var(--secondary)); color:#fff; border-radius:var(--radius-lg); padding:32px 20px; text-align:center; margin:16px 0; }
+    .cd-units { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .cd-unit { background:rgba(255,255,255,.2); border-radius:var(--radius-lg); padding:16px 20px; min-width:88px; }
+    .cd-num { font-size:3rem; font-weight:800; line-height:1; display:block; }
+    .cd-lbl { font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; opacity:.85; display:block; margin-top:4px; }
+    .cd-label { font-size:1rem; margin-bottom:20px; opacity:.9; }
+    .cd-done { font-size:2rem; padding:30px; }
+    .quick-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .quick-btn  { padding:5px 12px; border:1px solid var(--border); border-radius:20px; font-size:.82rem; cursor:pointer; background:var(--bg-white); transition:.15s; }
+    .quick-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary); }
+    .saved-list { margin-top:16px; }
+    .saved-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:6px; font-size:.88rem; cursor:pointer; }
+    .saved-item:hover { border-color:var(--primary); }
+    .saved-item .rm { color:var(--error); padding:2px 6px; border-radius:4px; cursor:pointer; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#datetime-tools">Date &amp; Time</a> › Countdown Timer</div>
+      <h1>Countdown Timer</h1>
+      <p>Create a live countdown to any date or event. Counts days, hours, minutes, and seconds in real time.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="ev-name">Event Name (optional)</label>
+        <input type="text" class="tool-input" id="ev-name" placeholder="e.g. New Year 2027, My Birthday…" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;">
+        <div class="form-group" style="margin:0;">
+          <label for="ev-dt">Target Date &amp; Time</label>
+          <input type="datetime-local" class="tool-input" id="ev-dt" />
+        </div>
+        <button class="btn btn-primary" onclick="startCountdown()">Start Countdown</button>
+      </div>
+
+      <div style="margin-top:14px;">
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:6px;">Quick picks:</div>
+        <div class="quick-btns" id="quick-btns"></div>
+      </div>
+
+      <div id="cd-output" style="display:none;">
+        <div class="cd-display">
+          <div class="cd-label" id="cd-title">Countdown</div>
+          <div class="cd-units" id="cd-units">
+            <div class="cd-unit"><span class="cd-num" id="cd-d">0</span><span class="cd-lbl">Days</span></div>
+            <div class="cd-unit"><span class="cd-num" id="cd-h">00</span><span class="cd-lbl">Hours</span></div>
+            <div class="cd-unit"><span class="cd-num" id="cd-m">00</span><span class="cd-lbl">Minutes</span></div>
+            <div class="cd-unit"><span class="cd-num" id="cd-s">00</span><span class="cd-lbl">Seconds</span></div>
+          </div>
+        </div>
+        <p id="cd-abs" style="text-align:center;color:var(--text-muted);font-size:.85rem;"></p>
+        <button class="btn btn-secondary" style="font-size:.82rem;" onclick="saveCountdown()">&#128190; Save this countdown</button>
+      </div>
+
+      <div id="cd-done" class="cd-display cd-done" style="display:none;">
+        🎉 <strong id="done-label">Time's up!</strong>
+      </div>
+
+      <div id="saved-list-wrap" style="display:none;">
+        <h3 style="margin-top:20px;font-size:.92rem;font-weight:700;">&#128190; Saved Countdowns</h3>
+        <div class="saved-list" id="saved-list"></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>Online Countdown Timer</h2>
+      <p>Use this tool to count down to any upcoming date — New Year, a birthday, a product launch, graduation day, or a vacation. The countdown updates every second and shows days, hours, minutes, and seconds remaining.</p>
+      <h3>How to Create a Countdown</h3>
+      <ol>
+        <li>Type an event name (optional but helps when saving multiple countdowns)</li>
+        <li>Pick the target date and time</li>
+        <li>Click <strong>Start Countdown</strong></li>
+        <li>Save it for quick access on your next visit</li>
+      </ol>
+    </div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+let cdInterval = null;
+let targetDate = null;
+
+function getQuickDates() {
+  const now = new Date();
+  const ny  = new Date(now.getFullYear() + 1, 0, 1);
+  const christmas = new Date(now.getFullYear(), 11, 25);
+  if (christmas < now) christmas.setFullYear(christmas.getFullYear() + 1);
+  const halloween = new Date(now.getFullYear(), 9, 31);
+  if (halloween < now) halloween.setFullYear(halloween.getFullYear() + 1);
+  const in30  = new Date(now.getTime() + 30 * 86400000);
+  const in7   = new Date(now.getTime() + 7  * 86400000);
+  const in1   = new Date(now.getTime() + 86400000);
+  return [
+    { label:'Tomorrow',       date:in1 },
+    { label:'In 7 days',      date:in7 },
+    { label:'In 30 days',     date:in30 },
+    { label:'Christmas 🎄',   date:christmas },
+    { label:'New Year 🎆',    date:ny },
+    { label:'Halloween 🎃',   date:halloween },
+  ];
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('countdown-timer');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('countdown-timer','datetime');
+
+  const qb = document.getElementById('quick-btns');
+  getQuickDates().forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'quick-btn';
+    b.textContent = q.label;
+    b.onclick = () => {
+      const pad = n => String(n).padStart(2,'0');
+      const d = q.date;
+      document.getElementById('ev-name').value = q.label.replace(/[^a-zA-Z\s]/g,'').trim();
+      document.getElementById('ev-dt').value   = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T00:00`;
+      startCountdown();
+    };
+    qb.appendChild(b);
+  });
+
+  loadSaved();
+
+  // Default: next year
+  const ny = new Date();
+  ny.setFullYear(ny.getFullYear()+1, 0, 1, 0, 0);
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('ev-dt').value = `${ny.getFullYear()}-01-01T00:00`;
+  document.getElementById('ev-name').value = 'New Year';
+  startCountdown();
+});
+
+function startCountdown() {
+  const dtVal = document.getElementById('ev-dt').value;
+  if (!dtVal) return;
+  targetDate = new Date(dtVal);
+  const name = document.getElementById('ev-name').value.trim() || 'Countdown';
+  document.getElementById('cd-title').textContent  = name;
+  document.getElementById('cd-output').style.display = 'block';
+  document.getElementById('cd-done').style.display   = 'none';
+  document.getElementById('cd-abs').textContent = 'Target: ' + targetDate.toLocaleString();
+  if (cdInterval) clearInterval(cdInterval);
+  tick(); cdInterval = setInterval(tick, 1000);
+}
+
+function tick() {
+  const now = new Date();
+  const diff = targetDate - now;
+  if (diff <= 0) {
+    clearInterval(cdInterval);
+    document.getElementById('cd-output').style.display = 'none';
+    document.getElementById('done-label').textContent  = (document.getElementById('ev-name').value || 'Time') + '\'s up! 🎉';
+    document.getElementById('cd-done').style.display   = 'flex';
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000)  / 60000);
+  const s = Math.floor((diff % 60000)    / 1000);
+  document.getElementById('cd-d').textContent = d;
+  document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+}
+
+function saveCountdown() {
+  const dtVal = document.getElementById('ev-dt').value;
+  const name  = document.getElementById('ev-name').value.trim() || 'Countdown';
+  if (!dtVal) return;
+  const saved = JSON.parse(localStorage.getItem('tn_countdowns') || '[]');
+  saved.unshift({ name, date: dtVal });
+  const deduped = saved.slice(0, 8);
+  localStorage.setItem('tn_countdowns', JSON.stringify(deduped));
+  loadSaved();
+  showToast('Countdown saved!', 'success');
+}
+
+function loadSaved() {
+  const saved = JSON.parse(localStorage.getItem('tn_countdowns') || '[]');
+  const wrap  = document.getElementById('saved-list-wrap');
+  const list  = document.getElementById('saved-list');
+  if (!saved.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = saved.map((s, i) => {
+    const diff = new Date(s.date) - new Date();
+    const daysLeft = diff > 0 ? Math.ceil(diff / 86400000) + ' days left' : 'Passed';
+    return `<div class="saved-item" onclick="loadCountdown(${i})">
+      <span>&#9200; <strong>${s.name}</strong> — ${new Date(s.date).toLocaleDateString()}</span>
+      <span style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);font-size:.8rem;">${daysLeft}</span><span class="rm" onclick="removeCountdown(event,${i})">✕</span></span>
+    </div>`;
+  }).join('');
+}
+
+function loadCountdown(i) {
+  const saved = JSON.parse(localStorage.getItem('tn_countdowns') || '[]');
+  const s = saved[i];
+  document.getElementById('ev-name').value = s.name;
+  document.getElementById('ev-dt').value   = s.date;
+  startCountdown();
+}
+
+function removeCountdown(e, i) {
+  e.stopPropagation();
+  const saved = JSON.parse(localStorage.getItem('tn_countdowns') || '[]');
+  saved.splice(i, 1);
+  localStorage.setItem('tn_countdowns', JSON.stringify(saved));
+  loadSaved();
+}
+</script>
+</body>
+</html>

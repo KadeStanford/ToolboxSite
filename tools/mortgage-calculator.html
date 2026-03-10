@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mortgage Calculator — Monthly Payment, PITI & Amortization | ToolNook</title>
+  <meta name="description" content="Free mortgage calculator. Calculate your monthly mortgage payment including principal, interest, property tax, and insurance (PITI). See full amortization." />
+  <meta name="keywords" content="mortgage calculator, monthly mortgage payment, PITI calculator, home loan calculator, amortization calculator, down payment calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/mortgage-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does PITI mean?","acceptedAnswer":{"@type":"Answer","text":"PITI stands for Principal, Interest, Taxes, and Insurance — the four components that make up a typical monthly mortgage payment."}},{"@type":"Question","name":"How much down payment do I need?","acceptedAnswer":{"@type":"Answer","text":"Conventional loans typically require 5-20%. Putting down 20% avoids PMI (Private Mortgage Insurance). FHA loans allow as little as 3.5% down."}},{"@type":"Question","name":"What is PMI and when can I cancel it?","acceptedAnswer":{"@type":"Answer","text":"PMI (Private Mortgage Insurance) is required when your down payment is less than 20%. You can typically request cancellation when your loan balance reaches 80% of the original home value."}}]}
+  </script>
+  <style>
+    .summary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:16px; }
+    .sum-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+    .sum-label { font-size:.68rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); letter-spacing:.06em; margin-bottom:4px; }
+    .sum-val   { font-size:1.2rem; font-weight:700; color:var(--primary); }
+    .piti-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:.9rem; }
+    .piti-row:last-child { border:none; font-weight:700; font-size:1rem; }
+    .piti-label { color:var(--text-muted); }
+    .pie-legend { display:flex; flex-wrap:wrap; gap:12px; font-size:.82rem; margin-top:8px; }
+    .pie-dot { width:12px; height:12px; border-radius:2px; display:inline-block; margin-right:4px; vertical-align:middle; }
+    .sched-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    .sched-table th { background:var(--primary-light); padding:7px 8px; text-align:right; white-space:nowrap; font-size:.75rem; }
+    .sched-table th:first-child { text-align:left; }
+    .sched-table td { padding:5px 8px; text-align:right; border-bottom:1px solid var(--border); }
+    .sched-table td:first-child { text-align:left; font-weight:600; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#finance-tools">Finance</a> › Mortgage Calculator</div>
+      <h1>Mortgage Calculator</h1>
+      <p>Calculate your complete monthly mortgage payment including principal, interest, property tax, and homeowner's insurance (PITI).</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;">
+        <div class="form-group">
+          <label>Home Price ($)</label>
+          <input type="number" class="tool-input" id="home-price" value="350000" min="1" />
+        </div>
+        <div class="form-group">
+          <label>Down Payment ($)</label>
+          <input type="number" class="tool-input" id="down-pmt" value="70000" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Annual Interest Rate (%)</label>
+          <input type="number" class="tool-input" id="m-rate" value="7.0" step="0.01" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Loan Term (years)</label>
+          <select class="tool-input" id="m-term">
+            <option value="30" selected>30 years</option>
+            <option value="20">20 years</option>
+            <option value="15">15 years</option>
+            <option value="10">10 years</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Property Tax ($/year)</label>
+          <input type="number" class="tool-input" id="prop-tax" value="4200" min="0" />
+        </div>
+        <div class="form-group">
+          <label>Home Insurance ($/year)</label>
+          <input type="number" class="tool-input" id="insurance" value="1200" min="0" />
+        </div>
+        <div class="form-group">
+          <label>PMI Rate (% if &lt;20% down)</label>
+          <input type="number" class="tool-input" id="pmi-rate" value="0.5" step="0.1" min="0" />
+        </div>
+        <div class="form-group">
+          <label>HOA ($/month)</label>
+          <input type="number" class="tool-input" id="hoa" value="0" min="0" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcMortgage()">Calculate</button>
+
+      <div id="results" style="display:none;margin-top:18px;">
+        <div class="summary-grid" id="sum-grid"></div>
+
+        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;">
+          <div style="flex:1;min-width:220px;">
+            <h3 style="font-size:.9rem;font-weight:700;margin-bottom:8px;">Monthly Payment Breakdown</h3>
+            <div id="piti-breakdown"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:8px;">Amortization Schedule (Yearly)</h3>
+          <div style="overflow-x:auto;max-height:320px;overflow-y:auto;">
+            <table class="sched-table" id="sched-table"></table>
+          </div>
+        </div>
+      </div>
+      <div id="err" class="error-box" style="display:none;margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>Understanding Your Mortgage Payment</h2>
+      <p>A mortgage payment consists of four components (PITI):</p>
+      <ul>
+        <li><strong>Principal</strong> — The portion that reduces what you owe.</li>
+        <li><strong>Interest</strong> — The lender's charge for borrowing money.</li>
+        <li><strong>Taxes</strong> — Property taxes collected and held in escrow.</li>
+        <li><strong>Insurance</strong> — Homeowner's insurance (and PMI if applicable).</li>
+      </ul>
+      <h3>30-Year vs 15-Year Mortgage</h3>
+      <p>A 15-year mortgage typically has a lower interest rate and you'll pay far less total interest — but monthly payments are higher. A 30-year mortgage has lower monthly payments and more flexibility, but you'll pay significantly more interest over the life of the loan.</p>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('mortgage-calculator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('mortgage-calculator','finance');
+  calcMortgage();
+});
+
+const fmtD = v => '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtK = v => '$' + (v/1000).toFixed(1)+'k';
+
+function calcMortgage() {
+  const hp   = parseFloat(document.getElementById('home-price').value);
+  const dp   = parseFloat(document.getElementById('down-pmt').value) || 0;
+  const rate = parseFloat(document.getElementById('m-rate').value) / 100 / 12;
+  const n    = parseInt(document.getElementById('m-term').value) * 12;
+  const tax  = parseFloat(document.getElementById('prop-tax').value) / 12 || 0;
+  const ins  = parseFloat(document.getElementById('insurance').value) / 12 || 0;
+  const pmiR = parseFloat(document.getElementById('pmi-rate').value) / 100 / 12;
+  const hoa  = parseFloat(document.getElementById('hoa').value) || 0;
+  const err  = document.getElementById('err'); err.style.display = 'none';
+
+  if (isNaN(hp)||hp<=0) { err.textContent='Enter a valid home price.'; err.style.display='block'; return; }
+  const P = hp - dp;
+  if (P <= 0) { err.textContent='Down payment cannot exceed home price.'; err.style.display='block'; return; }
+  const ltv = dp / hp;
+  const pmi = ltv < 0.20 ? P * pmiR : 0;
+  const piPayment = rate === 0 ? P/n : P * rate * Math.pow(1+rate,n) / (Math.pow(1+rate,n) - 1);
+  const totalMonthly = piPayment + tax + ins + pmi + hoa;
+
+  // Amortization
+  let schedData = [], balance = P, totalInt = 0;
+  for (let m = 1; m <= n; m++) {
+    const interest = balance * rate;
+    const principal = Math.min(piPayment - interest, balance);
+    balance = Math.max(balance - principal, 0);
+    totalInt += interest;
+    if (m % 12 === 0 || m === n) {
+      schedData.push({ year: Math.ceil(m/12), principal: principal*12, interest: interest*12, balance, totalInt });
+    }
+  }
+
+  document.getElementById('sum-grid').innerHTML = `
+    <div class="sum-card"><div class="sum-label">Loan Amount</div><div class="sum-val">${fmtD(P)}</div></div>
+    <div class="sum-card"><div class="sum-label">Monthly P&I</div><div class="sum-val">${fmtD(piPayment)}</div></div>
+    <div class="sum-card"><div class="sum-label">Monthly PITI</div><div class="sum-val">${fmtD(totalMonthly)}</div></div>
+    <div class="sum-card"><div class="sum-label">Total Interest</div><div class="sum-val" style="color:#f59e0b;">${fmtD(totalInt)}</div></div>
+    <div class="sum-card"><div class="sum-label">Total Cost</div><div class="sum-val">${fmtD(P+totalInt)}</div></div>
+    <div class="sum-card"><div class="sum-label">LTV Ratio</div><div class="sum-val">${(P/hp*100).toFixed(1)}%</div></div>
+  `;
+
+  document.getElementById('piti-breakdown').innerHTML = `
+    <div class="piti-row"><span class="piti-label">Principal &amp; Interest</span><span>${fmtD(piPayment)}</span></div>
+    <div class="piti-row"><span class="piti-label">Property Tax</span><span>${fmtD(tax)}</span></div>
+    <div class="piti-row"><span class="piti-label">Home Insurance</span><span>${fmtD(ins)}</span></div>
+    ${pmi>0?`<div class="piti-row"><span class="piti-label">PMI</span><span>${fmtD(pmi)}</span></div>`:''}
+    ${hoa>0?`<div class="piti-row"><span class="piti-label">HOA</span><span>${fmtD(hoa)}</span></div>`:''}
+    <div class="piti-row"><span>Total Monthly Payment</span><span>${fmtD(totalMonthly)}</span></div>
+  `;
+
+  document.getElementById('sched-table').innerHTML = `
+    <thead><tr><th>Year</th><th>Principal</th><th>Interest</th><th>Balance</th><th>Total Interest Paid</th></tr></thead>
+    <tbody>${schedData.map(d=>`<tr><td>${d.year}</td><td>${fmtD(d.principal)}</td><td>${fmtD(d.interest)}</td><td>${fmtD(d.balance)}</td><td>${fmtD(d.totalInt)}</td></tr>`).join('')}</tbody>
+  `;
+
+  document.getElementById('results').style.display = 'block';
+}
+</script>
+</body>
+</html>

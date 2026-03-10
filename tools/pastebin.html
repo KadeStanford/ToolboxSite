@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Share (Pastebin) — Share Text Snippets Online | ToolNook</title>
+  <meta name="description" content="Share text snippets, code, and notes with a unique shareable link. Free online pastebin tool. Set expiry time. No account required." />
+  <meta name="keywords" content="pastebin, share text online, text snippet share, paste code online, share code snippet, online notepad share" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/pastebin.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .setup-banner { background:#fef9c3; border:1px solid #fde047; border-radius:var(--radius); padding:14px; margin-bottom:14px; font-size:.84rem; }
+    .setup-banner h3 { margin:0 0 6px; font-size:.9rem; }
+    .share-result { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-top:12px; }
+    .share-url { font-family:monospace; font-size:.9rem; color:var(--primary); word-break:break-all; }
+    .view-mode { background:#fff; }
+    .view-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+    .lang-badge { font-size:.72rem; background:var(--primary); color:#fff; border-radius:20px; padding:2px 10px; }
+    .paste-content { font-family:monospace; font-size:.84rem; white-space:pre-wrap; word-break:break-all; background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius); padding:14px; max-height:500px; overflow-y:auto; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#connected-tools">Connected Tools</a> › Text Share</div>
+      <h1>Text Share <span style="font-size:.6em;font-weight:400;color:var(--text-muted)">(Pastebin)</span></h1>
+      <p>Share text snippets, code, or notes with a unique shareable link.</p>
+    </div>
+
+    <div class="tool-container" id="create-mode">
+      <div class="setup-banner" id="setup-banner" style="display:none;">
+        <h3>⚙️ Firebase Setup Required</h3>
+        <p>Cloud sharing requires a Firebase project. See <code>js/firebase-config.js</code> to configure. In demo mode, shares are stored locally (this browser only).</p>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="flex:1;min-width:140px;">
+          <label class="input-label">Title (optional)</label>
+          <input type="text" id="paste-title" placeholder="My code snippet" />
+        </div>
+        <div style="min-width:120px;">
+          <label class="input-label">Syntax</label>
+          <select id="paste-lang">
+            <option value="text">Plain text</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="sql">SQL</option>
+            <option value="json">JSON</option>
+            <option value="bash">Bash</option>
+            <option value="markdown">Markdown</option>
+          </select>
+        </div>
+        <div style="min-width:120px;">
+          <label class="input-label">Expires in</label>
+          <select id="paste-expiry">
+            <option value="0">Never</option>
+            <option value="3600000">1 hour</option>
+            <option value="86400000">1 day</option>
+            <option value="604800000">7 days</option>
+            <option value="2592000000">30 days</option>
+          </select>
+        </div>
+      </div>
+
+      <textarea id="paste-content" rows="12" placeholder="Paste your text, code, or notes here..." style="font-family:monospace;font-size:.84rem;resize:vertical;"></textarea>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <button class="btn btn-primary" onclick="createPaste()">&#128203; Create Share Link</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+      </div>
+
+      <div id="share-result" style="display:none;"></div>
+    </div>
+
+    <!-- VIEW MODE (when ?id=xxx is in URL) -->
+    <div class="tool-container view-mode" id="view-mode" style="display:none;"></div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Uses for Text Share</h2>
+      <ul>
+        <li><strong>Code reviews</strong> — Share a snippet without needing GitHub access.</li>
+        <li><strong>Config files</strong> — Quickly share a settings file with a teammate.</li>
+        <li><strong>Error logs</strong> — Share large error outputs when asking for help.</li>
+        <li><strong>Notes &amp; drafts</strong> — Temporarily share text between devices.</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+const STORE_KEY = 'tn_pastes';
+let pastes = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+let db = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('pastebin');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('pastebin','connected');
+
+  if (typeof TN_FIREBASE_ENABLED !== 'undefined' && TN_FIREBASE_ENABLED) {
+    try {
+      const { getFirestore } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      db = getFirestore(window._tnApp);
+    } catch(e) { document.getElementById('setup-banner').style.display = 'block'; }
+  } else {
+    document.getElementById('setup-banner').style.display = 'block';
+  }
+
+  // Check for view mode
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (id) { loadPaste(id); }
+});
+
+function genId(len = 8) {
+  return Array.from(crypto.getRandomValues(new Uint8Array(len))).map(b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
+}
+
+async function createPaste() {
+  const content = document.getElementById('paste-content').value;
+  if (!content.trim()) return showToast('Please enter some content first');
+
+  const paste = {
+    title:   document.getElementById('paste-title').value.trim() || 'Untitled',
+    lang:    document.getElementById('paste-lang').value,
+    expiry:  parseInt(document.getElementById('paste-expiry').value) || 0,
+    created: Date.now(),
+    content
+  };
+
+  const id = genId();
+
+  if (db) {
+    try {
+      const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      await setDoc(doc(db, 'pastes', id), paste);
+    } catch(e) { /* fallback */ }
+  }
+
+  pastes[id] = paste;
+  localStorage.setItem(STORE_KEY, JSON.stringify(pastes));
+
+  const shareUrl = `${location.origin}/tools/pastebin.html?id=${id}`;
+  const res = document.getElementById('share-result');
+  res.style.display = 'block';
+  res.innerHTML = `
+    <div class="share-result">
+      <p style="font-size:.82rem;font-weight:700;margin-bottom:6px;">&#127881; Your share link:</p>
+      <div class="share-url">${shareUrl}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <button class="btn btn-primary" style="font-size:.8rem;" onclick="navigator.clipboard.writeText('${shareUrl}').then(()=>showToast('Copied!'))">Copy Link</button>
+        <a class="btn btn-secondary" style="font-size:.8rem;" href="${shareUrl}" target="_blank" rel="noopener">Preview</a>
+      </div>
+      <p style="font-size:.74rem;color:var(--text-muted);margin-top:6px;">
+        ${paste.expiry ? 'Expires in ' + fmtExpiry(paste.expiry) : 'No expiry set'}
+        ${db ? '' : ' · Stored locally (this browser only without Firebase)'}
+      </p>
+    </div>`;
+}
+
+function fmtExpiry(ms) {
+  if (ms < 3600000) return Math.round(ms/60000) + ' minutes';
+  if (ms < 86400000) return Math.round(ms/3600000) + ' hour(s)';
+  if (ms < 604800000) return Math.round(ms/86400000) + ' day(s)';
+  return Math.round(ms/2592000000) + ' month(s)';
+}
+
+async function loadPaste(id) {
+  document.getElementById('create-mode').style.display = 'none';
+  document.getElementById('view-mode').style.display   = 'block';
+
+  let paste = pastes[id] || null;
+
+  if (!paste && db) {
+    try {
+      const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      const snap = await getDoc(doc(db, 'pastes', id));
+      if (snap.exists()) paste = snap.data();
+    } catch(e) {}
+  }
+
+  if (!paste) {
+    document.getElementById('view-mode').innerHTML = `<p style="color:#ef4444;font-weight:700;">&#10060; Paste not found or has expired.</p><a class="btn btn-primary" href="/tools/pastebin.html">Create New Paste</a>`;
+    return;
+  }
+
+  if (paste.expiry && (Date.now() - paste.created) > paste.expiry) {
+    document.getElementById('view-mode').innerHTML = `<p style="color:#f59e0b;font-weight:700;">&#9200; This paste has expired.</p><a class="btn btn-primary" href="/tools/pastebin.html">Create New Paste</a>`;
+    return;
+  }
+
+  const shareUrl = location.href;
+  document.getElementById('view-mode').innerHTML = `
+    <div class="view-header">
+      <div>
+        <p style="font-size:1.1rem;font-weight:800;margin:0">${escHtml(paste.title)}</p>
+        <p style="font-size:.74rem;color:var(--text-muted);margin:2px 0 0">${new Date(paste.created).toLocaleString()}</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span class="lang-badge">${escHtml(paste.lang)}</span>
+        <button class="btn btn-secondary" style="font-size:.78rem;" onclick="navigator.clipboard.writeText(document.getElementById('raw-content').textContent).then(()=>showToast('Copied!'))">Copy Content</button>
+        <button class="btn btn-secondary" style="font-size:.78rem;" onclick="navigator.clipboard.writeText('${shareUrl}').then(()=>showToast('Link copied!'))">Copy Link</button>
+        <a class="btn btn-primary" style="font-size:.78rem;" href="/tools/pastebin.html">New Paste</a>
+      </div>
+    </div>
+    <pre class="paste-content" id="raw-content">${escHtml(paste.content)}</pre>`;
+}
+
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function clearForm() {
+  document.getElementById('paste-content').value = '';
+  document.getElementById('paste-title').value = '';
+  document.getElementById('share-result').style.display = 'none';
+}
+</script>
+</body>
+</html>

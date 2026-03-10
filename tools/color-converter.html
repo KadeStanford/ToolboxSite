@@ -127,7 +127,6 @@
     let h,s,l=(max+min)/2;
     if(max===min){h=s=0;}
     else{const d=max-min;s=l>0.5?d/(2-max-min):d/(max+min);
-      h=({[r]*60+360,b:(b-r)/d*60+240,g:(g-b)/d*60})[max]||0;
       h=(max===r?(g-b)/d+(g<b?6:0):max===g?(b-r)/d+2:(r-g)/d+4)*60;}
     return {h:Math.round(h),s:Math.round(s*100),l:Math.round(l*100)};
   }

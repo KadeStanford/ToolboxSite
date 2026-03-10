@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fraction Calculator — Add, Subtract, Multiply, Divide Fractions | ToolNook</title>
+  <meta name="description" content="Free online fraction calculator. Add, subtract, multiply, or divide any two fractions. Shows the simplified fraction, decimal, and mixed number result." />
+  <meta name="keywords" content="fraction calculator, add fractions online, subtract fractions, multiply fractions, divide fractions, simplify fractions, mixed number calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/fraction-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do you add fractions with different denominators?","acceptedAnswer":{"@type":"Answer","text":"To add fractions with different denominators, find the least common denominator (LCD), convert both fractions to have that denominator, then add the numerators. For example, 1/3 + 1/4: LCD is 12, so 4/12 + 3/12 = 7/12."}},{"@type":"Question","name":"How do you multiply fractions?","acceptedAnswer":{"@type":"Answer","text":"Multiply the numerators together and the denominators together, then simplify. For example, 2/3 × 3/4 = (2×3)/(3×4) = 6/12 = 1/2."}},{"@type":"Question","name":"What is a mixed number?","acceptedAnswer":{"@type":"Answer","text":"A mixed number has a whole number and a fraction, like 1½. If you get an improper fraction like 5/3, the mixed number form is 1 2/3."}}]}
+  </script>
+  <style>
+    .frac-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .frac-box { display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .frac-line { width:60px; height:2px; background:var(--text); }
+    .frac-input { width:60px; text-align:center; font-size:1.2rem; font-weight:700; }
+    .op-select { font-size:1.4rem; padding:6px 10px; border:2px solid var(--border); border-radius:var(--radius); cursor:pointer; background:var(--bg-alt); }
+    .result-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-top:16px; }
+    .res-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:14px; text-align:center; }
+    .res-label { font-size:.7rem; text-transform:uppercase; color:var(--text-muted); font-weight:700; letter-spacing:.06em; margin-bottom:6px; }
+    .res-val   { font-size:1.5rem; font-weight:700; color:var(--primary); }
+    .frac-display { display:flex; flex-direction:column; align-items:center; font-size:1.1rem; font-weight:700; }
+    .frac-display .frac-line { width:100%; margin:2px 0; }
+    .steps-block { background:var(--bg-alt); border-radius:var(--radius); padding:14px; margin-top:16px; font-size:.88rem; line-height:1.8; }
+    .steps-block h3  { font-size:.92rem; font-weight:700; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#math-tools">Math &amp; Science</a> › Fraction Calculator</div>
+      <h1>Fraction Calculator</h1>
+      <p>Add, subtract, multiply, or divide two fractions. Results shown as a simplified fraction, decimal, and mixed number with step-by-step solution.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="frac-row">
+        <div class="frac-box">
+          <input type="number" class="tool-input frac-input" id="n1" value="1" placeholder="1" />
+          <div class="frac-line"></div>
+          <input type="number" class="tool-input frac-input" id="d1" value="3" placeholder="3" min="1" />
+        </div>
+        <select class="op-select" id="op">
+          <option value="add">+</option>
+          <option value="sub">−</option>
+          <option value="mul">×</option>
+          <option value="div">÷</option>
+        </select>
+        <div class="frac-box">
+          <input type="number" class="tool-input frac-input" id="n2" value="1" placeholder="1" />
+          <div class="frac-line"></div>
+          <input type="number" class="tool-input frac-input" id="d2" value="4" placeholder="4" min="1" />
+        </div>
+        <button class="btn btn-primary" onclick="calc()"> = </button>
+      </div>
+
+      <div id="results" style="display:none;margin-top:16px;">
+        <div class="result-grid" id="result-grid"></div>
+        <div class="steps-block" id="steps"></div>
+      </div>
+      <div id="err" class="error-box" style="display:none;margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>How to Add Fractions Online</h2>
+      <p>Use the fraction calculator above for any combination. For manual calculation:</p>
+      <ol>
+        <li><strong>Adding/Subtracting</strong>: Find the LCD, convert fractions, then add/subtract numerators.</li>
+        <li><strong>Multiplying</strong>: Multiply numerators × numerators and denominators × denominators.</li>
+        <li><strong>Dividing</strong>: Multiply the first fraction by the reciprocal of the second.</li>
+        <li><strong>Simplifying</strong>: Divide numerator and denominator by their GCD.</li>
+      </ol>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('fraction-calculator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('fraction-calculator','math');
+  calc();
+});
+
+function gcd(a, b) { return b === 0 ? Math.abs(a) : gcd(b, a % b); }
+function lcm(a, b) { return Math.abs(a * b) / gcd(a, b); }
+function simplify(n, d) { const g = gcd(Math.abs(n), Math.abs(d)); return [n/g, d/g]; }
+
+function calc() {
+  const n1 = parseInt(document.getElementById('n1').value);
+  const d1 = parseInt(document.getElementById('d1').value);
+  const n2 = parseInt(document.getElementById('n2').value);
+  const d2 = parseInt(document.getElementById('d2').value);
+  const op = document.getElementById('op').value;
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+
+  if (isNaN(n1)||isNaN(d1)||isNaN(n2)||isNaN(d2)) { err.textContent='Enter valid integers.'; err.style.display='block'; return; }
+  if (d1===0||d2===0) { err.textContent='Denominator cannot be zero.'; err.style.display='block'; return; }
+  if (op==='div' && n2===0) { err.textContent='Cannot divide by zero.'; err.style.display='block'; return; }
+
+  let rn, rd, steps = '';
+  if (op === 'add' || op === 'sub') {
+    const l = lcm(d1, d2);
+    const a = n1 * (l/d1), b = n2 * (l/d2);
+    rn = op === 'add' ? a + b : a - b; rd = l;
+    steps = `<h3>Steps</h3><ol>
+      <li>Find LCD of ${d1} and ${d2}: <strong>${l}</strong></li>
+      <li>Convert: ${n1}/${d1} = ${a}/${l} &nbsp;&nbsp; ${n2}/${d2} = ${b}/${l}</li>
+      <li>${op==='add'?'Add':'Subtract'} numerators: ${a} ${op==='add'?'+':'−'} ${b} = <strong>${rn}</strong></li>
+      <li>Result: ${rn}/${rd} → simplified: <strong>${simplify(rn,rd).join('/')}</strong></li>
+    </ol>`;
+  } else if (op === 'mul') {
+    rn = n1 * n2; rd = d1 * d2;
+    steps = `<h3>Steps</h3><ol>
+      <li>Multiply numerators: ${n1} × ${n2} = <strong>${rn}</strong></li>
+      <li>Multiply denominators: ${d1} × ${d2} = <strong>${rd}</strong></li>
+      <li>Result: ${rn}/${rd} → simplified: <strong>${simplify(rn,rd).join('/')}</strong></li>
+    </ol>`;
+  } else {
+    rn = n1 * d2; rd = d1 * n2;
+    steps = `<h3>Steps</h3><ol>
+      <li>Flip the second fraction: ${n2}/${d2} → <strong>${d2}/${n2}</strong></li>
+      <li>Multiply: (${n1}×${d2}) / (${d1}×${n2}) = ${rn}/${rd}</li>
+      <li>Result: ${rn}/${rd} → simplified: <strong>${simplify(rn,rd).join('/')}</strong></li>
+    </ol>`;
+  }
+  const [sn, sd] = simplify(rn, rd);
+  const decimal = (sn / sd).toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+  const wholes  = Math.floor(Math.abs(sn) / sd);
+  const rem     = Math.abs(sn) % sd;
+  const mixed   = wholes > 0 ? `${sn < 0 ? '-' : ''}${wholes}${rem > 0 ? ` ${rem}/${sd}` : ''}` : `${sn}/${sd}`;
+
+  document.getElementById('result-grid').innerHTML = `
+    <div class="res-card"><div class="res-label">Fraction</div><div class="frac-display" style="font-size:1.4rem;"><span>${sn}</span><div class="frac-line" style="width:40px;"></div><span>${sd}</span></div></div>
+    <div class="res-card"><div class="res-label">Decimal</div><div class="res-val">${decimal}</div></div>
+    <div class="res-card"><div class="res-label">Mixed Number</div><div class="res-val" style="font-size:1.1rem;">${mixed}</div></div>
+    <div class="res-card"><div class="res-label">Percentage</div><div class="res-val">${(sn/sd*100).toFixed(2)}%</div></div>
+  `;
+  document.getElementById('steps').innerHTML = steps;
+  document.getElementById('results').style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -3,6 +3,12 @@
 function showToast(message, type = '') {
   const toast = document.getElementById('toast');
   if (!toast) return;
+  // Ensure ARIA live region is declared (WCAG 4.1.3)
+  if (!toast.getAttribute('role')) {
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.setAttribute('aria-atomic', 'true');
+  }
   toast.textContent = message;
   toast.className = 'toast show' + (type ? ' ' + type : '');
   clearTimeout(window._toastTimer);

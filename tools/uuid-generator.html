@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UUID Generator — Generate UUID v4 Online | ToolNook</title>
+  <meta name="description" content="Generate UUID v4 universally unique identifiers online. Create single or bulk UUIDs instantly. Copy UUIDs for use in databases, APIs, and code. Free UUID generator." />
+  <meta name="keywords" content="UUID generator, GUID generator, UUID v4, random UUID, generate unique ID, universally unique identifier online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/uuid-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a UUID?","acceptedAnswer":{"@type":"Answer","text":"A UUID (Universally Unique Identifier) is a 128-bit label used to uniquely identify information in computer systems. UUID v4 is randomly generated and has only a 1-in-10^18 chance of collision."}},{"@type":"Question","name":"What is UUID v4?","acceptedAnswer":{"@type":"Answer","text":"UUID v4 uses random or pseudo-random data for all 122 bits. This is the most commonly used UUID version for database keys, API tokens, and session IDs because it requires no coordination between systems."}},{"@type":"Question","name":"What is the difference between UUID and GUID?","acceptedAnswer":{"@type":"Answer","text":"GUID (Globally Unique Identifier) is Microsoft's name for the same thing as UUID. They are identical standards — 32 hexadecimal characters displayed in 5 groups separated by hyphens."}}]}
+  </script>
+  <style>
+    .uuid-display { font-family:monospace; font-size:1.1rem; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; letter-spacing:.04em; word-break:break-all; }
+    .uuid-list { font-family:monospace; font-size:.82rem; background:#f1f5f9; border:1px solid var(--border); border-radius:var(--radius); padding:10px; max-height:260px; overflow-y:auto; white-space:pre; }
+    .format-pill { display:inline-block; padding:5px 14px; border:1px solid var(--border); border-radius:20px; font-size:.8rem; cursor:pointer; margin:3px; }
+    .format-pill.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .ref-table th, .ref-table td { padding:8px 12px; border:1px solid var(--border); font-size:.82rem; }
+    .ref-table th { background:var(--bg-alt); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › UUID Generator</div>
+      <h1>UUID v4 Generator</h1>
+      <p>Generate cryptographically random UUIDs using the browser's built-in <code>crypto.randomUUID()</code> API.</p>
+    </div>
+    <div class="tool-container">
+      <div class="uuid-display" id="single-uuid">Press Generate</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+        <button class="btn btn-primary" onclick="genSingle()">&#8635; Generate</button>
+        <button class="btn btn-secondary" onclick="copySingle()">&#128203; Copy</button>
+      </div>
+
+      <div style="margin-top:12px;">
+        <p style="font-weight:700;font-size:.88rem;margin-bottom:6px;">Format</p>
+        <div>
+          <span class="format-pill active" id="fmt-hyphens"  onclick="setFmt('hyphens')">With Hyphens</span>
+          <span class="format-pill" id="fmt-no-hyphens" onclick="setFmt('no-hyphens')">No Hyphens</span>
+          <span class="format-pill" id="fmt-upper"     onclick="setFmt('upper')">UPPERCASE</span>
+          <span class="format-pill" id="fmt-braces"    onclick="setFmt('braces')">{Braces}</span>
+        </div>
+      </div>
+
+      <hr style="margin:18px 0;" />
+
+      <p style="font-weight:700;font-size:.88rem;margin-bottom:8px;">Bulk Generate</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+        <label style="font-size:.85rem;">Count:</label>
+        <input type="number" id="bulk-count" value="10" min="1" max="500" style="width:80px;" />
+        <button class="btn btn-primary" onclick="genBulk()">Generate Bulk</button>
+        <button class="btn btn-secondary" onclick="copyBulk()">Copy All</button>
+      </div>
+      <div class="uuid-list" id="uuid-list"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>UUID Version Reference</h2>
+      <table class="ref-table" style="border-collapse:collapse;margin-bottom:12px;">
+        <tr><th>Version</th><th>Generation Method</th><th>Common Use</th></tr>
+        <tr><td>v1</td><td>Timestamp + MAC address</td><td>Time-ordered logs</td></tr>
+        <tr><td>v3</td><td>MD5 hash of namespace + name</td><td>Deterministic IDs</td></tr>
+        <tr><td>v4</td><td>Random (this tool)</td><td>General purpose</td></tr>
+        <tr><td>v5</td><td>SHA-1 hash of namespace + name</td><td>Deterministic IDs</td></tr>
+        <tr><td>v7</td><td>Unix timestamp + random</td><td>Sortable modern IDs</td></tr>
+      </table>
+      <p>UUID v4 is the safest choice when you need unique IDs without coordination — perfect for database primary keys, API keys, and session tokens.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+let fmt = 'hyphens';
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('uuid-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('uuid-generator','developer');
+  genSingle();
+});
+
+function genUUID() {
+  const raw = crypto.randomUUID();
+  if (fmt === 'hyphens')    return raw;
+  if (fmt === 'no-hyphens') return raw.replaceAll('-','');
+  if (fmt === 'upper')      return raw.toUpperCase();
+  if (fmt === 'braces')     return '{' + raw.toUpperCase() + '}';
+  return raw;
+}
+
+function genSingle() { document.getElementById('single-uuid').textContent = genUUID(); }
+function copySingle() {
+  navigator.clipboard.writeText(document.getElementById('single-uuid').textContent).then(() => showToast('Copied!'));
+}
+
+function genBulk() {
+  const n = Math.min(500, Math.max(1, parseInt(document.getElementById('bulk-count').value) || 10));
+  const list = Array.from({length:n}, () => genUUID());
+  document.getElementById('uuid-list').textContent = list.join('\n');
+}
+
+function copyBulk() {
+  const t = document.getElementById('uuid-list').textContent;
+  if (!t) return;
+  navigator.clipboard.writeText(t).then(() => showToast('Copied!'));
+}
+
+function setFmt(f) {
+  fmt = f;
+  document.querySelectorAll('.format-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('fmt-' + f).classList.add('active');
+  genSingle();
+  if (document.getElementById('uuid-list').textContent) genBulk();
+}
+</script>
+</body>
+</html>

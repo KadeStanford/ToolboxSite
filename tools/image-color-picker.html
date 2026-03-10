@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Color Picker — Extract Colors from Images | ToolNook</title>
+  <meta name="description" content="Pick and extract colors from any image. Get HEX, RGB, and HSL values instantly. Click anywhere on your image to identify colors. Free, private, browser-only." />
+  <meta name="keywords" content="image color picker, color extractor, pick color from image, HEX color finder, RGB picker, eyedropper tool online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/image-color-picker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does the image color picker work?","acceptedAnswer":{"@type":"Answer","text":"The tool draws your image on an HTML5 canvas, then uses getImageData() to read the exact pixel color at your mouse position when you click or hover. No image data is sent to any server."}},{"@type":"Question","name":"What color formats are supported?","acceptedAnswer":{"@type":"Answer","text":"The tool shows HEX (e.g. #3B82F6), RGB (e.g. rgb(59, 130, 246)), and HSL (e.g. hsl(217, 91%, 60%)) values simultaneously for every picked color."}},{"@type":"Question","name":"Can I copy the picked colors?","acceptedAnswer":{"@type":"Answer","text":"Yes. Click any color swatch in the history or the current HEX/RGB/HSL display to copy that value to your clipboard."}}]}
+  </script>
+  <style>
+    .drop-zone { border:2px dashed var(--primary); border-radius:var(--radius); padding:40px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+    .drop-zone:hover, .drop-zone.drag-over { background:var(--primary-light); }
+    #canvas-wrap { position:relative; display:inline-block; line-height:0; max-width:100%; overflow:hidden; }
+    #pick-canvas { max-width:100%; cursor:crosshair; display:block; border:1px solid var(--border); border-radius:6px; }
+    #mag-canvas  { position:absolute; width:80px; height:80px; border:2px solid #fff; border-radius:50%; box-shadow:0 2px 12px rgba(0,0,0,.4); pointer-events:none; display:none; }
+    .color-display { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:14px; }
+    .color-swatch-large { width:64px; height:64px; border-radius:var(--radius); border:1px solid var(--border); flex-shrink:0; }
+    .color-vals { display:flex; flex-direction:column; gap:6px; }
+    .val-row { display:flex; align-items:center; gap:8px; }
+    .val-label { font-size:.7rem; font-weight:700; width:30px; color:var(--text-muted); }
+    .val-text { font-family:monospace; font-size:.86rem; background:var(--bg-alt); border:1px solid var(--border); border-radius:4px; padding:4px 10px; cursor:pointer; }
+    .val-text:hover { background:var(--primary-light); }
+    .history-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .hist-swatch { width:32px; height:32px; border-radius:4px; border:1px solid var(--border); cursor:pointer; transition:transform .1s; position:relative; }
+    .hist-swatch:hover { transform:scale(1.2); z-index:1; }
+    .hist-swatch::after { content:attr(data-hex); position:absolute; bottom:-20px; left:50%; transform:translateX(-50%); font-size:.6rem; white-space:nowrap; background:#333; color:#fff; padding:1px 4px; border-radius:3px; display:none; }
+    .hist-swatch:hover::after { display:block; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#image-tools">Image Tools</a> › Image Color Picker</div>
+      <h1>Image Color Picker</h1>
+      <p>Upload any image and click (or hover) to pick colors. Get HEX, RGB, and HSL values instantly.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
+        <input type="file" id="file-in" accept="image/*" />
+        <div style="font-size:2.5rem;margin-bottom:10px;">🎨</div>
+        <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to select</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF — stays in your browser</p>
+      </div>
+
+      <div id="picker-section" style="display:none;">
+        <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:8px;">🖱️ Hover to preview &bull; Click to pick a color</p>
+        <div id="canvas-wrap">
+          <canvas id="pick-canvas"></canvas>
+          <canvas id="mag-canvas"></canvas>
+        </div>
+
+        <div class="color-display">
+          <div class="color-swatch-large" id="swatch-large"></div>
+          <div class="color-vals">
+            <div class="val-row"><span class="val-label">HEX</span><span class="val-text" id="val-hex" onclick="copyVal('val-hex')">#------</span></div>
+            <div class="val-row"><span class="val-label">RGB</span><span class="val-text" id="val-rgb" onclick="copyVal('val-rgb')">rgb(-,-,-)</span></div>
+            <div class="val-row"><span class="val-label">HSL</span><span class="val-text" id="val-hsl" onclick="copyVal('val-hsl')">hsl(-,-,-)</span></div>
+          </div>
+        </div>
+
+        <div style="font-size:.84rem;font-weight:700;margin-top:14px;margin-bottom:4px;">Color History <span id="history-count" style="font-size:.72rem;font-weight:400;color:var(--text-muted)">(click to copy HEX)</span></div>
+        <div class="history-row" id="history-row"><em style="font-size:.78rem;color:var(--text-muted)">Click on the image to pick colors...</em></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>How to Use the Image Color Picker</h2>
+      <ol>
+        <li>Upload or drag-and-drop your image into the upload area.</li>
+        <li>Hover over the image — a magnifier shows you a zoomed preview of the area under your cursor.</li>
+        <li>Click any spot on the image to pick that color. The HEX, RGB, and HSL values will appear.</li>
+        <li>Click any of the value labels to copy that format to your clipboard.</li>
+        <li>Your last 12 picks are saved as swatches in the Color History row.</li>
+      </ol>
+      <h2>Common Uses</h2>
+      <ul>
+        <li><strong>Brand color matching</strong> — Extract exact colors from a logo PNG.</li>
+        <li><strong>Web design</strong> — Sample colors from a mockup to use in your CSS.</li>
+        <li><strong>Photo palette</strong> — Build a color palette from a reference photograph.</li>
+      </ul>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('image-color-picker');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('image-color-picker','image');
+
+  const fileIn   = document.getElementById('file-in');
+  const zone     = document.getElementById('drop-zone');
+  const pickCanvas = document.getElementById('pick-canvas');
+  const magCanvas  = document.getElementById('mag-canvas');
+  const pCtx     = pickCanvas.getContext('2d', { willReadFrequently: true });
+  const mCtx     = magCanvas.getContext('2d');
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) loadImage(f);
+  });
+  fileIn.addEventListener('change', e => { if (e.target.files[0]) loadImage(e.target.files[0]); });
+
+  let img = new Image();
+  let history = [];
+  const MAG = 8;   // zoom factor
+  const MAG_PX = 10; // pixels to sample radius
+
+  function loadImage(file) {
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const maxW = pickCanvas.parentElement.clientWidth || 700;
+      const scale = Math.min(1, maxW / img.width);
+      pickCanvas.width  = img.width  * scale;
+      pickCanvas.height = img.height * scale;
+      pCtx.drawImage(img, 0, 0, pickCanvas.width, pickCanvas.height);
+      zone.style.display = 'none';
+      document.getElementById('picker-section').style.display = 'block';
+    };
+    img.src = url;
+  }
+
+  pickCanvas.addEventListener('mousemove', e => {
+    const {x, y} = canvasPos(e);
+    updateDisplay(x, y, false);
+    drawMagnifier(x, y);
+  });
+
+  pickCanvas.addEventListener('click', e => {
+    const {x, y} = canvasPos(e);
+    const hex = updateDisplay(x, y, true);
+    pushHistory(hex);
+  });
+
+  pickCanvas.addEventListener('mouseleave', () => {
+    magCanvas.style.display = 'none';
+  });
+
+  function canvasPos(e) {
+    const r = pickCanvas.getBoundingClientRect();
+    return {
+      x: Math.round((e.clientX - r.left) * (pickCanvas.width  / r.width)),
+      y: Math.round((e.clientY - r.top)  * (pickCanvas.height / r.height))
+    };
+  }
+
+  function updateDisplay(x, y, isPick) {
+    const px = pCtx.getImageData(x, y, 1, 1).data;
+    const r = px[0], g = px[1], b = px[2];
+    const hex = rgbToHex(r, g, b);
+    const hsl = rgbToHsl(r, g, b);
+    document.getElementById('swatch-large').style.background = hex;
+    document.getElementById('val-hex').textContent = hex;
+    document.getElementById('val-rgb').textContent = `rgb(${r}, ${g}, ${b})`;
+    document.getElementById('val-hsl').textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+    if (isPick) showToast('Picked ' + hex);
+    return hex;
+  }
+
+  function drawMagnifier(x, y) {
+    const size = 80;
+    magCanvas.width  = size; magCanvas.height = size;
+    magCanvas.style.display = 'block';
+    const r = pickCanvas.getBoundingClientRect();
+    const ox = (x / pickCanvas.width)  * r.width;
+    const oy = (y / pickCanvas.height) * r.height;
+    magCanvas.style.left = (ox - size/2 + (ox < size ? size : 0)) + 'px';
+    magCanvas.style.top  = (oy - size - 8) + 'px';
+
+    mCtx.imageSmoothingEnabled = false;
+    mCtx.clearRect(0, 0, size, size);
+    mCtx.save();
+    mCtx.beginPath();
+    mCtx.arc(size/2, size/2, size/2, 0, Math.PI*2);
+    mCtx.clip();
+    const srcSize = Math.round(size / MAG);
+    mCtx.drawImage(pickCanvas, x - srcSize/2, y - srcSize/2, srcSize, srcSize, 0, 0, size, size);
+    // crosshair
+    mCtx.strokeStyle = 'rgba(255,255,255,0.8)';
+    mCtx.lineWidth = 1;
+    mCtx.beginPath(); mCtx.moveTo(size/2, 0); mCtx.lineTo(size/2, size); mCtx.stroke();
+    mCtx.beginPath(); mCtx.moveTo(0, size/2); mCtx.lineTo(size, size/2); mCtx.stroke();
+    mCtx.restore();
+  }
+
+  function pushHistory(hex) {
+    history = history.filter(h => h !== hex);
+    history.unshift(hex);
+    if (history.length > 12) history.pop();
+    const row = document.getElementById('history-row');
+    row.innerHTML = history.map(h =>
+      `<div class="hist-swatch" style="background:${h}" data-hex="${h}" onclick="navigator.clipboard.writeText('${h}').then(()=>showToast('Copied ${h}'))"></div>`
+    ).join('');
+  }
+
+  function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b);
+    let h, s, l = (max+min)/2;
+    if (max === min) { h = s = 0; }
+    else {
+      const d = max - min;
+      s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+      switch (max) {
+        case r: h = ((g-b)/d + (g<b?6:0))/6; break;
+        case g: h = ((b-r)/d + 2)/6; break;
+        default: h = ((r-g)/d + 4)/6;
+      }
+    }
+    return { h: Math.round(h*360), s: Math.round(s*100), l: Math.round(l*100) };
+  }
+});
+
+function copyVal(id) {
+  const val = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(val).then(() => showToast('Copied ' + val));
+}
+</script>
+</body>
+</html>

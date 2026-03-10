@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image to Base64 Converter — Encode Images Online | ToolNook</title>
+  <meta name="description" content="Convert any image to Base64 encoded string online. Instantly generate data URLs for JPEG, PNG, WebP, and GIF images. Copy the Base64 string or full data URI." />
+  <meta name="keywords" content="image to base64, base64 image encoder, convert image to base64, data URL generator, base64 PNG, embed image in HTML CSS" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/image-to-base64.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Base64 image encoding?","acceptedAnswer":{"@type":"Answer","text":"Base64 encoding converts binary image data into ASCII text. This lets you embed images directly in HTML, CSS, or JSON without needing a separate image file or URL."}},{"@type":"Question","name":"How do I use a Base64 image in HTML?","acceptedAnswer":{"@type":"Answer","text":"Use the data URL as an img src: <img src=\"data:image/png;base64,iVBOR...\">. Or in CSS: background-image: url('data:image/png;base64,...')."}},{"@type":"Question","name":"Does Base64 increase file size?","acceptedAnswer":{"@type":"Answer","text":"Yes, Base64 encoding increases file size by approximately 33% because it encodes 3 bytes of binary data as 4 ASCII characters. Inline images for small icons are often worthwhile despite this overhead."}}]}
+  </script>
+  <style>
+    .drop-zone { border:2px dashed var(--primary); border-radius:var(--radius); padding:40px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+    .drop-zone:hover, .drop-zone.drag-over { background:var(--primary-light); }
+    .drop-zone input[type=file] { display:none; }
+    .b64-output { font-family:monospace; font-size:.72rem; word-break:break-all; background:#f1f5f9; border:1px solid var(--border); border-radius:var(--radius); padding:12px; max-height:120px; overflow-y:auto; }
+    .copy-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .usage-tabs { display:flex; gap:6px; margin-top:14px; flex-wrap:wrap; }
+    .tab-btn { padding:6px 14px; border:1px solid var(--border); border-radius:20px; font-size:.82rem; cursor:pointer; background:var(--bg-alt); }
+    .tab-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .usage-code { font-family:monospace; font-size:.78rem; background:#0f172a; color:#e2e8f0; padding:12px; border-radius:var(--radius); margin-top:10px; word-break:break-all; max-height:90px; overflow-y:auto; display:none; }
+    .usage-code.show { display:block; }
+    .info-pill { display:inline-block; font-size:.72rem; background:var(--primary-light); border:1px solid var(--primary); border-radius:20px; padding:2px 8px; margin:2px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#image-tools">Image Tools</a> › Image to Base64</div>
+      <h1>Image to Base64 Converter</h1>
+      <p>Convert any image to a Base64 data URL instantly in your browser. Private — no upload, no server.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-in').click()">
+        <input type="file" id="file-in" accept="image/*" onchange="convertFile(event)" />
+        <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
+        <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to select</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF supported</p>
+      </div>
+
+      <div id="result-section" style="display:none;margin-top:18px;">
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+          <img id="preview" style="max-width:180px;max-height:180px;border:1px solid var(--border);border-radius:6px;" alt="preview" />
+          <div style="flex:1;min-width:200px;">
+            <div id="file-info" style="margin-bottom:10px;"></div>
+            <div style="font-size:.88rem;font-weight:700;margin-bottom:6px;">Base64 String (no prefix)</div>
+            <div class="b64-output" id="b64-plain"></div>
+            <div class="copy-row">
+              <button class="btn btn-secondary" style="font-size:.8rem;" onclick="copy('b64-plain')">Copy Base64</button>
+            </div>
+            <div style="font-size:.88rem;font-weight:700;margin:12px 0 6px;">Full Data URL</div>
+            <div class="b64-output" id="b64-full"></div>
+            <div class="copy-row">
+              <button class="btn btn-primary" style="font-size:.8rem;" onclick="copy('b64-full')">Copy Data URL</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <p style="font-size:.88rem;font-weight:700;margin-bottom:8px;">Usage Examples</p>
+          <div class="usage-tabs">
+            <button class="tab-btn active" onclick="showTab('html-img',this)">HTML &lt;img&gt;</button>
+            <button class="tab-btn" onclick="showTab('css-bg',this)">CSS background</button>
+            <button class="tab-btn" onclick="showTab('json',this)">JSON</button>
+            <button class="tab-btn" onclick="showTab('markdown',this)">Markdown</button>
+          </div>
+          <div class="usage-code show" id="tab-html-img"></div>
+          <div class="usage-code" id="tab-css-bg"></div>
+          <div class="usage-code" id="tab-json"></div>
+          <div class="usage-code" id="tab-markdown"></div>
+          <button class="btn btn-secondary" style="font-size:.8rem;margin-top:6px;" onclick="copyActiveTab()">Copy Example</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>When to Use Base64 Images</h2>
+      <ul>
+        <li><strong>Small icons &amp; logos</strong> — Inline in CSS to eliminate HTTP requests for tiny images.</li>
+        <li><strong>Email templates</strong> — Some email clients block externally hosted images; Base64 ensures they always load.</li>
+        <li><strong>Single-file apps</strong> — Bundle all assets in one HTML file for portable demos.</li>
+        <li><strong>API payloads</strong> — Send images as JSON strings when binary uploads are not supported.</li>
+      </ul>
+      <p><strong>When not to use:</strong> Large images significantly bloat HTML/CSS file size and prevent browser caching of images.</p>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('image-to-base64');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('image-to-base64','image');
+  const zone = document.getElementById('drop-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) processFile(f); });
+});
+
+let activeTabId = 'tab-html-img';
+let fullDataUrl = '';
+
+function convertFile(e) { processFile(e.target.files[0]); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    fullDataUrl = dataUrl;
+    const b64 = dataUrl.split(',')[1];
+    document.getElementById('preview').src = dataUrl;
+    document.getElementById('b64-plain').textContent = b64;
+    document.getElementById('b64-full').textContent  = dataUrl;
+    document.getElementById('file-info').innerHTML = `<span class="info-pill">${file.name}</span> <span class="info-pill">${(file.size/1024).toFixed(1)} KB</span> <span class="info-pill">→ ${(b64.length/1024).toFixed(1)} KB encoded</span>`;
+    document.getElementById('tab-html-img').textContent = `<img src="${dataUrl.substring(0,60)}..." alt="image" />`;
+    document.getElementById('tab-css-bg').textContent   = `background-image: url('${dataUrl.substring(0,50)}...');`;
+    document.getElementById('tab-json').textContent     = `{ "image": "${dataUrl.substring(0,50)}..." }`;
+    document.getElementById('tab-markdown').textContent = `![image](${dataUrl.substring(0,50)}...)`;
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('drop-zone').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function copy(id) {
+  const text = document.getElementById(id).textContent;
+  const actualText = id === 'b64-plain' ? document.getElementById('b64-plain').textContent : fullDataUrl;
+  navigator.clipboard.writeText(actualText).then(() => showToast('Copied!'));
+}
+
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.usage-code').forEach(c => c.classList.remove('show'));
+  btn.classList.add('active');
+  activeTabId = 'tab-' + name;
+  document.getElementById(activeTabId).classList.add('show');
+}
+
+function copyActiveTab() {
+  const map = {
+    'tab-html-img': `<img src="${fullDataUrl}" alt="image" />`,
+    'tab-css-bg':   `background-image: url('${fullDataUrl}');`,
+    'tab-json':     JSON.stringify({ image: fullDataUrl }),
+    'tab-markdown': `![image](${fullDataUrl})`
+  };
+  navigator.clipboard.writeText(map[activeTabId] || '').then(() => showToast('Copied!'));
+}
+</script>
+</body>
+</html>

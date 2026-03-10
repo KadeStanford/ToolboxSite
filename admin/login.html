@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — ToolNook</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0fdf4 100%);
+    }
+    .login-wrap  { width: 100%; max-width: 400px; padding: 20px; }
+    .login-card  {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 44px 40px;
+      box-shadow: 0 8px 40px rgba(79,70,229,.12);
+    }
+    .login-logo {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .login-logo span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .login-subtitle { text-align: center; color: var(--text-muted); font-size: .875rem; margin-bottom: 32px; }
+    .err-box {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #b91c1c;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: .875rem;
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.5;
+    }
+    .err-box a { color: #b91c1c; }
+    .btn-login { width: 100%; margin-top: 8px; padding: 12px; font-size: 1rem; }
+    .spinner {
+      display: inline-block;
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">&#128736; <span>ToolNook</span></div>
+    <div class="login-subtitle">Admin Dashboard &mdash; Restricted Access</div>
+    <div class="err-box" id="err"></div>
+    <div class="form-group">
+      <label for="em">Email address</label>
+      <input type="email" id="em" class="tool-input" placeholder="admin@yourdomain.com" autocomplete="email" />
+    </div>
+    <div class="form-group">
+      <label for="pw">Password</label>
+      <input type="password" id="pw" class="tool-input" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary btn-login" id="login-btn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<script src="/js/firebase-config.js"></script>
+<script type="module">
+  import { initializeApp }                                from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword,
+           onAuthStateChanged }                           from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+  const errEl = document.getElementById('err');
+  const btn   = document.getElementById('login-btn');
+
+  if (!TN_FIREBASE_ENABLED) {
+    errEl.style.display = 'block';
+    errEl.innerHTML = `
+      ⚠️ <strong>Firebase is not configured yet.</strong><br>
+      Edit <code>/js/firebase-config.js</code>, paste your Firebase project credentials,
+      and set <code>TN_FIREBASE_ENABLED = true</code>.<br><br>
+      See the <a href="/admin/dashboard.html">dashboard</a> for full setup instructions.`;
+    btn.disabled = true;
+  }
+
+  let auth = null;
+  if (TN_FIREBASE_ENABLED) {
+    const app = initializeApp(TN_FIREBASE_CONFIG);
+    auth = getAuth(app);
+    // Redirect if already signed in
+    onAuthStateChanged(auth, user => {
+      if (user) location.replace('/admin/dashboard.html');
+    });
+  }
+
+  window.doLogin = async function () {
+    const em = document.getElementById('em').value.trim();
+    const pw = document.getElementById('pw').value;
+    errEl.style.display = 'none';
+
+    if (!em || !pw) {
+      errEl.textContent = 'Please enter your email and password.';
+      errEl.style.display = 'block';
+      return;
+    }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Signing in…';
+    try {
+      await signInWithEmailAndPassword(auth, em, pw);
+      location.replace('/admin/dashboard.html');
+    } catch (e) {
+      const msgs = {
+        'auth/invalid-credential': 'Invalid email or password.',
+        'auth/user-not-found':     'No account found with that email.',
+        'auth/wrong-password':     'Incorrect password.',
+        'auth/too-many-requests':  'Too many attempts — try again later.',
+      };
+      errEl.textContent = msgs[e.code] || e.message;
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  };
+
+  document.getElementById('pw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') window.doLogin();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading Time Calculator — How Long to Read Text | ToolNook</title>
+  <meta name="description" content="Calculate how long it takes to read any text. Paste your article or content and get instant reading time at various speeds. Also calculates speaking time." />
+  <meta name="keywords" content="reading time calculator, how long to read, words per minute calculator, reading speed, speaking time, article reading time" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/reading-time.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How fast does the average person read?","acceptedAnswer":{"@type":"Answer","text":"The average adult reads about 200–250 words per minute silently. Speed readers may achieve 400+ WPM. Children and people reading in a second language typically read at 100–150 WPM."}},{"@type":"Question","name":"How is reading time calculated?","acceptedAnswer":{"@type":"Answer","text":"Reading time is calculated by dividing the total word count by the reading speed (words per minute). For example, a 1,000-word article takes 5 minutes at 200 WPM."}},{"@type":"Question","name":"What is a good reading time for blog posts?","acceptedAnswer":{"@type":"Answer","text":"Medium-length posts (7-minute read, ~1,400–1,800 words) tend to get the highest engagement. Long-form articles (10+ minutes) rank better in search but have higher abandonment rates."}}]}
+  </script>
+  <style>
+    .wpm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin:14px 0; }
+    .wpm-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
+    .wpm-card .time { font-size:1.4rem; font-weight:800; color:var(--primary); }
+    .wpm-card .label { font-size:.72rem; color:var(--text-muted); margin-top:2px; }
+    .custom-wpm { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+    .stat-box { display:inline-flex; gap:18px; flex-wrap:wrap; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:12px 18px; margin-bottom:12px; }
+    .stat-box div { text-align:center; }
+    .stat-box .num { font-size:1.3rem; font-weight:800; }
+    .stat-box .lbl { font-size:.7rem; color:var(--text-muted); }
+    .bar-wrap { height:10px; background:#e2e8f0; border-radius:99px; overflow:hidden; margin:6px 0; }
+    .bar-fill { height:100%; border-radius:99px; background:var(--primary); transition:width .3s; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#content-tools">Content & SEO</a> › Reading Time</div>
+      <h1>Reading Time Calculator</h1>
+      <p>Paste your article or content below to instantly see how long it takes to read at different speeds.</p>
+    </div>
+
+    <div class="tool-container">
+      <label class="input-label">Paste Your Text</label>
+      <textarea id="text-in" rows="8" placeholder="Paste your blog post, article, essay, or any content here..." oninput="calc()" style="resize:vertical;"></textarea>
+
+      <div class="stat-box" id="stat-box" style="display:none;margin-top:14px;">
+        <div><div class="num" id="s-words">0</div><div class="lbl">Words</div></div>
+        <div><div class="num" id="s-chars">0</div><div class="lbl">Characters</div></div>
+        <div><div class="num" id="s-sentences">0</div><div class="lbl">Sentences</div></div>
+        <div><div class="num" id="s-paras">0</div><div class="lbl">Paragraphs</div></div>
+      </div>
+
+      <div id="results-area" style="display:none;">
+        <p style="font-weight:700;font-size:.9rem;margin-bottom:6px;">Reading Time at Common Speeds</p>
+        <div class="wpm-grid" id="wpm-grid"></div>
+
+        <div class="custom-wpm">
+          <label style="font-size:.84rem;">Custom WPM:</label>
+          <input type="number" id="custom-wpm" value="200" min="50" max="1000" style="width:80px;" oninput="updateCustom()" />
+          <span style="font-size:.88rem;">→ <strong id="custom-result">—</strong></span>
+        </div>
+
+        <p style="font-weight:700;font-size:.9rem;margin-bottom:6px;">Speaking Time</p>
+        <div class="wpm-grid" id="speak-grid"></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Reading Speed Reference</h2>
+      <ul>
+        <li><strong>100 WPM</strong> — Slow reader, second language, or complex technical text</li>
+        <li><strong>150 WPM</strong> — Below average</li>
+        <li><strong>200 WPM</strong> — Average adult reading speed</li>
+        <li><strong>250 WPM</strong> — Above average</li>
+        <li><strong>300 WPM</strong> — Fast reader</li>
+        <li><strong>400–600 WPM</strong> — Speed reading techniques</li>
+        <li><strong>130 WPM</strong> — Average speaking (presentations, podcasts)</li>
+        <li><strong>150 WPM</strong> — Conversational speech</li>
+      </ul>
+      <p><strong>For blog posts</strong>, add ~30 seconds per image or embedded element — they add visual reading time.</p>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('reading-time');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('reading-time','content');
+});
+
+const READ_SPEEDS  = [{label:'Slow (100 wpm)',wpm:100},{label:'Child (150 wpm)',wpm:150},{label:'Average (200 wpm)',wpm:200},{label:'Above avg (250 wpm)',wpm:250},{label:'Fast (300 wpm)',wpm:300},{label:'Speed (450 wpm)',wpm:450}];
+const SPEAK_SPEEDS = [{label:'Slow (100 wpm)',wpm:100},{label:'Presentations (130 wpm)',wpm:130},{label:'Conversational (150 wpm)',wpm:150},{label:'Fast speech (180 wpm)',wpm:180}];
+
+let totalWords = 0;
+
+function fmtTime(mins) {
+  if (mins < 1) return 'under 1 min';
+  if (mins < 60) return Math.round(mins) + ' min' + (Math.round(mins)===1?'':'s');
+  const h = Math.floor(mins/60), m = Math.round(mins%60);
+  return h + 'h ' + (m ? m+'m' : '');
+}
+
+function makeCard(title, mins) {
+  const mins2 = Math.round(mins * 10) / 10;
+  return `<div class="wpm-card"><div class="time">${fmtTime(mins2)}</div><div class="label">${title}</div></div>`;
+}
+
+let calcTimer;
+function calc() {
+  clearTimeout(calcTimer);
+  calcTimer = setTimeout(() => {
+    const text = document.getElementById('text-in').value;
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.length;
+    const sentences = (text.match(/[.!?]+/g) || []).length;
+    const paras = text.trim() ? text.trim().split(/\n\s*\n/).length : 0;
+    totalWords = words;
+    document.getElementById('s-words').textContent = words.toLocaleString();
+    document.getElementById('s-chars').textContent = chars.toLocaleString();
+    document.getElementById('s-sentences').textContent = sentences.toLocaleString();
+    document.getElementById('s-paras').textContent = paras.toLocaleString();
+    document.getElementById('stat-box').style.display = words ? 'inline-flex' : 'none';
+    document.getElementById('results-area').style.display = words ? 'block' : 'none';
+    if (!words) return;
+    document.getElementById('wpm-grid').innerHTML = READ_SPEEDS.map(s => makeCard(s.label, words/s.wpm)).join('');
+    document.getElementById('speak-grid').innerHTML = SPEAK_SPEEDS.map(s => makeCard(s.label, words/s.wpm)).join('');
+    updateCustom();
+  }, 120);
+}
+
+function updateCustom() {
+  const wpm = parseInt(document.getElementById('custom-wpm').value);
+  if (!wpm || wpm < 1 || !totalWords) return;
+  document.getElementById('custom-result').textContent = fmtTime(totalWords / wpm);
+}
+</script>
+</body>
+</html>

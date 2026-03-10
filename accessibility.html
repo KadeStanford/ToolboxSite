@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accessibility Statement | ToolNook</title>
+  <meta name="description" content="ToolNook's accessibility statement. We are committed to WCAG 2.1 Level AA conformance and ensuring our tools are usable by everyone." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/accessibility.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .a11y-content { max-width: 800px; }
+    .a11y-content h2 { margin-top: 2em; color: var(--primary); font-size: 1.2rem; }
+    .a11y-content h3 { margin-top: 1.2em; font-size: 1rem; }
+    .a11y-content p, .a11y-content li { line-height: 1.8; color: #374151; }
+    .a11y-content ul, .a11y-content ol { margin: 0.5em 0; padding-left: 1.5em; }
+    .a11y-content li { margin-bottom: 0.4em; }
+    .status-banner {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin-bottom: 2em;
+      font-size: 0.9rem;
+    }
+    .status-banner strong { color: var(--primary); }
+    .contact-box {
+      background: #f0fdf4;
+      border: 1px solid #6ee7b7;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 1.5em;
+    }
+    .contact-box h3 { margin-top: 0; }
+    .wcag-table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.88rem; }
+    .wcag-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; font-size: 0.82rem; }
+    .wcag-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .wcag-table tr:nth-child(even) td { background: #f8fafc; }
+    .badge-pass { display: inline-block; background: #dcfce7; color: #166534; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; }
+    .badge-partial { display: inline-block; background: #fef9c3; color: #713f12; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-wrapper">
+  <div class="a11y-content">
+    <h1>Accessibility Statement</h1>
+
+    <div class="status-banner">
+      <strong>Conformance Status:</strong> ToolNook is committed to conforming to
+      <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noopener noreferrer">Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</a>.
+      We continually evaluate and improve our tools to meet or exceed this standard.
+    </div>
+
+    <div class="a11y-content">
+
+      <h2>Our Commitment</h2>
+      <p>ToolNook is committed to ensuring digital accessibility for people with disabilities. We believe that the web should be usable by everyone, regardless of ability or the technology they use to access it. We are actively working to increase the accessibility and usability of our website in conformance with applicable standards.</p>
+      <p>This statement applies to the website <strong>toolnook.net</strong> and all tools hosted on it.</p>
+
+      <h2>Measures We've Taken</h2>
+      <p>We have implemented the following features to support accessibility:</p>
+      <ul>
+        <li><strong>Skip navigation link</strong> — A "Skip to main content" link is available at the top of every page for keyboard users.</li>
+        <li><strong>Keyboard navigation</strong> — All interactive elements (links, buttons, inputs, tabs) are fully operable via keyboard without requiring a mouse.</li>
+        <li><strong>Visible focus indicators</strong> — A clear 3px focus ring is shown on all keyboard-focused elements, meeting WCAG 2.4.7.</li>
+        <li><strong>ARIA landmarks</strong> — Pages use semantic HTML5 landmarks (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>) so screen reader users can navigate efficiently.</li>
+        <li><strong>Screen reader support</strong> — Decorative icons are hidden from assistive technology with <code>aria-hidden="true"</code>. Form labels are programmatically associated with their inputs.</li>
+        <li><strong>Live region announcements</strong> — Dynamic status messages (copy confirmations, errors) are announced via <code>aria-live="polite"</code> so screen reader users are notified of changes.</li>
+        <li><strong>Color contrast</strong> — All text meets the WCAG 1.4.3 minimum contrast ratio of 4.5:1 against its background.</li>
+        <li><strong>Responsive design</strong> — All tools work on mobile devices and support pinch-to-zoom. The viewport meta tag does not restrict user scaling.</li>
+        <li><strong>Reduced motion</strong> — All animations and transitions are suppressed for users who have enabled the "prefer reduced motion" OS setting (WCAG 2.3.3).</li>
+        <li><strong>Language declaration</strong> — <code>lang="en"</code> is set on every page so assistive technologies use the correct language.</li>
+        <li><strong>Link purpose</strong> — Links have descriptive text. Navigation links that share labels are scoped to their landmark regions.</li>
+        <li><strong>No reliance on color alone</strong> — Information is not conveyed by color alone; secondary indicators (icons, text labels) are used.</li>
+        <li><strong>Resizable text</strong> — All text can be resized up to 200% without loss of content or functionality.</li>
+      </ul>
+
+      <h2>Conformance Status by Principle</h2>
+      <table class="wcag-table" role="table" aria-label="WCAG 2.1 AA conformance by principle">
+        <thead>
+          <tr>
+            <th scope="col">Principle</th>
+            <th scope="col">Criteria</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Perceivable</strong></td>
+            <td>Text alternatives, captions, adaptable content, distinguishable (1.1–1.4)</td>
+            <td><span class="badge-pass">Pass</span></td>
+          </tr>
+          <tr>
+            <td><strong>2. Operable</strong></td>
+            <td>Keyboard, timing, seizures, navigable (2.1–2.4)</td>
+            <td><span class="badge-pass">Pass</span></td>
+          </tr>
+          <tr>
+            <td><strong>3. Understandable</strong></td>
+            <td>Readable, predictable, input assistance (3.1–3.3)</td>
+            <td><span class="badge-partial">Partial</span> — inline error messages for complex forms are being added progressively</td>
+          </tr>
+          <tr>
+            <td><strong>4. Robust</strong></td>
+            <td>Compatible with current and future user agents (4.1)</td>
+            <td><span class="badge-pass">Pass</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Technical Specifications</h2>
+      <p>ToolNook relies on the following technologies for conformance:</p>
+      <ul>
+        <li>HTML5 semantic elements</li>
+        <li>CSS3 including <code>:focus-visible</code> and <code>prefers-reduced-motion</code></li>
+        <li>JavaScript (Vanilla ES6+) for dynamic ARIA state management</li>
+        <li>WAI-ARIA 1.2 attributes for dynamic widgets</li>
+      </ul>
+      <p>Pages were tested with:</p>
+      <ul>
+        <li>NVDA screen reader with Chrome on Windows</li>
+        <li>VoiceOver with Safari on macOS and iOS</li>
+        <li>Keyboard-only navigation (Tab, Shift-Tab, Enter, Space, arrow keys)</li>
+        <li>Chrome's built-in accessibility inspector (Lighthouse)</li>
+        <li>axe DevTools browser extension</li>
+      </ul>
+
+      <h2>Known Limitations</h2>
+      <p>While we strive for full WCAG 2.1 AA conformance, the following known limitations exist and are on our roadmap to address:</p>
+      <ol>
+        <li><strong>Multi-input group labels</strong> — Some form groups (e.g., the separate R/G/B fields in the Color Converter) use a group label that is not yet enclosed in a <code>&lt;fieldset&gt;</code>/<code>&lt;legend&gt;</code>. These are readable but not formally grouped.</li>
+        <li><strong>Complex live output areas</strong> — Some tools generate output dynamically (e.g., JSON formatter, SQL formatter). These outputs are accessible but do not yet announce update counts to screen readers.</li>
+        <li><strong>Canvas-based tools</strong> — The Image Resizer and Image Color Picker use the HTML5 Canvas API. While the controls surrounding the canvas are accessible, the canvas content itself is not exposed to the accessibility tree (per canvas limitations).</li>
+        <li><strong>Third-party advertising</strong> — Google AdSense ads are served by a third party. While Google provides accessible ad labels, ToolNook cannot guarantee full conformance of third-party ad content.</li>
+      </ol>
+
+      <h2>Feedback and Contact</h2>
+      <div class="contact-box">
+        <h3>Report an Issue or Request Assistance</h3>
+        <p>We welcome your feedback on the accessibility of ToolNook. If you encounter an accessibility barrier or need a specific accommodation, please contact us:</p>
+        <ul>
+          <li><strong>GitHub Issues:</strong> <a href="https://github.com/KadeStanford/ToolboxSite/issues" target="_blank" rel="noopener noreferrer">github.com/KadeStanford/ToolboxSite/issues</a></li>
+        </ul>
+        <p>We aim to respond to accessibility feedback within <strong>5 business days</strong>. We will work with you to provide the information, item, or transaction in an alternative format or method that is accessible to you.</p>
+      </div>
+
+      <h2>Enforcement and Formal Complaints</h2>
+      <p>ToolNook is committed to voluntary compliance with accessibility standards. If you are not satisfied with our response after contacting us, you may contact:</p>
+      <ul>
+        <li><strong>U.S. Department of Justice (ADA):</strong> <a href="https://www.ada.gov/" target="_blank" rel="noopener noreferrer">ada.gov</a> — ADA National Hotline: 1-800-514-0301 (voice) / 1-800-514-0383 (TTY)</li>
+        <li><strong>U.S. Access Board:</strong> <a href="https://www.access-board.gov/" target="_blank" rel="noopener noreferrer">access-board.gov</a></li>
+      </ul>
+
+      <h2>Related Policies</h2>
+      <ul>
+        <li><a href="/privacy-policy.html">Privacy Policy</a></li>
+      </ul>
+
+      <p style="margin-top:2em;font-size:0.82rem;color:var(--text-muted);">
+        This statement was created on March 10, 2026 and last reviewed on March 10, 2026.
+        It follows the <a href="https://www.w3.org/WAI/planning/statements/" target="_blank" rel="noopener noreferrer">W3C WAI Accessibility Statement template</a>.
+      </p>
+
+    </div>
+  </div>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+</body>
+</html>

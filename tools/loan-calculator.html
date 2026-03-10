@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan Calculator — Monthly Payment & Amortization Schedule | ToolNook</title>
+  <meta name="description" content="Free online loan calculator. Calculate monthly payments, total interest, and see a full amortization schedule for any loan. Supports extra payments." />
+  <meta name="keywords" content="loan calculator, monthly payment calculator, amortization schedule, personal loan calculator, auto loan calculator, interest calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/loan-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How is a monthly loan payment calculated?","acceptedAnswer":{"@type":"Answer","text":"Monthly payment = P × [r(1+r)^n] / [(1+r)^n - 1], where P is the principal, r is the monthly interest rate (annual rate ÷ 12), and n is the number of monthly payments."}},{"@type":"Question","name":"How do extra payments affect a loan?","acceptedAnswer":{"@type":"Answer","text":"Extra monthly payments directly reduce the principal, which means less interest accrues each period. Even a small extra payment can shave months or years off a loan."}},{"@type":"Question","name":"What is an amortization schedule?","acceptedAnswer":{"@type":"Answer","text":"An amortization schedule is a table showing each payment's breakdown: how much goes to principal vs. interest, and the remaining balance after each payment."}}]}
+  </script>
+  <style>
+    .summary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:16px; }
+    .sum-card { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+    .sum-label { font-size:.68rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); letter-spacing:.06em; margin-bottom:4px; }
+    .sum-val   { font-size:1.3rem; font-weight:700; color:var(--primary); }
+    .sched-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+    .sched-table th { background:var(--primary-light); padding:7px 10px; text-align:right; font-weight:700; font-size:.75rem; white-space:nowrap; }
+    .sched-table th:first-child { text-align:left; }
+    .sched-table td { padding:5px 10px; text-align:right; border-bottom:1px solid var(--border); }
+    .sched-table td:first-child { text-align:left; font-weight:600; }
+    .sched-table tr:last-child td { font-weight:700; background:var(--primary-light); }
+    .prog-bar { height:14px; background:#e2e8f0; border-radius:6px; overflow:hidden; margin-top:10px; }
+    .prog-fill-p { height:100%; background:var(--primary); border-radius:6px 0 0 6px; transition:width .4s; display:inline-block; vertical-align:top; }
+    .prog-fill-i { height:100%; background:#f59e0b; border-radius:0 6px 6px 0; transition:width .4s; display:inline-block; vertical-align:top; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#finance-tools">Finance</a> › Loan Calculator</div>
+      <h1>Loan Calculator</h1>
+      <p>Calculate your monthly loan payment, total interest paid, and view a complete amortization schedule.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
+        <div class="form-group">
+          <label for="principal">Loan Amount ($)</label>
+          <input type="number" class="tool-input" id="principal" value="20000" min="1" placeholder="e.g. 20000" />
+        </div>
+        <div class="form-group">
+          <label for="rate">Annual Interest Rate (%)</label>
+          <input type="number" class="tool-input" id="rate" value="7.5" min="0" step="0.01" placeholder="e.g. 7.5" />
+        </div>
+        <div class="form-group">
+          <label for="term">Loan Term (years)</label>
+          <input type="number" class="tool-input" id="term" value="5" min="1" placeholder="e.g. 5" />
+        </div>
+        <div class="form-group">
+          <label for="extra">Extra Monthly Payment ($)</label>
+          <input type="number" class="tool-input" id="extra" value="0" min="0" placeholder="0" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcLoan()">Calculate</button>
+
+      <div id="results" style="display:none;margin-top:18px;">
+        <div class="summary-grid" id="sum-grid"></div>
+
+        <div style="margin-top:14px;">
+          <div style="display:flex;gap:16px;font-size:.82rem;margin-bottom:6px;">
+            <span style="display:flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:var(--primary);display:inline-block;"></span> Principal</span>
+            <span style="display:flex;align-items:center;gap:5px;"><span style="width:12px;height:12px;border-radius:2px;background:#f59e0b;display:inline-block;"></span> Interest</span>
+          </div>
+          <div class="prog-bar"><div class="prog-fill-p" id="ppct"></div><div class="prog-fill-i" id="ipct"></div></div>
+        </div>
+
+        <div style="margin-top:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <h2 style="font-size:.95rem;font-weight:700;margin:0;">Amortization Schedule</h2>
+            <div style="display:flex;gap:8px;align-items:center;font-size:.8rem;">
+              <label><input type="checkbox" id="show-monthly" checked onchange="toggleView()" /> Monthly</label>
+              <label><input type="checkbox" id="show-yearly" onchange="toggleView2()" /> Yearly</label>
+            </div>
+          </div>
+          <div style="overflow-x:auto;max-height:320px;overflow-y:auto;">
+            <table class="sched-table" id="sched-table"></table>
+          </div>
+        </div>
+      </div>
+      <div id="err" class="error-box" style="display:none;margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>How Loan Interest Works</h2>
+      <p>Most loans use <strong>simple amortization</strong>: each payment covers the interest accrued that period, with the remainder reducing the principal. Early payments are mostly interest; later payments are mostly principal.</p>
+      <h3>Ways to Pay Off Your Loan Faster</h3>
+      <ul>
+        <li>Make extra principal payments — even $50/month makes a significant difference.</li>
+        <li>Pay bi-weekly instead of monthly (26 half-payments = 13 full payments per year).</li>
+        <li>Refinance to a lower rate when market conditions improve.</li>
+        <li>Round up payments to the nearest $100 for effortless overpayment.</li>
+      </ul>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('loan-calculator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('loan-calculator','finance');
+  calcLoan();
+});
+
+let schedData = [];
+
+const fmt = v => '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+function calcLoan() {
+  const P = parseFloat(document.getElementById('principal').value);
+  const r = parseFloat(document.getElementById('rate').value) / 100 / 12;
+  const n = parseFloat(document.getElementById('term').value) * 12;
+  const extra = parseFloat(document.getElementById('extra').value) || 0;
+  const err = document.getElementById('err'); err.style.display = 'none';
+
+  if (isNaN(P)||isNaN(r)||isNaN(n)||P<=0||n<=0) { err.textContent='Please enter valid positive numbers.'; err.style.display='block'; return; }
+  if (r < 0) { err.textContent='Interest rate cannot be negative.'; err.style.display='block'; return; }
+
+  const basePayment = r === 0 ? P / n : P * r * Math.pow(1+r,n) / (Math.pow(1+r,n) - 1);
+  const monthlyPayment = basePayment + extra;
+
+  schedData = [];
+  let balance = P, totalInt = 0, totalPrinc = 0, month = 0;
+  while (balance > 0.005) {
+    month++;
+    const interest = balance * r;
+    let principal = Math.min(monthlyPayment - interest, balance);
+    if (principal < 0) principal = 0;
+    balance -= principal;
+    if (balance < 0.001) balance = 0;
+    totalInt += interest;
+    totalPrinc += principal;
+    schedData.push({ month, payment: principal + interest, principal, interest, balance, totalInt });
+    if (month > 1200) break; // safety cap
+  }
+
+  const total = totalPrinc + totalInt;
+  document.getElementById('sum-grid').innerHTML = `
+    <div class="sum-card"><div class="sum-label">Monthly Payment</div><div class="sum-val">${fmt(basePayment)}</div></div>
+    ${extra>0?`<div class="sum-card"><div class="sum-label">With Extra Pmt</div><div class="sum-val">${fmt(monthlyPayment)}</div></div>`:''}
+    <div class="sum-card"><div class="sum-label">Total Interest</div><div class="sum-val" style="color:#f59e0b;">${fmt(totalInt)}</div></div>
+    <div class="sum-card"><div class="sum-label">Total Cost</div><div class="sum-val">${fmt(total)}</div></div>
+    <div class="sum-card"><div class="sum-label">Payoff Months</div><div class="sum-val">${month}</div></div>
+    <div class="sum-card"><div class="sum-label">Savings (vs base)</div><div class="sum-val" style="color:#22c55e;">${extra>0?fmt(P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)*n-P-totalInt):'$0.00'}</div></div>
+  `;
+  document.getElementById('ppct').style.width = (P/total*100).toFixed(1)+'%';
+  document.getElementById('ipct').style.width = (totalInt/total*100).toFixed(1)+'%';
+  renderTable(false);
+  document.getElementById('results').style.display = 'block';
+}
+
+function renderTable(yearly) {
+  if (!schedData.length) return;
+  const rows = yearly ? schedData.filter((_,i) => (i+1) % 12 === 0 || i === schedData.length-1) : schedData;
+  document.getElementById('sched-table').innerHTML = `
+    <thead><tr><th>${yearly?'Year':'Month'}</th><th>Payment</th><th>Principal</th><th>Interest</th><th>Balance</th></tr></thead>
+    <tbody>${rows.map(d=>`<tr><td>${yearly?Math.ceil(d.month/12):d.month}</td><td>${fmt(d.payment)}</td><td>${fmt(d.principal)}</td><td>${fmt(d.interest)}</td><td>${fmt(d.balance)}</td></tr>`).join('')}</tbody>
+  `;
+}
+
+function toggleView() {
+  if (document.getElementById('show-monthly').checked) renderTable(false);
+}
+function toggleView2() {
+  if (document.getElementById('show-yearly').checked) renderTable(true);
+}
+</script>
+</body>
+</html>

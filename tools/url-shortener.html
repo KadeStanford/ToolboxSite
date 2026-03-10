@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener — Shorten Links Free | ToolNook</title>
+  <meta name="description" content="Shorten long URLs into short, shareable links. Free URL shortener powered by Firebase. Create custom short links. No account required." />
+  <meta name="keywords" content="URL shortener, shorten link, short URL generator, custom short link, free link shortener" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/url-shortener.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .short-result { background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .short-url { font-family:monospace; font-size:.95rem; color:var(--primary); font-weight:700; flex:1; word-break:break-all; }
+    .setup-banner { background:#fef9c3; border:1px solid #fde047; border-radius:var(--radius); padding:14px; margin-bottom:14px; font-size:.84rem; }
+    .setup-banner h3 { margin:0 0 6px; font-size:.9rem; }
+    .recent-list { list-style:none; padding:0; }
+    .recent-list li { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border); font-size:.82rem; flex-wrap:wrap; gap:6px; }
+    .recent-list li:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#connected-tools">Connected Tools</a> › URL Shortener</div>
+      <h1>URL Shortener</h1>
+      <p>Paste any long URL and get a short, shareable link instantly.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="setup-banner" id="setup-banner" style="display:none;">
+        <h3>⚙️ Firebase Setup Required</h3>
+        <p>This tool requires a Firebase project to store short links. See <code>js/firebase-config.js</code> to configure. The demo mode below uses <strong>sessionStorage</strong> (links work in this tab only).</p>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="url" id="long-url" placeholder="https://your-very-long-url.com/with/lots/of?query=params" style="flex:1;min-width:220px;" />
+        <button class="btn btn-primary" onclick="shorten()" id="shorten-btn">Shorten</button>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+        <label style="font-size:.84rem;">Custom alias (optional):</label>
+        <input type="text" id="custom-slug" placeholder="my-link" style="width:140px;" maxlength="20" pattern="[a-zA-Z0-9\-_]+" />
+        <span style="font-size:.74rem;color:var(--text-muted);">Letters, numbers, hyphens only</span>
+      </div>
+
+      <div id="result-area" style="display:none;"></div>
+
+      <div id="recent-section" style="display:none;margin-top:20px;">
+        <p style="font-size:.84rem;font-weight:700;margin-bottom:6px;">Recent Links (this session)</p>
+        <ul class="recent-list" id="recent-list"></ul>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Why Use a URL Shortener?</h2>
+      <ul>
+        <li><strong>Cleaner sharing</strong> — Short links are easier to read and type in emails, SMS, and social posts.</li>
+        <li><strong>Track clicks</strong> — With Firebase analytics, see how many people click your links.</li>
+        <li><strong>Custom aliases</strong> — Use memorable slugs like <code>toolnook.net/go/sale</code> instead of random characters.</li>
+        <li><strong>Avoid URL breaking</strong> — Long URLs often break in email clients and PDFs. Short links stay intact.</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+const SESSION_KEY = 'tn_short_links';
+let links = JSON.parse(sessionStorage.getItem(SESSION_KEY) || '{}');
+let db = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('url-shortener');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('url-shortener','connected');
+
+  if (typeof TN_FIREBASE_ENABLED !== 'undefined' && TN_FIREBASE_ENABLED) {
+    try {
+      const { getFirestore } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      db = getFirestore(window._tnApp);
+    } catch(e) { document.getElementById('setup-banner').style.display = 'block'; }
+  } else {
+    document.getElementById('setup-banner').style.display = 'block';
+  }
+  renderRecent();
+});
+
+function genSlug(len = 6) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  return Array.from(crypto.getRandomValues(new Uint8Array(len))).map(b => chars[b % chars.length]).join('');
+}
+
+function isValidUrl(s) {
+  try { return ['http:','https:'].includes(new URL(s).protocol); } catch { return false; }
+}
+
+async function shorten() {
+  const longUrl = document.getElementById('long-url').value.trim();
+  const customSlug = document.getElementById('custom-slug').value.trim().replace(/[^a-zA-Z0-9\-_]/g,'');
+
+  if (!longUrl) return showToast('Please enter a URL');
+  if (!isValidUrl(longUrl)) return showToast('Please enter a valid URL starting with http:// or https://');
+
+  const slug = customSlug || genSlug();
+  const shortUrl = `${location.origin}/go/${slug}`;
+
+  if (db) {
+    try {
+      const { doc, setDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      const ref = doc(db, 'shortlinks', slug);
+      const existing = await getDoc(ref);
+      if (existing.exists() && customSlug) return showToast('That alias is already taken — try another');
+      await setDoc(ref, { url: longUrl, created: Date.now(), clicks: 0 });
+    } catch(e) { /* fallback to session */ }
+  }
+
+  // Always save to session
+  links[slug] = longUrl;
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(links));
+
+  showResult(shortUrl, longUrl);
+  renderRecent();
+  document.getElementById('custom-slug').value = '';
+}
+
+function showResult(shortUrl, longUrl) {
+  const area = document.getElementById('result-area');
+  area.style.display = 'block';
+  area.innerHTML = `
+    <div class="short-result">
+      <a class="short-url" href="${shortUrl}" target="_blank" rel="noopener">${shortUrl}</a>
+      <button class="btn btn-primary" style="font-size:.8rem;" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>showToast('Copied!'))">Copy</button>
+    </div>
+    <p style="font-size:.74rem;color:var(--text-muted);margin-top:6px;">→ ${longUrl.substring(0,80)}${longUrl.length>80?'...':''}</p>`;
+}
+
+function renderRecent() {
+  const entries = Object.entries(links);
+  if (!entries.length) return;
+  document.getElementById('recent-section').style.display = 'block';
+  document.getElementById('recent-list').innerHTML = entries.slice(-8).reverse().map(([slug, url]) => {
+    const shortUrl = `${location.origin}/go/${slug}`;
+    return `<li>
+      <a href="${shortUrl}" target="_blank" rel="noopener" style="font-family:monospace;color:var(--primary)">${shortUrl}</a>
+      <span style="color:var(--text-muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${url.substring(0,50)}...</span>
+      <button class="btn btn-secondary" style="font-size:.74rem;padding:3px 8px;" onclick="navigator.clipboard.writeText('${shortUrl}').then(()=>showToast('Copied!'))">Copy</button>
+    </li>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

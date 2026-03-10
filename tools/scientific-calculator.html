@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Scientific Calculator Online — Free Trig, Log, Square Root | ToolNook
+    </title>
+    <meta
+      name="description"
+      content="Free online scientific calculator with sin, cos, tan, log, ln, square root, exponents, pi, and e. Full keyboard support. History log included."
+    />
+    <meta
+      name="keywords"
+      content="scientific calculator online, trig calculator, sin cos tan calculator, log calculator, square root calculator, algebra calculator, free online calculator"
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://toolnook.net/tools/scientific-calculator.html"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Can I use the keyboard with this calculator?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes! All digits, operators (+, -, *, /), Enter (=), Backspace, and Escape (clear) work with your keyboard."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Are trig functions in degrees or radians?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Use the DEG/RAD toggle button to switch modes. The current mode is shown on the display. Most everyday calculations use degrees."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does the Ans button do?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "ANS inserts the result of your last calculation into the current expression, letting you chain calculations together easily."
+            }
+          }
+        ]
+      }
+    </script>
+    <style>
+      .calc-wrap {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .calc-panel {
+        flex: 1;
+        min-width: 260px;
+      }
+      #display {
+        width: 100%;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 1.5rem;
+        text-align: right;
+        background: #0f172a;
+        color: #e2e8f0;
+        border: none;
+        border-radius: var(--radius) var(--radius) 0 0;
+        padding: 14px 16px;
+        outline: none;
+      }
+      #expr {
+        width: 100%;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 0.82rem;
+        text-align: right;
+        background: #1e293b;
+        color: #94a3b8;
+        border: none;
+        padding: 4px 16px 8px;
+        border-radius: 0;
+        outline: none;
+      }
+      .calc-buttons {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 6px;
+        background: #1e293b;
+        padding: 10px;
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+      .cbtn {
+        padding: 12px 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: filter 0.1s;
+      }
+      .cbtn:hover {
+        filter: brightness(1.15);
+      }
+      .cbtn:active {
+        filter: brightness(0.9);
+      }
+      .cn {
+        background: #2d3748;
+        color: #e2e8f0;
+      }
+      .cop {
+        background: #374151;
+        color: #f9a825;
+      }
+      .csc {
+        background: #1a3a5c;
+        color: #93c5fd;
+      }
+      .ceq {
+        background: var(--primary);
+        color: #fff;
+        grid-column: span 2;
+      }
+      .cclr {
+        background: #7f1d1d;
+        color: #fca5a5;
+      }
+      .deg-badge {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 12px;
+        background: #334155;
+        color: #94a3b8;
+        font-weight: 700;
+      }
+
+      .hist-panel {
+        flex: 0 0 200px;
+        max-height: 360px;
+        overflow-y: auto;
+      }
+      .hist-panel h3 {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .hist-item {
+        font-size: 0.82rem;
+        cursor: pointer;
+        padding: 5px 8px;
+        border-radius: 4px;
+        border-bottom: 1px solid var(--border);
+      }
+      .hist-item:hover {
+        background: var(--primary-light);
+      }
+      .hist-eq {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+      }
+      .hist-res {
+        font-weight: 700;
+        color: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <div class="page-with-sidebar">
+      <main class="main-content">
+        <div class="ad-banner ad-banner-top">Advertisement</div>
+
+        <div class="tool-header">
+          <div class="breadcrumb">
+            <a href="/">Home</a> ›
+            <a href="/#math-tools">Math &amp; Science</a> › Scientific
+            Calculator
+          </div>
+          <h1>Scientific Calculator</h1>
+          <p>
+            Full-featured online scientific calculator with trig functions,
+            logarithms, constants, and calculation history.
+          </p>
+        </div>
+
+        <div class="tool-container">
+          <div class="calc-wrap">
+            <div class="calc-panel">
+              <span id="mode-label" class="deg-badge">DEG</span>
+              <input type="text" id="display" value="0" readonly />
+              <input type="text" id="expr" value="" readonly />
+              <div class="calc-buttons" id="calc-buttons">
+                <!-- Row 1 -->
+                <button class="cbtn csc" onclick="toggle_mode()">
+                  DEG/RAD
+                </button>
+                <button class="cbtn csc" onclick="press('sin(')">sin</button>
+                <button class="cbtn csc" onclick="press('cos(')">cos</button>
+                <button class="cbtn csc" onclick="press('tan(')">tan</button>
+                <button class="cbtn cop" onclick="press('(')">(</button>
+                <!-- Row 2 -->
+                <button class="cbtn csc" onclick="press('asin(')">sin⁻¹</button>
+                <button class="cbtn csc" onclick="press('acos(')">acos</button>
+                <button class="cbtn csc" onclick="press('atan(')">atan</button>
+                <button class="cbtn csc" onclick="press('log(')">log</button>
+                <button class="cbtn cop" onclick="press(')')">)</button>
+                <!-- Row 3 -->
+                <button class="cbtn csc" onclick="press('sqrt(')">√</button>
+                <button class="cbtn csc" onclick="press('^2')">x²</button>
+                <button class="cbtn csc" onclick="press('^')">xⁿ</button>
+                <button class="cbtn csc" onclick="press('ln(')">ln</button>
+                <button class="cbtn cop" onclick="press('%')">%</button>
+                <!-- Row 4 -->
+                <button class="cbtn csc" onclick="press('pi')">π</button>
+                <button class="cbtn csc" onclick="press('e')">e</button>
+                <button class="cbtn csc" onclick="press('abs(')">|x|</button>
+                <button class="cbtn csc" onclick="press('ans')">ANS</button>
+                <button class="cbtn cop" onclick="press('/')">÷</button>
+                <!-- Row 5 -->
+                <button class="cbtn cn" onclick="press('7')">7</button>
+                <button class="cbtn cn" onclick="press('8')">8</button>
+                <button class="cbtn cn" onclick="press('9')">9</button>
+                <button class="cbtn cclr" onclick="clearAll()">C</button>
+                <button class="cbtn cop" onclick="press('*')">×</button>
+                <!-- Row 6 -->
+                <button class="cbtn cn" onclick="press('4')">4</button>
+                <button class="cbtn cn" onclick="press('5')">5</button>
+                <button class="cbtn cn" onclick="press('6')">6</button>
+                <button class="cbtn csc" onclick="backspace()">⌫</button>
+                <button class="cbtn cop" onclick="press('-')">−</button>
+                <!-- Row 7 -->
+                <button class="cbtn cn" onclick="press('1')">1</button>
+                <button class="cbtn cn" onclick="press('2')">2</button>
+                <button class="cbtn cn" onclick="press('3')">3</button>
+                <button class="cbtn csc" onclick="press('+/-')">+/−</button>
+                <button class="cbtn cop" onclick="press('+')">+</button>
+                <!-- Row 8 -->
+                <button
+                  class="cbtn cn"
+                  onclick="press('0')"
+                  style="grid-column: span 2"
+                >
+                  0
+                </button>
+                <button class="cbtn cn" onclick="press('.')">.</button>
+                <button class="cbtn ceq" onclick="calculate()">=</button>
+              </div>
+            </div>
+            <div class="hist-panel">
+              <h3>History</h3>
+              <div id="history-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ad-banner ad-inline">Advertisement</div>
+
+        <div class="seo-content">
+          <h2>Scientific Calculator Tips</h2>
+          <ul>
+            <li>
+              Use <strong>DEG/RAD</strong> to toggle between degree and radian
+              mode for trig functions.
+            </li>
+            <li>
+              Chain results with <strong>ANS</strong> — it inserts the last
+              calculated answer.
+            </li>
+            <li>
+              Keyboard shortcut: <strong>Enter</strong> = Calculate,
+              <strong>Esc</strong> = Clear, <strong>Backspace</strong> = Delete.
+            </li>
+            <li>
+              Use <strong>^</strong> for exponents: e.g. <code>2^10</code> =
+              1024.
+            </li>
+          </ul>
+        </div>
+
+        <div class="related-tools">
+          <h2>Related Tools</h2>
+          <div class="related-grid" id="related-grid"></div>
+        </div>
+        <div class="ad-banner ad-banner-bottom">Advertisement</div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="ad-banner ad-sidebar">Advertisement</div>
+        <div class="sidebar-widget">
+          <h3>Other Tools</h3>
+          <div id="sidebar-tools"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div id="site-footer"></div>
+    <div class="toast" id="toast"></div>
+    <script src="/js/utils.js"></script>
+    <script src="/js/firebase-config.js"></script>
+    <script src="/js/analytics.js"></script>
+    <script src="/js/components.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("sidebar-tools").innerHTML = renderSidebarTools(
+          "scientific-calculator",
+        );
+        document.getElementById("related-grid").innerHTML = renderRelatedTools(
+          "scientific-calculator",
+          "math",
+        );
+        document.addEventListener("keydown", handleKey);
+      });
+
+      let expr = "",
+        ans = 0,
+        isDeg = true;
+
+      function toggle_mode() {
+        isDeg = !isDeg;
+        document.getElementById("mode-label").textContent = isDeg
+          ? "DEG"
+          : "RAD";
+      }
+
+      function press(v) {
+        if (v === "+/-") {
+          if (expr && !isNaN(expr[expr.length - 1])) {
+            expr = "-" + expr;
+          }
+        } else if (v === "ans") {
+          expr += ans;
+        } else {
+          expr += v;
+        }
+        document.getElementById("display").value = expr || "0";
+      }
+
+      function clearAll() {
+        expr = "";
+        document.getElementById("display").value = "0";
+        document.getElementById("expr").value = "";
+      }
+      function backspace() {
+        expr = expr.slice(0, -1);
+        document.getElementById("display").value = expr || "0";
+      }
+
+      function calculate() {
+        if (!expr) return;
+        try {
+          let e = expr;
+          const toRad = isDeg ? Math.PI / 180 : 1;
+          e = e
+            .replace(/pi/g, Math.PI)
+            .replace(/\be\b/g, Math.E)
+            .replace(/abs\(/g, "Math.abs(")
+            .replace(/sqrt\(/g, "Math.sqrt(")
+            .replace(/log\(/g, "Math.log10(")
+            .replace(/ln\(/g, "Math.log(")
+            .replace(/asin\(/g, `(x=>Math.asin(x)/${toRad})(`)
+            .replace(/acos\(/g, `(x=>Math.acos(x)/${toRad})(`)
+            .replace(/atan\(/g, `(x=>Math.atan(x)/${toRad})(`)
+            .replace(/sin\(/g, `(x=>Math.sin(x*${toRad}))(`)
+            .replace(/cos\(/g, `(x=>Math.cos(x*${toRad}))(`)
+            .replace(/tan\(/g, `(x=>Math.tan(x*${toRad}))(`)
+            .replace(/\^/g, "**")
+            .replace(/%/g, "/100");
+          const result = Function(`"use strict"; return (${e})`)();
+          if (!isFinite(result)) throw new Error("Math error");
+          const disp = parseFloat(result.toFixed(10));
+          addHistory(expr, disp);
+          ans = disp;
+          document.getElementById("expr").value = expr + " =";
+          expr = String(disp);
+          document.getElementById("display").value = disp;
+        } catch (e) {
+          document.getElementById("display").value = "Error";
+          expr = "";
+        }
+      }
+
+      function handleKey(e) {
+        if (
+          ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName) &&
+          document.activeElement.id !== "display" &&
+          document.activeElement.id !== "expr"
+        )
+          return;
+        if (e.key === "Enter") {
+          calculate();
+          e.preventDefault();
+        } else if (e.key === "Escape" || e.key === "Delete") {
+          clearAll();
+        } else if (e.key === "Backspace") {
+          backspace();
+          e.preventDefault();
+        } else if ("0123456789.+-*/()".includes(e.key)) {
+          press(e.key);
+        }
+      }
+
+      function addHistory(eq, res) {
+        const div = document.getElementById("history-list");
+        const item = document.createElement("div");
+        item.className = "hist-item";
+        item.innerHTML = `<div class="hist-eq">${eq}</div><div class="hist-res">= ${res}</div>`;
+        item.onclick = () => {
+          expr = String(res);
+          document.getElementById("display").value = expr;
+        };
+        div.prepend(item);
+        if (div.children.length > 20) div.lastChild.remove();
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date Formatter — Convert Dates Between Formats Online | ToolNook</title>
+  <meta name="description" content="Free online date formatter. Convert any date into any format — MM/DD/YYYY, YYYY-MM-DD, ISO 8601, long format, relative time, and more. Instant, no signup needed." />
+  <meta name="keywords" content="date formatter, date format converter, format date online, date to string, YYYY-MM-DD, MM/DD/YYYY, ISO date format, date formatting tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/date-formatter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .fmt-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+    .fmt-row  { display:flex; justify-content:space-between; align-items:center; background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius); padding:10px 14px; }
+    .fmt-row .fmt-label { font-size:.78rem; color:var(--text-muted); font-weight:600; }
+    .fmt-row .fmt-value { font-family:monospace; font-size:.9rem; cursor:pointer; color:var(--text); }
+    .fmt-row .fmt-value:hover { color:var(--primary); }
+    .fmt-row .copy-btn { font-size:.72rem; padding:3px 8px; }
+    @media(max-width:540px){ .fmt-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#datetime-tools">Date &amp; Time</a> › Date Formatter</div>
+      <h1>Date Formatter</h1>
+      <p>Convert any date into dozens of common and custom formats instantly.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;">
+        <div class="form-group" style="margin:0;">
+          <label for="dt-in">Date &amp; Time</label>
+          <input type="datetime-local" class="tool-input" id="dt-in" />
+        </div>
+        <button class="btn btn-primary" onclick="format()">Format Date</button>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:8px;font-size:.82rem;" onclick="useNow()">Use Current Date &amp; Time</button>
+
+      <div id="results" style="display:none;margin-top:16px;">
+        <h3 style="font-size:.9rem;font-weight:700;margin-bottom:10px;">All Formats</h3>
+        <div class="fmt-grid" id="fmt-grid"></div>
+      </div>
+
+      <div style="margin-top:20px;" id="custom-section">
+        <div class="form-group">
+          <label for="custom-fmt">Custom Format Pattern</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="tool-input" id="custom-fmt" placeholder="e.g. YYYY/MM/DD HH:mm:ss" style="flex:1;" oninput="applyCustom()" />
+          </div>
+          <small class="form-help">Tokens: YYYY=year, MM=month, DD=day, HH=hour(24h), hh=hour(12h), mm=min, ss=sec, A=AM/PM, ddd=weekday short, dddd=weekday full</small>
+        </div>
+        <div id="custom-result" class="fmt-row" style="display:none;">
+          <span>
+            <div class="fmt-label">Custom Format</div>
+            <div class="fmt-value" id="custom-out"></div>
+          </span>
+          <button class="btn btn-secondary copy-btn" onclick="copyToClipboard(document.getElementById('custom-out').textContent)">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>How to Use the Date Formatter</h2>
+      <p>Pick any date and time using the date picker (or click "Use Current"), then click Format Date. All common date formats are shown at once — click any value to copy it.</p>
+      <h3>Common Date Formats Explained</h3>
+      <ul>
+        <li><strong>YYYY-MM-DD</strong> (ISO 8601) — used by databases, APIs, and HTML date inputs</li>
+        <li><strong>MM/DD/YYYY</strong> — standard US format</li>
+        <li><strong>DD/MM/YYYY</strong> — standard UK/European format</li>
+        <li><strong>Unix timestamp</strong> — seconds since Jan 1, 1970 UTC, used in programming</li>
+        <li><strong>RFC 2822</strong> — email and HTTP date format</li>
+      </ul>
+    </div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAYSS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('date-formatter');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('date-formatter','datetime');
+  useNow();
+});
+
+function useNow() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('dt-in').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  format();
+}
+
+function format() {
+  const val = document.getElementById('dt-in').value;
+  if (!val) return;
+  const d = new Date(val);
+  if (isNaN(d)) return;
+
+  const pad  = n => String(n).padStart(2,'0');
+  const yr   = d.getFullYear();
+  const mo   = d.getMonth();
+  const dy   = d.getDate();
+  const wd   = d.getDay();
+  const hr24 = d.getHours();
+  const hr12 = hr24 % 12 || 12;
+  const mn   = d.getMinutes();
+  const sc   = d.getSeconds();
+  const ampm = hr24 < 12 ? 'AM' : 'PM';
+  const ts   = Math.floor(d.getTime() / 1000);
+
+  const fmts = [
+    { label:'ISO 8601',            value: `${yr}-${pad(mo+1)}-${pad(dy)}` },
+    { label:'ISO 8601 + Time',     value: `${yr}-${pad(mo+1)}-${pad(dy)}T${pad(hr24)}:${pad(mn)}:${pad(sc)}` },
+    { label:'ISO 8601 UTC',        value: d.toISOString() },
+    { label:'US (MM/DD/YYYY)',     value: `${pad(mo+1)}/${pad(dy)}/${yr}` },
+    { label:'EU (DD/MM/YYYY)',     value: `${pad(dy)}/${pad(mo+1)}/${yr}` },
+    { label:'DD-MM-YYYY',          value: `${pad(dy)}-${pad(mo+1)}-${yr}` },
+    { label:'Long Date',           value: `${DAYS[wd]}, ${MONTHS[mo]} ${dy}, ${yr}` },
+    { label:'Short Date',          value: `${MONTHS_SHORT[mo]} ${dy}, ${yr}` },
+    { label:'MM/DD/YY',            value: `${pad(mo+1)}/${pad(dy)}/${String(yr).slice(-2)}` },
+    { label:'YYYYMMDD (compact)',  value: `${yr}${pad(mo+1)}${pad(dy)}` },
+    { label:'Time (12h)',          value: `${hr12}:${pad(mn)} ${ampm}` },
+    { label:'Time (24h)',          value: `${pad(hr24)}:${pad(mn)}` },
+    { label:'Time with seconds',   value: `${pad(hr24)}:${pad(mn)}:${pad(sc)}` },
+    { label:'Unix Timestamp',      value: String(ts) },
+    { label:'Unix (milliseconds)', value: String(d.getTime()) },
+    { label:'RFC 2822',            value: d.toUTCString() },
+    { label:'Locale String',       value: d.toLocaleString() },
+    { label:'Weekday',             value: DAYS[wd] },
+    { label:'Month Name',          value: MONTHS[mo] },
+    { label:'Quarter',             value: 'Q' + (Math.floor(mo/3)+1) },
+  ];
+
+  document.getElementById('fmt-grid').innerHTML = fmts.map(f => `
+    <div class="fmt-row">
+      <span>
+        <div class="fmt-label">${f.label}</div>
+        <div class="fmt-value" onclick="copyToClipboard('${f.value.replace(/'/g,"\\'")}'); showToast('Copied!','success');">${f.value}</div>
+      </span>
+      <button class="btn btn-secondary copy-btn" onclick="copyToClipboard('${f.value.replace(/'/g,"\\'")}'); showToast('Copied!','success');">Copy</button>
+    </div>`).join('');
+
+  document.getElementById('results').style.display = 'block';
+  applyCustom();
+}
+
+function applyCustom() {
+  const val = document.getElementById('dt-in').value;
+  const fmt = document.getElementById('custom-fmt').value;
+  if (!val || !fmt) return;
+  const d   = new Date(val);
+  const pad = n => String(n).padStart(2,'0');
+  const result = fmt
+    .replace('dddd', DAYS[d.getDay()])
+    .replace('ddd',  DAYSS[d.getDay()])
+    .replace('YYYY', d.getFullYear())
+    .replace('YY',   String(d.getFullYear()).slice(-2))
+    .replace('MMMM', MONTHS[d.getMonth()])
+    .replace('MMM',  MONTHS_SHORT[d.getMonth()])
+    .replace('MM',   pad(d.getMonth()+1))
+    .replace('M',    String(d.getMonth()+1))
+    .replace('DD',   pad(d.getDate()))
+    .replace('D',    String(d.getDate()))
+    .replace('HH',   pad(d.getHours()))
+    .replace('hh',   pad(d.getHours()%12||12))
+    .replace('mm',   pad(d.getMinutes()))
+    .replace('ss',   pad(d.getSeconds()))
+    .replace('A',    d.getHours()<12?'AM':'PM')
+    .replace('a',    d.getHours()<12?'am':'pm');
+  document.getElementById('custom-out').textContent   = result;
+  document.getElementById('custom-result').style.display = 'flex';
+}
+</script>
+</body>
+</html>

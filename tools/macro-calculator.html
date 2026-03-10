@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Macro Calculator — Protein, Carbs & Fat for Your Goals | ToolNook</title>
+  <meta name="description" content="Free macro calculator. Calculate your ideal daily protein, carbohydrate, and fat intake based on your calories and fitness goal (cut, maintain, bulk)." />
+  <meta name="keywords" content="macro calculator, macros for cutting, protein calculator, IIFYM calculator, daily protein intake, carb calculator, fat loss macros" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/macro-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much protein do I need per day?","acceptedAnswer":{"@type":"Answer","text":"For active people, 0.7–1g of protein per lb of body weight (1.5–2.2g per kg) is commonly recommended. When cutting calories, higher protein (1g/lb) helps preserve muscle mass."}},{"@type":"Question","name":"What are macros?","acceptedAnswer":{"@type":"Answer","text":"Macros (macronutrients) are protein, carbohydrates, and fats — the three main nutrient categories that provide calories. Protein and carbs have 4 cal/g; fat has 9 cal/g."}},{"@type":"Question","name":"What is IIFYM?","acceptedAnswer":{"@type":"Answer","text":"IIFYM (If It Fits Your Macros) is a flexible dieting approach where you can eat any food as long as it fits within your daily macro targets, rather than following a strict food list."}}]}
+  </script>
+  <style>
+    .macro-display { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+    .macro-card { border-radius:var(--radius); padding:16px; text-align:center; }
+    .macro-card.protein { background:#dbeafe; border:2px solid #3b82f6; }
+    .macro-card.carbs   { background:#fef9c3; border:2px solid #f59e0b; }
+    .macro-card.fats    { background:#fce7f3; border:2px solid #ec4899; }
+    .macro-name  { font-size:.7rem; text-transform:uppercase; font-weight:700; letter-spacing:.06em; margin-bottom:4px; }
+    .macro-val   { font-size:1.6rem; font-weight:700; }
+    .macro-cals  { font-size:.75rem; margin-top:3px; color:var(--text-muted); }
+    .macro-bar   { height:12px; border-radius:20px; margin-top:3px; }
+    .legend-strip { display:flex; gap:16px; font-size:.8rem; flex-wrap:wrap; margin-top:10px; }
+    .leg-dot { width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:4px; vertical-align:middle; }
+    .preset-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .preset-btn { font-size:.78rem; padding:5px 12px; background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; cursor:pointer; }
+    .preset-btn:hover { background:var(--primary-light); border-color:var(--primary); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#health-tools">Health &amp; Fitness</a> › Macro Calculator</div>
+      <h1>Macro Calculator</h1>
+      <p>Calculate your daily protein, carbohydrate, and fat targets based on your calorie goal and fitness objective.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;">
+        <div class="form-group">
+          <label>Daily Calorie Target</label>
+          <input type="number" class="tool-input" id="cals" value="2200" min="800" />
+        </div>
+        <div class="form-group">
+          <label>Body Weight (lbs)</label>
+          <input type="number" class="tool-input" id="bw" value="170" min="50" />
+        </div>
+        <div class="form-group">
+          <label>Goal</label>
+          <select class="tool-input" id="goal" onchange="updatePreset()">
+            <option value="cut">Cutting (Fat Loss)</option>
+            <option value="maintain" selected>Maintenance</option>
+            <option value="bulk">Bulking (Muscle Gain)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;">
+        <div class="form-group">
+          <label>Protein (%)</label>
+          <input type="number" class="tool-input" id="pct-p" value="30" min="10" max="70" oninput="clampMacros('p')" />
+        </div>
+        <div class="form-group">
+          <label>Carbs (%)</label>
+          <input type="number" class="tool-input" id="pct-c" value="40" min="10" max="70" oninput="clampMacros('c')" />
+        </div>
+        <div class="form-group">
+          <label>Fat (%)</label>
+          <input type="number" class="tool-input" id="pct-f" value="30" min="10" max="70" oninput="clampMacros('f')" />
+        </div>
+      </div>
+
+      <div class="preset-row">
+        <span style="font-size:.78rem;color:var(--text-muted);align-self:center;">Presets:</span>
+        <button class="preset-btn" onclick="setPreset(30,40,30)">Balanced 30/40/30</button>
+        <button class="preset-btn" onclick="setPreset(40,30,30)">High Protein 40/30/30</button>
+        <button class="preset-btn" onclick="setPreset(25,50,25)">High Carb 25/50/25</button>
+        <button class="preset-btn" onclick="setPreset(25,10,65)">Keto 25/10/65</button>
+        <button class="preset-btn" onclick="setPreset(35,30,35)">Paleo-ish 35/30/35</button>
+      </div>
+
+      <button class="btn btn-primary" style="margin-top:14px;" onclick="calcMacros()">Calculate Macros</button>
+
+      <div id="results" style="display:none;margin-top:18px;">
+        <div class="macro-display" id="macro-display"></div>
+
+        <div id="pct-bar" style="margin-top:14px;height:16px;border-radius:20px;overflow:hidden;display:flex;"></div>
+        <div class="legend-strip">
+          <span><span class="leg-dot" style="background:#3b82f6;"></span>Protein</span>
+          <span><span class="leg-dot" style="background:#f59e0b;"></span>Carbs</span>
+          <span><span class="leg-dot" style="background:#ec4899;"></span>Fat</span>
+        </div>
+
+        <div style="margin-top:14px;background:var(--bg-alt);border-radius:var(--radius);padding:12px;font-size:.86rem;" id="tip-box"></div>
+      </div>
+      <div id="err" class="error-box" style="display:none;margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>Macronutrient Basics</h2>
+      <p>Each macro has a caloric value:</p>
+      <ul>
+        <li><strong>Protein</strong> — 4 calories per gram. Essential for muscle repair and growth.</li>
+        <li><strong>Carbohydrates</strong> — 4 calories per gram. Primary energy source for high-intensity activity.</li>
+        <li><strong>Fat</strong> — 9 calories per gram. Needed for hormones, vitamins absorption, and long-duration energy.</li>
+      </ul>
+      <h3>Macros for Different Goals</h3>
+      <ul>
+        <li><strong>Cutting</strong>: Higher protein (35–40%) to preserve muscle. Lower carbs.</li>
+        <li><strong>Bulking</strong>: Higher carbs (45–50%) for training fuel and recovery.</li>
+        <li><strong>Keto</strong>: Very low carbs (5–10%), high fat (60–70%) to induce ketosis.</li>
+      </ul>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('macro-calculator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('macro-calculator','health');
+});
+
+function setPreset(p, c, f) {
+  document.getElementById('pct-p').value = p;
+  document.getElementById('pct-c').value = c;
+  document.getElementById('pct-f').value = f;
+  calcMacros();
+}
+
+function updatePreset() {
+  const g = document.getElementById('goal').value;
+  if (g === 'cut')      setPreset(40,35,25);
+  else if (g === 'bulk') setPreset(25,50,25);
+  else                   setPreset(30,40,30);
+}
+
+function clampMacros(changed) {
+  // Keep sum at 100
+  const p = parseFloat(document.getElementById('pct-p').value)||0;
+  const c = parseFloat(document.getElementById('pct-c').value)||0;
+  const f = parseFloat(document.getElementById('pct-f').value)||0;
+  if (p+c+f > 100) {
+    const excess = p+c+f - 100;
+    if (changed !== 'f') document.getElementById('pct-f').value = Math.max(5, f - excess);
+    else if (changed !== 'c') document.getElementById('pct-c').value = Math.max(5, c - excess);
+  }
+}
+
+function calcMacros() {
+  const cals = parseFloat(document.getElementById('cals').value);
+  const bw   = parseFloat(document.getElementById('bw').value);
+  const pp   = parseFloat(document.getElementById('pct-p').value);
+  const pc   = parseFloat(document.getElementById('pct-c').value);
+  const pf   = parseFloat(document.getElementById('pct-f').value);
+  const goal = document.getElementById('goal').value;
+  const err  = document.getElementById('err'); err.style.display = 'none';
+
+  if (isNaN(cals)||cals<800) { err.textContent='Enter a calorie goal (min 800).'; err.style.display='block'; return; }
+  const sum = pp+pc+pf;
+  if (Math.abs(sum-100) > 1) { err.textContent=`Percentages must add to 100% (currently ${sum}%).`; err.style.display='block'; return; }
+
+  const protG = Math.round(cals * pp / 100 / 4);
+  const carbG = Math.round(cals * pc / 100 / 4);
+  const fatG  = Math.round(cals * pf / 100 / 9);
+
+  document.getElementById('macro-display').innerHTML = `
+    <div class="macro-card protein"><div class="macro-name">Protein</div><div class="macro-val">${protG}g</div><div class="macro-cals">${Math.round(protG*4)} cal · ${pp}%</div></div>
+    <div class="macro-card carbs"><div class="macro-name">Carbs</div><div class="macro-val">${carbG}g</div><div class="macro-cals">${Math.round(carbG*4)} cal · ${pc}%</div></div>
+    <div class="macro-card fats"><div class="macro-name">Fat</div><div class="macro-val">${fatG}g</div><div class="macro-cals">${Math.round(fatG*9)} cal · ${pf}%</div></div>
+  `;
+
+  document.getElementById('pct-bar').innerHTML = `
+    <div style="width:${pp}%;background:#3b82f6;"></div>
+    <div style="width:${pc}%;background:#f59e0b;"></div>
+    <div style="width:${pf}%;background:#ec4899;"></div>
+  `;
+
+  const protPerLb = bw > 0 ? (protG / bw).toFixed(2) : '?';
+  const tips = {
+    cut: `For cutting, your ${protG}g of protein (${protPerLb}g/lb) is great for preserving muscle. Consider spreading meals evenly and prioritizing protein at each meal.`,
+    maintain: `A balanced split at your maintenance calories. Adjust activity level in the <a href="/tools/calorie-calculator.html">Calorie Calculator</a> if needed.`,
+    bulk: `For bulking, high carbs fuel your workouts and recovery. Track progress and adjust calories every 2–3 weeks based on weight change.`
+  };
+  document.getElementById('tip-box').innerHTML = `<strong>💡 Goal Tip:</strong> ${tips[goal]}`;
+
+  document.getElementById('results').style.display = 'block';
+}
+</script>
+</body>
+</html>

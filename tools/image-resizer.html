@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Resizer Online — Resize Images Free, No Upload | ToolNook</title>
+  <meta name="description" content="Free online image resizer. Resize JPEG, PNG, and WebP images directly in your browser — no file upload, no server. Set exact dimensions, lock aspect ratio, and download." />
+  <meta name="keywords" content="image resizer online, resize image free, resize photo online, image compressor, change image dimensions, crop image online, JPEG resizer" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/image-resizer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does this image resizer upload my image?","acceptedAnswer":{"@type":"Answer","text":"No. All image processing happens entirely in your browser using the HTML5 Canvas API. Your image never leaves your device."}},{"@type":"Question","name":"What image formats are supported?","acceptedAnswer":{"@type":"Answer","text":"You can upload JPEG, PNG, WebP, GIF, and BMP images. You can download the result as JPEG, PNG, or WebP."}},{"@type":"Question","name":"How do I maintain aspect ratio when resizing?","acceptedAnswer":{"@type":"Answer","text":"Check the 'Lock Aspect Ratio' checkbox before entering dimensions. When you change width, height will adjust automatically to preserve the original proportions."}}]}
+  </script>
+  <style>
+    .drop-zone { border:2px dashed var(--primary); border-radius:var(--radius); padding:40px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+    .drop-zone:hover, .drop-zone.drag-over { background:var(--primary-light); }
+    .drop-zone input[type=file] { display:none; }
+    .controls-row { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-top:14px; }
+    .controls-row .form-group { margin:0; flex:1; min-width:100px; }
+    .preview-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:18px; }
+    .preview-box { flex:1; min-width:200px; }
+    .preview-box img  { max-width:100%; border:1px solid var(--border); border-radius:6px; display:block; }
+    .preview-box label { font-size:.72rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-bottom:6px; display:block; }
+    .info-pill { display:inline-block; font-size:.72rem; background:var(--primary-light); border:1px solid var(--primary); border-radius:20px; padding:2px 8px; margin:2px; }
+    #canvas { display:none; }
+    .quality-row { display:flex; gap:10px; align-items:center; margin-top:8px; font-size:.88rem; }
+    .quality-row input[type=range] { flex:1; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#image-tools">Image Tools</a> › Image Resizer</div>
+      <h1>Image Resizer Online</h1>
+      <p>Resize images directly in your browser — completely private, no uploads. Supports JPEG, PNG, and WebP output.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
+        <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
+        <p style="font-weight:600;margin-bottom:4px;">Drop an image here or click to browse</p>
+        <p style="font-size:.82rem;color:var(--text-muted);">JPEG, PNG, WebP, GIF, BMP supported</p>
+      </div>
+
+      <canvas id="canvas"></canvas>
+
+      <div id="editor" style="display:none;margin-top:18px;">
+        <div style="margin-bottom:12px;" id="orig-info"></div>
+
+        <div class="controls-row">
+          <div class="form-group">
+            <label>Width (px)</label>
+            <input type="number" class="tool-input" id="out-w" min="1" max="8000" oninput="updateHeight()" />
+          </div>
+          <div style="align-self:center;font-size:1.2rem;color:var(--text-muted);padding-bottom:4px;">×</div>
+          <div class="form-group">
+            <label>Height (px)</label>
+            <input type="number" class="tool-input" id="out-h" min="1" max="8000" oninput="updateWidth()" />
+          </div>
+          <div class="form-group">
+            <label>Format</label>
+            <select class="tool-input" id="out-fmt">
+              <option value="image/jpeg">JPEG</option>
+              <option value="image/png">PNG</option>
+              <option value="image/webp">WebP</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="quality-row">
+          <label style="white-space:nowrap;">Quality: <span id="q-val">90</span>%</label>
+          <input type="range" id="quality" min="10" max="100" value="90" oninput="document.getElementById('q-val').textContent=this.value" />
+          <label style="white-space:nowrap;font-size:.82rem;">
+            <input type="checkbox" id="lock-ar" checked /> Lock Aspect Ratio
+          </label>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn btn-primary" onclick="doResize()">Resize Image</button>
+          <button class="btn btn-secondary" onclick="setCommonSize(800,600)">800×600</button>
+          <button class="btn btn-secondary" onclick="setCommonSize(1280,720)">1280×720</button>
+          <button class="btn btn-secondary" onclick="setCommonSize(1920,1080)">1920×1080</button>
+          <button class="btn btn-secondary" onclick="setCommonSize(1080,1080)">1080×1080</button>
+        </div>
+
+        <div class="preview-row" id="preview-row" style="display:none;">
+          <div class="preview-box">
+            <label>Original</label>
+            <img id="orig-preview" alt="Original" />
+            <div id="orig-stats" style="margin-top:6px;"></div>
+          </div>
+          <div class="preview-box">
+            <label>Resized</label>
+            <img id="result-preview" alt="Resized" />
+            <div id="result-stats" style="margin-top:6px;"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="dl-btn" style="display:none;margin-top:14px;" onclick="downloadResult()">⬇️ Download Resized Image</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>Why Resize Images?</h2>
+      <ul>
+        <li><strong>Web performance</strong> — Uploading oversized images slows down websites. Resize before uploading to a CMS.</li>
+        <li><strong>Email attachments</strong> — Large photos can be blocked by email servers. Resize to under 1 MB.</li>
+        <li><strong>Social media</strong> — Each platform has optimal dimensions. Instagram posts: 1080×1080. Twitter header: 1500×500.</li>
+        <li><strong>Storage</strong> — Smaller images take less storage space on your device or cloud.</li>
+      </ul>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('image-resizer');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('image-resizer','image');
+  setupDrag();
+});
+
+let origImg = null, origFile = null, resultDataURL = null;
+
+function setupDrag() {
+  const zone = document.getElementById('drop-zone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImageFromFile(file);
+  });
+}
+
+function loadImage(event) { loadImageFromFile(event.target.files[0]); }
+
+function loadImageFromFile(file) {
+  origFile = file;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    origImg = img;
+    document.getElementById('out-w').value = img.naturalWidth;
+    document.getElementById('out-h').value = img.naturalHeight;
+    document.getElementById('orig-preview').src = url;
+    document.getElementById('orig-info').innerHTML = `<span class="info-pill">${img.naturalWidth} × ${img.naturalHeight} px</span> <span class="info-pill">${(file.size/1024).toFixed(0)} KB</span> <span class="info-pill">${file.type || 'unknown'}</span>`;
+    document.getElementById('editor').style.display = 'block';
+    document.getElementById('drop-zone').style.display = 'none';
+  };
+  img.src = url;
+}
+
+function updateHeight() {
+  if (!origImg || !document.getElementById('lock-ar').checked) return;
+  const w = parseInt(document.getElementById('out-w').value);
+  if (w > 0) document.getElementById('out-h').value = Math.round(w * origImg.naturalHeight / origImg.naturalWidth);
+}
+
+function updateWidth() {
+  if (!origImg || !document.getElementById('lock-ar').checked) return;
+  const h = parseInt(document.getElementById('out-h').value);
+  if (h > 0) document.getElementById('out-w').value = Math.round(h * origImg.naturalWidth / origImg.naturalHeight);
+}
+
+function setCommonSize(w, h) {
+  document.getElementById('out-w').value = w;
+  document.getElementById('out-h').value = h;
+  document.getElementById('lock-ar').checked = false;
+}
+
+function doResize() {
+  if (!origImg) return;
+  const w = parseInt(document.getElementById('out-w').value);
+  const h = parseInt(document.getElementById('out-h').value);
+  const fmt = document.getElementById('out-fmt').value;
+  const q = parseInt(document.getElementById('quality').value) / 100;
+  if (!w||!h||w<1||h<1) { showToast('Enter valid dimensions'); return; }
+
+  const canvas = document.getElementById('canvas');
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(origImg, 0, 0, w, h);
+  resultDataURL = canvas.toDataURL(fmt, q);
+
+  document.getElementById('result-preview').src = resultDataURL;
+  document.getElementById('result-stats').innerHTML = `<span class="info-pill">${w} × ${h} px</span> <span class="info-pill">~${Math.round(resultDataURL.length*0.75/1024)} KB est.</span>`;
+  document.getElementById('preview-row').style.display = 'flex';
+  document.getElementById('dl-btn').style.display = 'block';
+  showToast('Resized!');
+}
+
+function downloadResult() {
+  if (!resultDataURL) return;
+  const fmt = document.getElementById('out-fmt').value;
+  const ext = fmt.split('/')[1];
+  const a = document.createElement('a');
+  a.href = resultDataURL;
+  a.download = `resized-image.${ext}`;
+  a.click();
+}
+</script>
+</body>
+</html>

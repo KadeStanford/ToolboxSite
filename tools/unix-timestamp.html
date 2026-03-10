@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unix Timestamp Converter — Epoch Time to Date | ToolNook</title>
+  <meta name="description" content="Free Unix timestamp converter. Convert Unix epoch timestamps to human-readable dates and vice versa. Supports seconds and milliseconds. Instant results — no signup needed." />
+  <meta name="keywords" content="unix timestamp converter, epoch converter, epoch to date, timestamp to date, unix time converter, convert epoch time, milliseconds to date" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/unix-timestamp.html" />
+  <meta property="og:title" content="Unix Timestamp Converter — ToolNook" />
+  <meta property="og:description" content="Convert Unix epoch timestamps to human-readable dates and back. Supports seconds and milliseconds." />
+  <meta property="og:url" content="https://toolnook.net/tools/unix-timestamp.html" />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Unix timestamp?","acceptedAnswer":{"@type":"Answer","text":"A Unix timestamp (also called epoch time) is the number of seconds elapsed since January 1, 1970, 00:00:00 UTC. It's universally used in programming to represent points in time."}},{"@type":"Question","name":"How do I convert a Unix timestamp to a date?","acceptedAnswer":{"@type":"Answer","text":"Paste your Unix timestamp into the 'Timestamp to Date' field and click Convert. The tool shows the equivalent date and time in your local timezone and UTC."}},{"@type":"Question","name":"What's the difference between seconds and milliseconds timestamps?","acceptedAnswer":{"@type":"Answer","text":"Standard Unix timestamps are in seconds. JavaScript and many APIs use milliseconds (1/1000th of a second), which are 1000× larger. The tool auto-detects which format you're using."}}]}
+  </script>
+  <style>
+    .ts-display { background:var(--primary); color:#fff; border-radius:var(--radius-lg); padding:16px 20px; text-align:center; margin-bottom:16px; }
+    .ts-display .big { font-size:2rem; font-weight:800; font-family:monospace; }
+    .ts-display .sub { font-size:.85rem; opacity:.85; margin-top:4px; }
+    .conv-block { background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px; }
+    .conv-block h3 { font-size:.92rem; font-weight:700; margin-bottom:14px; color:var(--primary); }
+    .result-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); font-size:.9rem; }
+    .result-row:last-child { border-bottom:none; }
+    .result-row .label { color:var(--text-muted); font-weight:500; }
+    .result-row .value { font-family:monospace; font-weight:600; cursor:pointer; }
+    .result-row .value:hover { color:var(--primary); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#datetime-tools">Date &amp; Time</a> › Unix Timestamp Converter</div>
+      <h1>Unix Timestamp Converter</h1>
+      <p>Convert between Unix epoch timestamps and human-readable dates instantly.</p>
+    </div>
+
+    <div class="tool-container">
+      <!-- Live clock -->
+      <div class="ts-display">
+        <div class="big" id="live-ts">—</div>
+        <div class="sub">Current Unix timestamp (seconds since 1970-01-01 00:00:00 UTC)</div>
+      </div>
+
+      <!-- Timestamp → Date -->
+      <div class="conv-block">
+        <h3>&#128336; Timestamp → Date</h3>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label for="ts-in">Unix Timestamp</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="text" class="tool-input" id="ts-in" placeholder="e.g. 1704067200 or 1704067200000" style="flex:1;" />
+            <button class="btn btn-primary" onclick="tsToDate()">Convert</button>
+            <button class="btn btn-secondary" onclick="useNow()">Use Now</button>
+          </div>
+        </div>
+        <div id="ts-result" style="display:none;">
+          <div class="result-row"><span class="label">Local Date &amp; Time</span><span class="value" id="r-local" onclick="copyToClipboard(this.textContent)"></span></div>
+          <div class="result-row"><span class="label">UTC Date &amp; Time</span><span class="value" id="r-utc" onclick="copyToClipboard(this.textContent)"></span></div>
+          <div class="result-row"><span class="label">ISO 8601</span><span class="value" id="r-iso" onclick="copyToClipboard(this.textContent)"></span></div>
+          <div class="result-row"><span class="label">Relative</span><span class="value" id="r-rel"></span></div>
+          <div class="result-row"><span class="label">Format detected</span><span class="value" id="r-fmt"></span></div>
+        </div>
+        <div id="ts-err" class="error-box" style="display:none;"></div>
+      </div>
+
+      <!-- Date → Timestamp -->
+      <div class="conv-block">
+        <h3>&#128197; Date → Timestamp</h3>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;">
+          <div class="form-group" style="margin:0;">
+            <label for="dt-in">Date &amp; Time</label>
+            <input type="datetime-local" class="tool-input" id="dt-in" />
+          </div>
+          <button class="btn btn-primary" onclick="dateToTs()">Convert</button>
+        </div>
+        <div id="dt-result" style="display:none;margin-top:12px;">
+          <div class="result-row"><span class="label">Unix (seconds)</span><span class="value" id="r-sec" onclick="copyToClipboard(this.textContent)" title="Click to copy"></span></div>
+          <div class="result-row"><span class="label">Unix (milliseconds)</span><span class="value" id="r-ms" onclick="copyToClipboard(this.textContent)" title="Click to copy"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>What is a Unix Timestamp?</h2>
+      <p>A Unix timestamp (also called "epoch time" or "POSIX time") represents the number of seconds that have elapsed since <strong>January 1, 1970, 00:00:00 UTC</strong> — known as the "Unix epoch." It's the standard way most programming languages and databases store date/time values because it's timezone-independent and easy to compare.</p>
+      <h3>Seconds vs Milliseconds</h3>
+      <p>Standard Unix timestamps are in <strong>seconds</strong> (e.g., <code>1704067200</code>). JavaScript, Java, and many modern APIs use <strong>milliseconds</strong> (e.g., <code>1704067200000</code>). The tool auto-detects which format you're entering — numbers with 13+ digits are treated as milliseconds.</p>
+      <h3>Common Timestamp Reference Points</h3>
+      <ul>
+        <li><code>0</code> → January 1, 1970 00:00:00 UTC (Unix epoch)</li>
+        <li><code>1000000000</code> → September 9, 2001 01:46:40 UTC</li>
+        <li><code>1700000000</code> → November 14, 2023 22:13:20 UTC</li>
+      </ul>
+    </div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('unix-timestamp');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('unix-timestamp', 'datetime');
+  setInterval(() => {
+    document.getElementById('live-ts').textContent = Math.floor(Date.now() / 1000).toLocaleString();
+  }, 1000);
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('dt-in').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+});
+
+function useNow() {
+  document.getElementById('ts-in').value = Math.floor(Date.now() / 1000);
+  tsToDate();
+}
+
+function tsToDate() {
+  const raw = document.getElementById('ts-in').value.trim();
+  const err = document.getElementById('ts-err');
+  err.style.display = 'none';
+  document.getElementById('ts-result').style.display = 'none';
+  if (!raw) { err.textContent = 'Please enter a timestamp.'; err.style.display = 'block'; return; }
+  let num = Number(raw);
+  if (isNaN(num)) { err.textContent = 'Invalid timestamp — enter a number.'; err.style.display = 'block'; return; }
+  const isMs = raw.length >= 13;
+  const fmt  = isMs ? 'Milliseconds (13 digits)' : 'Seconds (10 digits)';
+  const date = new Date(isMs ? num : num * 1000);
+  if (isNaN(date.getTime())) { err.textContent = 'Timestamp out of valid range.'; err.style.display = 'block'; return; }
+  document.getElementById('r-local').textContent = date.toLocaleString();
+  document.getElementById('r-utc').textContent   = date.toUTCString();
+  document.getElementById('r-iso').textContent   = date.toISOString();
+  document.getElementById('r-rel').textContent   = relativeTime(date);
+  document.getElementById('r-fmt').textContent   = fmt;
+  document.getElementById('ts-result').style.display = 'block';
+}
+
+function dateToTs() {
+  const val = document.getElementById('dt-in').value;
+  if (!val) return;
+  const date = new Date(val);
+  const sec  = Math.floor(date.getTime() / 1000);
+  document.getElementById('r-sec').textContent = sec.toLocaleString();
+  document.getElementById('r-ms').textContent  = date.getTime().toLocaleString();
+  document.getElementById('dt-result').style.display = 'block';
+}
+
+function relativeTime(date) {
+  const diff = (Date.now() - date.getTime()) / 1000;
+  const abs  = Math.abs(diff);
+  const fut  = diff < 0;
+  if (abs < 60)     return (fut ? 'in ' : '') + Math.round(abs) + ' seconds' + (fut ? '' : ' ago');
+  if (abs < 3600)   return (fut ? 'in ' : '') + Math.round(abs/60) + ' minutes' + (fut ? '' : ' ago');
+  if (abs < 86400)  return (fut ? 'in ' : '') + Math.round(abs/3600) + ' hours' + (fut ? '' : ' ago');
+  if (abs < 2592000)return (fut ? 'in ' : '') + Math.round(abs/86400) + ' days' + (fut ? '' : ' ago');
+  return date.toLocaleDateString();
+}
+</script>
+</body>
+</html>

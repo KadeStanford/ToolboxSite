@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Currency Converter — Convert Between 40+ Currencies | ToolNook</title>
+  <meta name="description" content="Free online currency converter. Convert between 40+ world currencies with approximate exchange rates. Fast, easy, no sign-up required." />
+  <meta name="keywords" content="currency converter, exchange rate calculator, USD to EUR, dollars to pounds, foreign exchange calculator, money converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/currency-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are the exchange rates accurate?","acceptedAnswer":{"@type":"Answer","text":"The exchange rates displayed are approximate reference rates updated periodically. For financial transactions, always verify rates with your bank or official currency exchange."}},{"@type":"Question","name":"How many currencies are supported?","acceptedAnswer":{"@type":"Answer","text":"This converter supports 40+ major world currencies including USD, EUR, GBP, JPY, CAD, AUD, CHF, CNY, INR, and many more."}},{"@type":"Question","name":"What is the base currency?","acceptedAnswer":{"@type":"Answer","text":"All exchange rates are calculated relative to USD (US Dollar). You can convert between any two currencies by selecting them from the dropdown menus."}}]}
+  </script>
+  <style>
+    .cc-row { display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; }
+    .cc-group { flex:1; min-width:160px; }
+    .cc-select { width:100%; }
+    .rate-note { font-size:.72rem; color:var(--text-muted); margin-top:10px; padding:8px; background:var(--bg-alt); border-radius:6px; }
+    .quick-pairs { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+    .quick-pairs button { font-size:.78rem; padding:4px 10px; background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; cursor:pointer; }
+    .quick-pairs button:hover { background:var(--primary-light); }
+    .multi-results { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:8px; margin-top:14px; }
+    .mc-item { background:var(--bg-alt); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-size:.85rem; }
+    .mc-code { font-weight:700; color:var(--primary); font-size:.7rem; margin-bottom:2px; }
+    .mc-val  { font-size:1rem; font-weight:700; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#finance-tools">Finance</a> › Currency Converter</div>
+      <h1>Currency Converter</h1>
+      <p>Convert between 40+ world currencies instantly. Approximate reference rates — always verify with your bank for financial transactions.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="cc-row">
+        <div class="cc-group">
+          <label>From</label>
+          <select class="tool-input cc-select" id="from-cur"></select>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding-bottom:4px;">
+          <input type="number" class="tool-input" id="amount" value="1" min="0" step="any" style="width:110px;text-align:center;font-size:1.1rem;font-weight:700;" oninput="convert()" />
+        </div>
+        <div class="cc-group">
+          <label>To</label>
+          <select class="tool-input cc-select" id="to-cur"></select>
+        </div>
+        <button class="btn btn-secondary" onclick="swap()" title="Swap currencies" style="padding:10px 14px;font-size:1.2rem;">⇄</button>
+      </div>
+
+      <div id="result-box" style="margin-top:16px;background:var(--primary);color:#fff;padding:18px;border-radius:var(--radius);display:none;">
+        <div style="font-size:.82rem;opacity:.8;" id="rate-label"></div>
+        <div style="font-size:2rem;font-weight:700;margin-top:4px;" id="main-result"></div>
+        <div style="font-size:.8rem;opacity:.7;margin-top:4px;" id="inv-rate"></div>
+      </div>
+
+      <div class="quick-pairs">
+        <span style="font-size:.78rem;color:var(--text-muted);align-self:center;">Quick picks:</span>
+        <button onclick="setPair('USD','EUR')">USD → EUR</button>
+        <button onclick="setPair('USD','GBP')">USD → GBP</button>
+        <button onclick="setPair('USD','JPY')">USD → JPY</button>
+        <button onclick="setPair('USD','CAD')">USD → CAD</button>
+        <button onclick="setPair('EUR','USD')">EUR → USD</button>
+        <button onclick="setPair('GBP','USD')">GBP → USD</button>
+        <button onclick="setPair('USD','INR')">USD → INR</button>
+        <button onclick="setPair('USD','CNY')">USD → CNY</button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <h3 style="font-size:.88rem;font-weight:700;margin-bottom:8px;" id="multi-title">1 USD in popular currencies</h3>
+        <div class="multi-results" id="multi-results"></div>
+      </div>
+
+      <div class="rate-note">⚠️ Exchange rates are approximate reference values and may not reflect current market rates. Last updated: Jan 2025. For accurate real-time rates, use a financial service.</div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>About Currency Exchange Rates</h2>
+      <p>Exchange rates fluctuate continuously based on supply and demand, economic conditions, interest rates, and geopolitical events. There are two main types:</p>
+      <ul>
+        <li><strong>Spot rate</strong> — The current market rate for immediate exchange.</li>
+        <li><strong>Forward rate</strong> — A contracted rate for future exchange at a predetermined date.</li>
+      </ul>
+      <h3>Tips for Currency Exchange</h3>
+      <ul>
+        <li>Avoid airport currency exchanges — they often charge high fees and poor rates.</li>
+        <li>Credit cards with no foreign transaction fees often give you the best rates automatically.</li>
+        <li>Withdraw local currency from ATMs abroad for better rates than exchange bureaus.</li>
+      </ul>
+    </div>
+
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('currency-converter');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('currency-converter','finance');
+  populateSelects();
+  convert();
+});
+
+// Approximate rates relative to USD (as of Jan 2025)
+const RATES = {
+  USD:1, EUR:0.923, GBP:0.789, JPY:157.3, CAD:1.436, AUD:1.613,
+  CHF:0.896, CNY:7.294, INR:85.1, MXN:20.15, BRL:6.12, KRW:1461,
+  SGD:1.349, HKD:7.786, NOK:10.97, SEK:10.78, DKK:6.886, NZD:1.764,
+  ZAR:18.64, RUB:89.5, TRY:35.1, PLN:4.089, THB:33.5, MYR:4.461,
+  IDR:16230, PHP:57.9, VND:25460, AED:3.673, SAR:3.751, QAR:3.641,
+  KWD:0.308, EGP:31.0, NGN:1658, PKR:278.5, BDT:109.8, ILS:3.73,
+  COP:4390, CLP:991.5, PEN:3.71, ARS:1043
+};
+
+const NAMES = {
+  USD:'US Dollar', EUR:'Euro', GBP:'British Pound', JPY:'Japanese Yen', CAD:'Canadian Dollar',
+  AUD:'Australian Dollar', CHF:'Swiss Franc', CNY:'Chinese Yuan', INR:'Indian Rupee', MXN:'Mexican Peso',
+  BRL:'Brazilian Real', KRW:'South Korean Won', SGD:'Singapore Dollar', HKD:'Hong Kong Dollar',
+  NOK:'Norwegian Krone', SEK:'Swedish Krona', DKK:'Danish Krone', NZD:'New Zealand Dollar',
+  ZAR:'South African Rand', RUB:'Russian Ruble', TRY:'Turkish Lira', PLN:'Polish Zloty',
+  THB:'Thai Baht', MYR:'Malaysian Ringgit', IDR:'Indonesian Rupiah', PHP:'Philippine Peso',
+  VND:'Vietnamese Dong', AED:'UAE Dirham', SAR:'Saudi Riyal', QAR:'Qatari Riyal',
+  KWD:'Kuwaiti Dinar', EGP:'Egyptian Pound', NGN:'Nigerian Naira', PKR:'Pakistani Rupee',
+  BDT:'Bangladeshi Taka', ILS:'Israeli Shekel', COP:'Colombian Peso', CLP:'Chilean Peso',
+  PEN:'Peruvian Sol', ARS:'Argentine Peso'
+};
+
+const POPULAR = ['EUR','GBP','JPY','CAD','AUD','CHF','CNY','INR','MXN','BRL','KRW','SGD'];
+
+function populateSelects() {
+  const codes = Object.keys(RATES);
+  ['from-cur','to-cur'].forEach((id,i) => {
+    document.getElementById(id).innerHTML = codes.map(c =>
+      `<option value="${c}" ${c===(i===0?'USD':'EUR')?'selected':''}>${c} — ${NAMES[c]}</option>`
+    ).join('');
+  });
+}
+
+function convert() {
+  const from = document.getElementById('from-cur').value;
+  const to   = document.getElementById('to-cur').value;
+  const amt  = parseFloat(document.getElementById('amount').value) || 0;
+  const rate = RATES[to] / RATES[from];
+  const result = amt * rate;
+  const fmt = (v, code) => {
+    try { return new Intl.NumberFormat('en', {style:'currency', currency:code, maximumFractionDigits:4}).format(v); }
+    catch { return v.toFixed(4) + ' ' + code; }
+  };
+
+  document.getElementById('rate-label').textContent = `1 ${from} = ${rate.toFixed(6)} ${to}`;
+  document.getElementById('main-result').textContent = fmt(result, to);
+  document.getElementById('inv-rate').textContent = `1 ${to} = ${(1/rate).toFixed(6)} ${from}`;
+  document.getElementById('result-box').style.display = 'block';
+
+  const multiHTML = POPULAR.filter(c => c !== from).slice(0,12).map(c => {
+    const r = RATES[c] / RATES[from];
+    let disp;
+    try { disp = new Intl.NumberFormat('en',{style:'currency',currency:c,maximumFractionDigits:2}).format(amt*r); }
+    catch { disp = (amt*r).toFixed(2) + ' ' + c; }
+    return `<div class="mc-item"><div class="mc-code">${c}</div><div class="mc-val">${disp}</div></div>`;
+  }).join('');
+  document.getElementById('multi-title').textContent = `${amt} ${from} in popular currencies`;
+  document.getElementById('multi-results').innerHTML = multiHTML;
+}
+
+function swap() {
+  const f = document.getElementById('from-cur').value;
+  const t = document.getElementById('to-cur').value;
+  document.getElementById('from-cur').value = t;
+  document.getElementById('to-cur').value = f;
+  convert();
+}
+
+function setPair(from, to) {
+  document.getElementById('from-cur').value = from;
+  document.getElementById('to-cur').value = to;
+  convert();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Formatter & Beautifier — Format SQL Online | ToolNook</title>
+  <meta name="description" content="Format, beautify, and minify SQL queries online. Automatically uppercase SQL keywords, add proper indentation, and make complex queries readable. Free SQL formatter." />
+  <meta name="keywords" content="SQL formatter, SQL beautifier, format SQL online, SQL pretty print, SQL minifier, SQL query formatter, SQL indentation" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/sql-formatter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is SQL formatting?","acceptedAnswer":{"@type":"Answer","text":"SQL formatting (or beautifying) adds consistent indentation, line breaks, and capitalization to SQL queries. This makes complex queries easier to read, maintain, and debug."}},{"@type":"Question","name":"Should SQL keywords be uppercase?","acceptedAnswer":{"@type":"Answer","text":"Uppercase SQL keywords (SELECT, FROM, WHERE, JOIN) is a widespread convention that improves readability by visually distinguishing keywords from table and column names. Most SQL style guides recommend this."}},{"@type":"Question","name":"What SQL dialects does this formatter support?","acceptedAnswer":{"@type":"Answer","text":"This formatter handles standard ANSI SQL and is compatible with most dialects including MySQL, PostgreSQL, SQLite, SQL Server (T-SQL), and Oracle. Dialect-specific features may not format perfectly."}}]}
+  </script>
+  <style>
+    .editors { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:680px) { .editors { grid-template-columns:1fr; } }
+    .editor-pane { display:flex; flex-direction:column; gap:6px; }
+    .editor-pane label { font-size:.82rem; font-weight:700; }
+    .editor-pane textarea { font-family:monospace; font-size:.8rem; resize:vertical; min-height:260px; }
+    .kw-toggle { display:flex; align-items:center; gap:8px; font-size:.84rem; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › SQL Formatter</div>
+      <h1>SQL Formatter &amp; Beautifier</h1>
+      <p>Instantly format messy SQL into clean, readable, properly indented queries.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <button class="btn btn-primary" onclick="formatSQL()">&#9650; Format SQL</button>
+        <button class="btn btn-secondary" onclick="minifySQL()">&#9660; Minify SQL</button>
+        <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+        <label class="kw-toggle">
+          <input type="checkbox" id="uppercase-kw" checked /> Uppercase keywords
+        </label>
+      </div>
+      <div class="editors">
+        <div class="editor-pane">
+          <label>Input SQL</label>
+          <textarea id="sql-input" placeholder="select u.id, u.name, o.total from users u join orders o on u.id = o.user_id where u.active = 1 and o.total > 100 order by o.total desc limit 10;"></textarea>
+          <button class="btn btn-secondary" style="font-size:.8rem;" onclick="pasteInput()">Paste</button>
+        </div>
+        <div class="editor-pane">
+          <label>Formatted SQL</label>
+          <textarea id="sql-output" readonly placeholder="Formatted query appears here..."></textarea>
+          <button class="btn btn-secondary" style="font-size:.8rem;" onclick="copyOutput()">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>SQL Formatting Best Practices</h2>
+      <ul>
+        <li><strong>Uppercase keywords</strong> (SELECT, FROM, WHERE) — distinguishes SQL grammar from identifiers.</li>
+        <li><strong>Each clause on its own line</strong> — SELECT, FROM, WHERE, JOIN, GROUP BY, ORDER BY each start on a new line.</li>
+        <li><strong>Indent JOIN conditions</strong> — ON clauses should be indented under their JOIN for clarity.</li>
+        <li><strong>Use table aliases</strong> — short aliases (u for users) make complex queries much more readable.</li>
+        <li><strong>Comment complex logic</strong> — Use <code>-- comment</code> to explain non-obvious filters or JOINs.</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('sql-formatter');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('sql-formatter','developer');
+});
+
+const BREAK_BEFORE = ['SELECT','FROM','WHERE','JOIN','LEFT JOIN','RIGHT JOIN','INNER JOIN','OUTER JOIN','CROSS JOIN','FULL JOIN','ON','GROUP BY','ORDER BY','HAVING','LIMIT','OFFSET','UNION','UNION ALL','INSERT INTO','VALUES','UPDATE','SET','DELETE FROM','CREATE TABLE','ALTER TABLE','DROP TABLE','WITH'];
+const KW_ALL = ['SELECT','DISTINCT','FROM','WHERE','AND','OR','NOT','IN','EXISTS','BETWEEN','LIKE','IS NULL','IS NOT NULL','JOIN','LEFT','RIGHT','INNER','OUTER','CROSS','FULL','ON','AS','BY','GROUP','ORDER','HAVING','LIMIT','OFFSET','UNION','ALL','INSERT','INTO','VALUES','UPDATE','SET','DELETE','CREATE','TABLE','ALTER','DROP','INDEX','VIEW','PROCEDURE','FUNCTION','TRIGGER','PRIMARY','KEY','FOREIGN','REFERENCES','UNIQUE','DEFAULT','NOT NULL','NULL','INT','INTEGER','VARCHAR','TEXT','DATE','DATETIME','BOOLEAN','FLOAT','DECIMAL','WITH','RETURNING','CASE','WHEN','THEN','ELSE','END','ASC','DESC','COUNT','SUM','AVG','MAX','MIN','COALESCE','IFNULL','CAST','CONVERT','BEGIN','COMMIT','ROLLBACK','TRANSACTION'];
+
+function applyKeywordCase(sql) {
+  const upper = document.getElementById('uppercase-kw').checked;
+  if (!upper) return sql;
+  // Replace keywords not inside quotes
+  return sql.replace(/'[^']*'|"[^"]*"|`[^`]*`|([\w]+)/g, (m, word) => {
+    if (!word) return m;
+    const up = word.toUpperCase();
+    return KW_ALL.includes(up) ? up : word;
+  });
+}
+
+function formatSQL() {
+  let sql = document.getElementById('sql-input').value.trim();
+  if (!sql) return;
+  // Normalize whitespace
+  sql = sql.replace(/\s+/g, ' ');
+  sql = applyKeywordCase(sql);
+
+  // Add newlines before major clauses
+  BREAK_BEFORE.forEach(kw => {
+    const re = new RegExp('\\b(' + kw.replace(/\s+/g,'\\s+') + ')\\b', 'gi');
+    sql = sql.replace(re, '\n$1');
+  });
+
+  // Indent JOIN sub-clauses
+  sql = sql.replace(/\n(ON\b)/gi, '\n  $1');
+
+  // Indent items in SELECT list
+  sql = sql.replace(/\bSELECT\b(.*?)\bFROM\b/is, (m, cols) => {
+    const items = cols.split(',').map(c => '  ' + c.trim()).join(',\n');
+    return 'SELECT\n' + items + '\nFROM';
+  });
+
+  // Clean up
+  sql = sql.split('\n').map(l => l.replace(/^\s+$','').trimEnd()).filter((l,i,a) => l || (a[i-1] && a[i-1])).join('\n');
+  document.getElementById('sql-output').value = sql.trim();
+}
+
+function minifySQL() {
+  let sql = document.getElementById('sql-input').value.trim();
+  if (!sql) return;
+  sql = sql.replace(/--[^\n]*/g, '');
+  sql = sql.replace(/\/\*[\s\S]*?\*\//g, '');
+  sql = sql.replace(/\s+/g, ' ').trim();
+  document.getElementById('sql-output').value = sql;
+}
+
+function clearAll() {
+  document.getElementById('sql-input').value = '';
+  document.getElementById('sql-output').value = '';
+}
+function pasteInput() { navigator.clipboard.readText().then(t => { document.getElementById('sql-input').value = t; }); }
+function copyOutput() {
+  const v = document.getElementById('sql-output').value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).then(() => showToast('Copied!'));
+}
+</script>
+</body>
+</html>

@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ToolNook — Free Online Tools | Developer, Text, Calculator & Generator Tools</title>
-  <meta name="description" content="ToolNook offers 24+ free online tools including JSON formatter, password generator, unit converter, word counter, and more. No signup required. All tools run in your browser." />
-  <meta name="keywords" content="free online tools, developer tools, JSON formatter, password generator, unit converter, word counter, base64 encoder, regex tester, text tools, calculators" />
+  <title>ToolNook — 54+ Free Online Tools | Developer, Text, Calculator, Image & More</title>
+  <meta name="description" content="ToolNook offers 54+ free online tools including JSON formatter, password generator, hash generator, invoice maker, cron builder, image resizer, and more. No signup required. All tools run in your browser." />
+  <meta name="keywords" content="free online tools, developer tools, JSON formatter, password generator, unit converter, word counter, base64 encoder, regex tester, image resizer, hash generator, cron expression builder, invoice generator, url shortener, pastebin" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://toolnook.net/" />
-  <meta property="og:title" content="ToolNook — 24+ Free Online Tools" />
-  <meta property="og:description" content="JSON formatter, password generator, unit converter, word counter and 20+ more free browser-based tools. No signup. No tracking." />
+  <meta property="og:title" content="ToolNook — 54+ Free Online Tools" />
+  <meta property="og:description" content="JSON formatter, hash generator, image resizer, cron builder, invoice maker, URL shortener and 50+ more free browser-based tools. No signup. No tracking." />
   <meta property="og:image" content="https://toolnook.net/og-image.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="ToolNook — 24+ Free Online Tools" />
-  <meta name="twitter:description" content="Free browser-based tools for developers, writers & everyone. JSON formatter, password generator, unit converter and more." />
+  <meta name="twitter:title" content="ToolNook — 54+ Free Online Tools" />
+  <meta name="twitter:description" content="Free browser-based tools for developers, writers & everyone. JSON formatter, hash generator, image resizer, cron builder, invoice maker and 50+ more." />
 
   <!-- Schema.org -->
   <script type="application/ld+json">
@@ -47,16 +47,17 @@
 <!-- HERO -->
 <section class="hero">
   <h1>Your Free Online <span class="highlight">Toolkit</span></h1>
-  <p>24+ browser-based tools for developers, writers, and everyone else. No signup. No data sent to servers. Just tools that work.</p>
+  <p>54+ browser-based tools for developers, writers, and everyone else. No signup. No data sent to servers. Just tools that work.</p>
   <div class="hero-badges">
     <span class="hero-badge">&#10003; 100% Free</span>
     <span class="hero-badge">&#10003; No Signup</span>
     <span class="hero-badge">&#10003; Works Offline</span>
     <span class="hero-badge">&#10003; No Data Collected</span>
   </div>
-  <div class="search-bar">
-    <span class="search-icon">&#128269;</span>
-    <input type="text" id="tool-search" placeholder="Search tools... (e.g. &quot;JSON&quot;, &quot;password&quot;, &quot;convert&quot;)" autocomplete="off" />
+  <div class="search-bar" role="search">
+    <span class="search-icon" aria-hidden="true">&#128269;</span>
+    <label for="tool-search" class="sr-only">Search tools</label>
+    <input type="text" id="tool-search" placeholder="Search tools... (e.g. &quot;JSON&quot;, &quot;password&quot;, &quot;convert&quot;)" autocomplete="off" aria-label="Search tools" />
   </div>
 </section>
 
@@ -106,6 +107,31 @@
         <span class="tool-card-icon">&#128279;</span>
         <h3>URL Encoder/Decoder</h3>
         <p>Encode special characters in URLs or decode encoded strings.</p>
+      </a>
+      <a href="/tools/uuid-generator.html" class="tool-card">
+        <span class="tool-card-icon">&#128165;</span>
+        <h3>UUID Generator</h3>
+        <p>Generate RFC-compliant UUID v4 identifiers. Single or bulk output.</p>
+      </a>
+      <a href="/tools/hash-generator.html" class="tool-card">
+        <span class="tool-card-icon">&#128273;</span>
+        <h3>Hash Generator</h3>
+        <p>Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text or files.</p>
+      </a>
+      <a href="/tools/css-minifier.html" class="tool-card">
+        <span class="tool-card-icon">&#127912;</span>
+        <h3>CSS Minifier / Beautifier</h3>
+        <p>Minify CSS for production or beautify compressed stylesheets.</p>
+      </a>
+      <a href="/tools/sql-formatter.html" class="tool-card">
+        <span class="tool-card-icon">&#128204;</span>
+        <h3>SQL Formatter</h3>
+        <p>Format and prettify SQL queries or minify them for production.</p>
+      </a>
+      <a href="/tools/cron-builder.html" class="tool-card">
+        <span class="tool-card-icon">&#128336;</span>
+        <h3>Cron Expression Builder</h3>
+        <p>Build and decode cron expressions with a human-readable preview.</p>
       </a>
     </div>
   </section>
@@ -228,23 +254,224 @@
     </div>
   </section>
 
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- DATE & TIME TOOLS -->
+  <section class="category-section" id="datetime-tools">
+    <h2>&#128197; Date &amp; Time Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/date-difference.html" class="tool-card">
+        <span class="tool-card-icon">&#128198;</span>
+        <h3>Date Difference Calculator</h3>
+        <p>Calculate the exact number of days, months, or years between two dates.</p>
+      </a>
+      <a href="/tools/unix-timestamp.html" class="tool-card">
+        <span class="tool-card-icon">&#128190;</span>
+        <h3>Unix Timestamp Converter</h3>
+        <p>Convert Unix timestamps to readable dates and vice versa.</p>
+      </a>
+      <a href="/tools/timezone-converter.html" class="tool-card">
+        <span class="tool-card-icon">&#127758;</span>
+        <h3>Timezone Converter</h3>
+        <p>Convert time between any two time zones around the world.</p>
+      </a>
+      <a href="/tools/countdown-timer.html" class="tool-card">
+        <span class="tool-card-icon">&#9200;</span>
+        <h3>Countdown Timer</h3>
+        <p>Create a live countdown to any future date and event.</p>
+      </a>
+      <a href="/tools/date-formatter.html" class="tool-card">
+        <span class="tool-card-icon">&#128203;</span>
+        <h3>Date Formatter</h3>
+        <p>Format any date into dozens of common date string formats.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- MATH & SCIENCE -->
+  <section class="category-section" id="math-tools">
+    <h2>&#129518; Math &amp; Science Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/scientific-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#129518;</span>
+        <h3>Scientific Calculator</h3>
+        <p>Full scientific calculator with trig, logarithm, and power functions.</p>
+      </a>
+      <a href="/tools/statistics-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#128202;</span>
+        <h3>Statistics Calculator</h3>
+        <p>Calculate mean, median, mode, standard deviation and more.</p>
+      </a>
+      <a href="/tools/number-base-converter.html" class="tool-card">
+        <span class="tool-card-icon">&#128259;</span>
+        <h3>Number Base Converter</h3>
+        <p>Convert numbers between binary, octal, decimal, and hexadecimal.</p>
+      </a>
+      <a href="/tools/fraction-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#247;</span>
+        <h3>Fraction Calculator</h3>
+        <p>Add, subtract, multiply, and divide fractions with full working shown.</p>
+      </a>
+      <a href="/tools/roman-numerals.html" class="tool-card">
+        <span class="tool-card-icon">&#128220;</span>
+        <h3>Roman Numeral Converter</h3>
+        <p>Convert numbers to Roman numerals and decode Roman numerals back.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- FINANCE TOOLS -->
+  <section class="category-section" id="finance-tools">
+    <h2>&#128176; Finance Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/loan-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#127968;</span>
+        <h3>Loan Calculator</h3>
+        <p>Calculate monthly payments, total interest, and amortization schedules.</p>
+      </a>
+      <a href="/tools/mortgage-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#127962;</span>
+        <h3>Mortgage Calculator</h3>
+        <p>Estimate monthly mortgage payments, down payments, and total costs.</p>
+      </a>
+      <a href="/tools/currency-converter.html" class="tool-card">
+        <span class="tool-card-icon">&#128178;</span>
+        <h3>Currency Converter</h3>
+        <p>Convert between 30+ major world currencies with live exchange rates.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- HEALTH & FITNESS -->
+  <section class="category-section" id="health-tools">
+    <h2>&#129340; Health &amp; Fitness Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/calorie-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#127822;</span>
+        <h3>Calorie Calculator</h3>
+        <p>Calculate your daily calorie needs using the Mifflin–St Jeor equation.</p>
+      </a>
+      <a href="/tools/macro-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#129379;</span>
+        <h3>Macro Calculator</h3>
+        <p>Calculate daily protein, carbs, and fat targets for your fitness goal.</p>
+      </a>
+      <a href="/tools/body-fat-calculator.html" class="tool-card">
+        <span class="tool-card-icon">&#128170;</span>
+        <h3>Body Fat Calculator</h3>
+        <p>Estimate body fat percentage using the U.S. Navy method formula.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- IMAGE TOOLS -->
+  <section class="category-section" id="image-tools">
+    <h2>&#128247; Image Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/image-resizer.html" class="tool-card">
+        <span class="tool-card-icon">&#128247;</span>
+        <h3>Image Resizer</h3>
+        <p>Resize images by dimensions or percentage. Export as JPEG, PNG, or WebP.</p>
+      </a>
+      <a href="/tools/image-to-base64.html" class="tool-card">
+        <span class="tool-card-icon">&#128443;</span>
+        <h3>Image to Base64</h3>
+        <p>Convert any image to a Base64 data URL for use in HTML, CSS, or JSON.</p>
+      </a>
+      <a href="/tools/image-color-picker.html" class="tool-card">
+        <span class="tool-card-icon">&#127912;</span>
+        <h3>Image Color Picker</h3>
+        <p>Click any pixel in an image to get its HEX, RGB, and HSL color code.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- CONTENT & SEO TOOLS -->
+  <section class="category-section" id="content-tools">
+    <h2>&#128221; Content &amp; SEO Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/meta-tag-generator.html" class="tool-card">
+        <span class="tool-card-icon">&#128269;</span>
+        <h3>Meta Tag Generator</h3>
+        <p>Generate SEO, Open Graph, and Twitter Card meta tags with live preview.</p>
+      </a>
+      <a href="/tools/reading-time.html" class="tool-card">
+        <span class="tool-card-icon">&#128214;</span>
+        <h3>Reading Time Calculator</h3>
+        <p>Paste any text to see word count, reading time, and speaking time.</p>
+      </a>
+      <a href="/tools/invoice-generator.html" class="tool-card">
+        <span class="tool-card-icon">&#128196;</span>
+        <h3>Invoice Generator</h3>
+        <p>Create professional invoices with line items, tax, and PDF export.</p>
+      </a>
+      <a href="/tools/hashtag-generator.html" class="tool-card">
+        <span class="tool-card-icon">&#35;</span>
+        <h3>Hashtag Generator</h3>
+        <p>Generate relevant hashtags for Instagram, TikTok, Twitter, and LinkedIn.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- INLINE AD -->
+  <div class="ad-banner ad-inline">Advertisement</div>
+
+  <!-- CONNECTED TOOLS -->
+  <section class="category-section" id="connected-tools">
+    <h2>&#128101; Connected Tools</h2>
+    <div class="tools-grid">
+      <a href="/tools/url-shortener.html" class="tool-card">
+        <span class="tool-card-icon">&#128279;</span>
+        <h3>URL Shortener</h3>
+        <p>Shorten long URLs to clean shareable links. Custom aliases supported.</p>
+      </a>
+      <a href="/tools/pastebin.html" class="tool-card">
+        <span class="tool-card-icon">&#128203;</span>
+        <h3>Text Share (Pastebin)</h3>
+        <p>Share text, code, and notes via a unique link. Set an expiry time.</p>
+      </a>
+    </div>
+  </section>
+
   <!-- SEO CONTENT SECTION -->
   <section class="seo-content">
-    <h2>Free Online Tools — No Signup Required</h2>
+    <h2>54+ Free Online Tools — No Signup Required</h2>
     <p>ToolNook is a collection of fast, free, browser-based tools designed for developers, writers, students, and anyone who needs a quick utility without the hassle of installing software or creating accounts. Every tool runs entirely in your browser — your data never leaves your device.</p>
 
     <h3>Developer Tools</h3>
-    <p>Our developer tools include a <a href="/tools/json-formatter.html">JSON formatter and validator</a>, <a href="/tools/base64.html">Base64 encoder/decoder</a>, <a href="/tools/regex-tester.html">regex tester with live match highlighting</a>, <a href="/tools/color-converter.html">color code converter</a> (HEX, RGB, HSL), <a href="/tools/diff-checker.html">text diff checker</a>, <a href="/tools/jwt-decoder.html">JWT decoder</a>, and <a href="/tools/url-encoder.html">URL encoder/decoder</a>. These tools are essential for everyday development tasks.</p>
+    <p>Our developer tools include a <a href="/tools/json-formatter.html">JSON formatter and validator</a>, <a href="/tools/base64.html">Base64 encoder/decoder</a>, <a href="/tools/regex-tester.html">regex tester with live match highlighting</a>, <a href="/tools/color-converter.html">color code converter</a>, <a href="/tools/diff-checker.html">text diff checker</a>, <a href="/tools/jwt-decoder.html">JWT decoder</a>, <a href="/tools/uuid-generator.html">UUID generator</a>, <a href="/tools/hash-generator.html">SHA hash generator</a>, <a href="/tools/css-minifier.html">CSS minifier</a>, <a href="/tools/sql-formatter.html">SQL formatter</a>, and <a href="/tools/cron-builder.html">cron expression builder</a>.</p>
 
     <h3>Text Processing Tools</h3>
     <p>Our text tools include a <a href="/tools/word-counter.html">word and character counter</a> with reading time estimates, <a href="/tools/case-converter.html">case converter</a> (camelCase, Title Case, UPPER, lower), <a href="/tools/text-cleaner.html">text cleaner</a>, <a href="/tools/text-sorter.html">line sorter</a>, <a href="/tools/slug-generator.html">URL slug generator</a>, <a href="/tools/lorem-ipsum.html">lorem ipsum generator</a>, and a live <a href="/tools/markdown-preview.html">Markdown previewer</a>.</p>
 
-    <h3>Calculators</h3>
-    <p>Quick calculators that work instantly: <a href="/tools/age-calculator.html">age calculator</a>, <a href="/tools/bmi-calculator.html">BMI calculator</a>, <a href="/tools/tip-calculator.html">tip and bill splitter</a>, <a href="/tools/percentage-calculator.html">percentage calculator</a>, <a href="/tools/unit-converter.html">unit converter</a>, and <a href="/tools/compound-interest.html">compound interest calculator</a>.</p>
+    <h3>Calculators &amp; Finance</h3>
+    <p>Quick calculators that work instantly: <a href="/tools/age-calculator.html">age calculator</a>, <a href="/tools/bmi-calculator.html">BMI calculator</a>, <a href="/tools/tip-calculator.html">tip and bill splitter</a>, <a href="/tools/percentage-calculator.html">percentage calculator</a>, <a href="/tools/unit-converter.html">unit converter</a>, <a href="/tools/compound-interest.html">compound interest calculator</a>, <a href="/tools/loan-calculator.html">loan calculator</a>, <a href="/tools/mortgage-calculator.html">mortgage calculator</a>, and <a href="/tools/currency-converter.html">currency converter</a>.</p>
+
+    <h3>Image Tools</h3>
+    <p>Browser-based image utilities: <a href="/tools/image-resizer.html">image resizer</a> with JPEG/PNG/WebP export, <a href="/tools/image-to-base64.html">image to Base64 converter</a> for embedding images in code, and an <a href="/tools/image-color-picker.html">image color picker</a> for extracting HEX, RGB and HSL values from any photo.</p>
+
+    <h3>Content &amp; SEO Tools</h3>
+    <p>Tools for content creators: <a href="/tools/meta-tag-generator.html">SEO meta tag generator</a> with Open Graph and Twitter Card support, <a href="/tools/reading-time.html">reading time calculator</a>, <a href="/tools/invoice-generator.html">free invoice generator</a> with PDF export, and a <a href="/tools/hashtag-generator.html">hashtag generator</a> for Instagram, TikTok, and Twitter.</p>
 
     <h3>Why Use ToolNook?</h3>
     <ul>
-      <li>All tools are completely free with no hidden costs</li>
+      <li>All 54+ tools are completely free with no hidden costs</li>
       <li>No account creation or email required</li>
       <li>Everything runs client-side — your data stays on your device</li>
       <li>Fast, clean interface with no bloat</li>

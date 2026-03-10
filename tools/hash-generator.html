@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hash Generator — SHA-256, SHA-512, MD5 Online | ToolNook</title>
+  <meta name="description" content="Generate cryptographic hashes online. Create SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text or file using your browser's WebCrypto API. Free and private." />
+  <meta name="keywords" content="hash generator, SHA-256 generator, SHA-512 online, SHA-1 hash, text hash calculator, WebCrypto hash, md5 alternative" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/hash-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a cryptographic hash?","acceptedAnswer":{"@type":"Answer","text":"A cryptographic hash is a fixed-length string of characters derived from input data. Even a tiny change in the input produces a completely different hash. It is computationally infeasible to reverse a hash back to the original input."}},{"@type":"Question","name":"Which hash algorithm should I use?","acceptedAnswer":{"@type":"Answer","text":"Use SHA-256 or SHA-512 for security purposes. SHA-1 is deprecated for security use but still seen in legacy systems. MD5 should not be used for security — only for checksums where collision resistance is not required."}},{"@type":"Question","name":"Is this hash generator safe?","acceptedAnswer":{"@type":"Answer","text":"Yes. This tool uses the browser's built-in WebCrypto API (window.crypto.subtle). Your text never leaves your device — all hashing is done locally in your browser."}}]}
+  </script>
+  <style>
+    .hash-row { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+    .hash-algo { font-size:.78rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; }
+    .hash-val  { font-family:monospace; font-size:.8rem; background:var(--bg-alt); border:1px solid var(--border); border-radius:var(--radius); padding:10px 12px; word-break:break-all; cursor:pointer; transition:background .15s; }
+    .hash-val:hover { background:var(--primary-light); }
+    .hash-val.copied { background:#d1fae5; border-color:#34d399; }
+    .file-zone { border:2px dashed var(--border); border-radius:var(--radius); padding:16px; text-align:center; cursor:pointer; font-size:.85rem; color:var(--text-muted); margin-top:10px; }
+    .file-zone:hover { border-color:var(--primary); background:var(--primary-light); }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Hash Generator</div>
+      <h1>Hash Generator</h1>
+      <p>Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text or a file — all in your browser using the WebCrypto API.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="margin-bottom:14px;">
+        <label class="input-label">Input Text</label>
+        <textarea id="text-input" placeholder="Type or paste your text here..." style="resize:vertical;min-height:100px;" oninput="hashText()"></textarea>
+      </div>
+
+      <div id="results">
+        <div class="hash-row" id="row-sha1">
+          <span class="hash-algo">SHA-1</span>
+          <span class="hash-val" id="val-sha1" onclick="copyHash('val-sha1','SHA-1')">—</span>
+        </div>
+        <div class="hash-row" id="row-sha256">
+          <span class="hash-algo">SHA-256</span>
+          <span class="hash-val" id="val-sha256" onclick="copyHash('val-sha256','SHA-256')">—</span>
+        </div>
+        <div class="hash-row" id="row-sha384">
+          <span class="hash-algo">SHA-384</span>
+          <span class="hash-val" id="val-sha384" onclick="copyHash('val-sha384','SHA-384')">—</span>
+        </div>
+        <div class="hash-row" id="row-sha512">
+          <span class="hash-algo">SHA-512</span>
+          <span class="hash-val" id="val-sha512" onclick="copyHash('val-sha512','SHA-512')">—</span>
+        </div>
+      </div>
+
+      <div class="file-zone" onclick="document.getElementById('file-hash-in').click()">
+        <input type="file" id="file-hash-in" style="display:none" onchange="hashFile(event)" />
+        &#128196; Or hash a file (click to select)
+        <span id="file-name" style="display:block;margin-top:4px;font-weight:600;color:var(--primary)"></span>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="seo-content">
+      <h2>SHA Hash Algorithm Comparison</h2>
+      <table style="border-collapse:collapse;width:100%;font-size:.84rem;">
+        <tr style="background:var(--bg-alt);"><th style="padding:8px;border:1px solid var(--border);">Algorithm</th><th style="padding:8px;border:1px solid var(--border);">Output Length</th><th style="padding:8px;border:1px solid var(--border);">Security</th><th style="padding:8px;border:1px solid var(--border);">Use</th></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">SHA-1</td><td style="padding:8px;border:1px solid var(--border);">160 bits (40 hex)</td><td style="padding:8px;border:1px solid var(--border);">⚠️ Deprecated</td><td style="padding:8px;border:1px solid var(--border);">Legacy checksums, Git</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">SHA-256</td><td style="padding:8px;border:1px solid var(--border);">256 bits (64 hex)</td><td style="padding:8px;border:1px solid var(--border);">✅ Secure</td><td style="padding:8px;border:1px solid var(--border);">Passwords, certificates, blockchain</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">SHA-384</td><td style="padding:8px;border:1px solid var(--border);">384 bits (96 hex)</td><td style="padding:8px;border:1px solid var(--border);">✅ Secure</td><td style="padding:8px;border:1px solid var(--border);">TLS certificates</td></tr>
+        <tr><td style="padding:8px;border:1px solid var(--border);">SHA-512</td><td style="padding:8px;border:1px solid var(--border);">512 bits (128 hex)</td><td style="padding:8px;border:1px solid var(--border);">✅ Very Secure</td><td style="padding:8px;border:1px solid var(--border);">High-security applications</td></tr>
+      </table>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('hash-generator');
+  document.getElementById('related-grid').innerHTML  = renderRelatedTools('hash-generator','developer');
+});
+
+const ALGOS = ['SHA-1','SHA-256','SHA-384','SHA-512'];
+const ID_MAP = {'SHA-1':'val-sha1','SHA-256':'val-sha256','SHA-384':'val-sha384','SHA-512':'val-sha512'};
+
+async function digestBuffer(buf) {
+  const results = {};
+  for (const algo of ALGOS) {
+    const hashBuf = await crypto.subtle.digest(algo, buf);
+    results[algo] = Array.from(new Uint8Array(hashBuf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  return results;
+}
+
+let hashTimer;
+function hashText() {
+  clearTimeout(hashTimer);
+  hashTimer = setTimeout(async () => {
+    const text = document.getElementById('text-input').value;
+    if (!text) { ALGOS.forEach(a => { document.getElementById(ID_MAP[a]).textContent = '—'; }); return; }
+    const buf = new TextEncoder().encode(text);
+    const results = await digestBuffer(buf);
+    ALGOS.forEach(a => { document.getElementById(ID_MAP[a]).textContent = results[a]; });
+  }, 120);
+}
+
+async function hashFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('file-name').textContent = file.name;
+  document.getElementById('text-input').value = '';
+  const buf = await file.arrayBuffer();
+  const results = await digestBuffer(buf);
+  ALGOS.forEach(a => { document.getElementById(ID_MAP[a]).textContent = results[a]; });
+}
+
+function copyHash(id, label) {
+  const val = document.getElementById(id).textContent;
+  if (val === '—') return;
+  navigator.clipboard.writeText(val).then(() => {
+    const el = document.getElementById(id);
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 1000);
+    showToast('Copied ' + label + ' hash!');
+  });
+}
+</script>
+</body>
+</html>
