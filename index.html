@@ -1036,6 +1036,7 @@
       } else {
         const digit = document.createElement('div');
         digit.className = 'flip-digit';
+        digit.style.perspective = '300px';
         digit.innerHTML =
           '<div class="top"><span>' + ch + '</span></div>' +
           '<div class="bottom"><span>' + ch + '</span></div>';
@@ -1043,6 +1044,44 @@
         currentDigits.push({ type: 'digit', el: digit, value: ch });
       }
     }
+  }
+
+  function animateDigit(entry, oldVal, newVal) {
+    const el = entry.el;
+    entry.value = newVal;
+
+    // Remove any leftover flaps
+    el.querySelectorAll('.flap').forEach(f => f.remove());
+    el.classList.remove('flipping');
+
+    // Create front flap (old value, rotates down from top)
+    const flapFront = document.createElement('div');
+    flapFront.className = 'flap flap-front';
+    flapFront.innerHTML = '<span>' + oldVal + '</span>';
+
+    // Create back flap (new value, rotates up from bottom)
+    const flapBack = document.createElement('div');
+    flapBack.className = 'flap flap-back';
+    flapBack.innerHTML = '<span>' + newVal + '</span>';
+
+    // Update static halves to new value underneath
+    el.querySelector('.top span').textContent = newVal;
+    el.querySelector('.bottom span').textContent = newVal;
+
+    // Attach flaps and trigger animation
+    el.appendChild(flapFront);
+    el.appendChild(flapBack);
+
+    // Force reflow so the class triggers animation
+    void el.offsetWidth;
+    el.classList.add('flipping');
+
+    // Cleanup after animation completes
+    setTimeout(() => {
+      el.classList.remove('flipping');
+      flapFront.remove();
+      flapBack.remove();
+    }, 600);
   }
 
   function flipTo(newNum) {
@@ -1062,40 +1101,8 @@
       const entry = currentDigits.filter(d => d.type === 'digit')[digitIdx];
       digitIdx++;
       if (!entry) continue;
-      const oldVal = entry.value;
-      const newVal = newStr[i];
-      if (oldVal === newVal) continue;
-
-      // Animate flip
-      const el = entry.el;
-      entry.value = newVal;
-
-      // Add flap elements
-      const flapTop = document.createElement('div');
-      flapTop.className = 'flap flap-top';
-      flapTop.innerHTML = '<span>' + oldVal + '</span>';
-
-      const flapBottom = document.createElement('div');
-      flapBottom.className = 'flap flap-bottom';
-      flapBottom.innerHTML = '<span>' + newVal + '</span>';
-
-      // Set the new value underneath
-      el.querySelector('.top span').textContent = newVal;
-      el.querySelector('.bottom span').textContent = newVal;
-
-      // But show old on top flap initially
-      el.appendChild(flapTop);
-      el.appendChild(flapBottom);
-
-      // Start flip
-      el.classList.add('flipping');
-
-      // Cleanup after animation
-      setTimeout(() => {
-        el.classList.remove('flipping');
-        if (flapTop.parentNode) flapTop.remove();
-        if (flapBottom.parentNode) flapBottom.remove();
-      }, 700);
+      if (entry.value === newStr[i]) continue;
+      animateDigit(entry, entry.value, newStr[i]);
     }
     displayCount = newNum;
   }
@@ -1103,13 +1110,12 @@
   // Initial render
   buildDigits(formatWithCommas(displayCount));
 
-  // Simulate live updates — random increment every 3-8 seconds
+  // Increment by exactly 1 every 2-5 seconds
   function scheduleNext() {
-    const delay = 3000 + Math.random() * 5000;
+    const delay = 2000 + Math.random() * 3000;
     setTimeout(() => {
-      const increment = Math.floor(Math.random() * 3) + 1;
-      displayCount += increment;
-      count += increment;
+      displayCount += 1;
+      count += 1;
       localStorage.setItem(STORAGE_KEY, count);
       flipTo(displayCount);
       scheduleNext();

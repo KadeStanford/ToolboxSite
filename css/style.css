@@ -174,11 +174,10 @@ body {
 }
 .flip-digit {
   position: relative;
+  display: inline-block;
   width: 44px;
   height: 64px;
-  perspective: 300px;
   border-radius: 8px;
-  overflow: hidden;
   background: #1e293b;
   box-shadow: 0 4px 16px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
 }
@@ -188,65 +187,51 @@ body {
   left: 0; right: 0;
   height: 50%;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .flip-digit .top {
   top: 0;
   background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
   border-bottom: 1px solid rgba(0,0,0,0.4);
   border-radius: 8px 8px 0 0;
+  z-index: 1;
 }
 .flip-digit .bottom {
   bottom: 0;
   background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   border-radius: 0 0 8px 8px;
+  z-index: 1;
 }
-.flip-digit .top span {
+.flip-digit .top span,
+.flip-digit .bottom span,
+.flip-digit .flap span {
+  display: block;
+  text-align: center;
   font-size: 2rem;
   font-weight: 800;
   color: #e2e8f0;
   font-family: 'Courier New', Courier, monospace;
   line-height: 64px;
-  transform: translateY(25%);
 }
-.flip-digit .bottom span {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #e2e8f0;
-  font-family: 'Courier New', Courier, monospace;
-  line-height: 64px;
-  transform: translateY(-25%);
-}
-/* Flap animation */
+.flip-digit .top span { transform: translateY(0); }
+.flip-digit .bottom span { transform: translateY(-100%); }
+/* Flap animation pieces */
 .flip-digit .flap {
   position: absolute;
   left: 0; right: 0;
   height: 50%;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   backface-visibility: hidden;
 }
-.flip-digit .flap-top {
+.flip-digit .flap-front {
   top: 0;
   background: linear-gradient(180deg, #334155, #1e293b);
   border-bottom: 1px solid rgba(0,0,0,0.4);
   border-radius: 8px 8px 0 0;
   transform-origin: bottom center;
-  z-index: 2;
+  z-index: 3;
 }
-.flip-digit .flap-top span {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #e2e8f0;
-  font-family: 'Courier New', Courier, monospace;
-  line-height: 64px;
-  transform: translateY(25%);
-}
-.flip-digit .flap-bottom {
+.flip-digit .flap-front span { transform: translateY(0); }
+.flip-digit .flap-back {
   bottom: 0;
   background: linear-gradient(180deg, #1e293b, #0f172a);
   border-radius: 0 0 8px 8px;
@@ -254,27 +239,20 @@ body {
   transform: rotateX(90deg);
   z-index: 2;
 }
-.flip-digit .flap-bottom span {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #e2e8f0;
-  font-family: 'Courier New', Courier, monospace;
-  line-height: 64px;
-  transform: translateY(-25%);
-}
-@keyframes flipTop {
+.flip-digit .flap-back span { transform: translateY(-100%); }
+@keyframes flapDown {
   0%   { transform: rotateX(0deg); }
   100% { transform: rotateX(-90deg); }
 }
-@keyframes flipBottom {
+@keyframes flapUp {
   0%   { transform: rotateX(90deg); }
   100% { transform: rotateX(0deg); }
 }
-.flip-digit.flipping .flap-top {
-  animation: flipTop 0.3s ease-in forwards;
+.flip-digit.flipping .flap-front {
+  animation: flapDown 0.25s ease-in forwards;
 }
-.flip-digit.flipping .flap-bottom {
-  animation: flipBottom 0.3s 0.3s ease-out forwards;
+.flip-digit.flipping .flap-back {
+  animation: flapUp 0.25s 0.25s ease-out forwards;
 }
 .flip-comma {
   display: flex;
