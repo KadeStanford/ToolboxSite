@@ -36,6 +36,16 @@
     .range-row input:focus{border-color:var(--primary);outline:none;}
     .prime-grid{display:flex;flex-wrap:wrap;gap:4px;max-height:200px;overflow-y:auto;}
     .pg{padding:4px 10px;background:#f3f4f6;border-radius:var(--radius);font-size:.8rem;font-weight:500;}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .verdict.prime { background:#14532d; }
+  [data-theme="dark"] .verdict.not-prime { background:#7f1d1d; }
+  [data-theme="dark"] .verdict.special { background:#451a03; color: #fbbf24; }
+  [data-theme="dark"] .info-card { background:#1e293b; }
+  [data-theme="dark"] .np { background:#1e293b; }
+  [data-theme="dark"] .np:hover { background:#1e1b4b; }
+  [data-theme="dark"] .range-section { background:#1e293b; }
+  [data-theme="dark"] .pg { background:#0f172a; }
   </style>
 </head>
 <body>

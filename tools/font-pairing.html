@@ -147,7 +147,22 @@ function init() {
     container.appendChild(btn);
   });
 
+  // Set initial colors based on theme
+  applyThemeDefaults();
   updatePreview();
+}
+
+function applyThemeDefaults() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const tc = document.getElementById('textColor');
+  const bg = document.getElementById('bgColor');
+  if (isDark) {
+    if (tc.value === '#222222') tc.value = '#e2e8f0';
+    if (bg.value === '#ffffff') bg.value = '#1e293b';
+  } else {
+    if (tc.value === '#e2e8f0') tc.value = '#222222';
+    if (bg.value === '#1e293b') bg.value = '#ffffff';
+  }
 }
 
 function updatePreview() {
@@ -205,6 +220,7 @@ function randomPair() {
 }
 
 init();
+window.addEventListener('tn-theme-change', () => { applyThemeDefaults(); updatePreview(); });
 </script>
 </body>
 </html>

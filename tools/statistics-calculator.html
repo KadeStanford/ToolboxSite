@@ -23,6 +23,9 @@
     .bar-row { display:flex; align-items:center; gap:8px; margin-bottom:5px; font-size:.82rem; }
     .bar-track { flex:1; background:#e2e8f0; border-radius:4px; height:10px; overflow:hidden; }
     .bar-fill { height:100%; background:var(--primary); border-radius:4px; transition:width .4s ease; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .bar-track { background:#334155; }
   </style>
 </head>
 <body>

@@ -29,6 +29,10 @@
     .saved-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg-white); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:6px; font-size:.88rem; cursor:pointer; }
     .saved-item:hover { border-color:var(--primary); }
     .saved-item .rm { color:var(--error); padding:2px 6px; border-radius:4px; cursor:pointer; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .quick-btn { background:var(--bg-#1e293b); }
+  [data-theme="dark"] .saved-item { background:var(--bg-#1e293b); }
   </style>
 </head>
 <body>

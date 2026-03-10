@@ -271,6 +271,102 @@ function toggleTheme() {
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('tn-theme', next);
+  patchDarkInlineStyles();
+  window.dispatchEvent(new CustomEvent('tn-theme-change', { detail: { theme: next } }));
+}
+
+/* ── Dark Mode Inline-Style Patcher ── */
+/* Fixes hardcoded inline styles that CSS attribute selectors can't reliably override */
+function patchDarkInlineStyles() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const container = document.querySelector('.tool-container');
+  if (!container) return;
+
+  /* Light → Dark color mappings */
+  const bgMap = {
+    '#fff':'#1e293b', '#ffffff':'#1e293b', 'white':'#1e293b',
+    '#f8fafc':'#0f172a', '#f1f5f9':'#0f172a', '#f3f4f6':'#0f172a', '#fafafa':'#0f172a',
+    '#f5f5f5':'#0f172a', '#f0f0f0':'#0f172a', '#f9fafb':'#0f172a', '#e9ecef':'#0f172a',
+    '#e2e8f0':'#334155', '#e5e7eb':'#334155', '#dee2e6':'#334155',
+    '#eff6ff':'#1e1b4b', '#dbeafe':'#1e1b4b', '#eef2ff':'#1e1b4b', '#e0e7ff':'#1e1b4b',
+    '#dcfce7':'#14532d', '#f0fdf4':'#14532d', '#d1fae5':'#14532d',
+    '#fee2e2':'#7f1d1d', '#fef2f2':'#7f1d1d', '#fecaca':'#7f1d1d',
+    '#fef3c7':'#451a03', '#fffbeb':'#451a03',
+    '#ede9fe':'#2e1065',
+  };
+  const bgMapReverse = {};
+  Object.entries(bgMap).forEach(([k, v]) => { if (!bgMapReverse[v]) bgMapReverse[v] = k; });
+
+  const textMap = {
+    '#333':'#e2e8f0', '#333333':'#e2e8f0', '#222':'#e2e8f0', '#222222':'#e2e8f0',
+    '#111':'#e2e8f0', '#000':'#e2e8f0', '#000000':'#e2e8f0', 'black':'#e2e8f0',
+    '#1e293b':'#e2e8f0', '#0f172a':'#e2e8f0',
+    '#166534':'#86efac', '#15803d':'#86efac', '#065f46':'#6ee7b7',
+    '#991b1b':'#fca5a5', '#b91c1c':'#fca5a5',
+    '#92400e':'#fbbf24', '#854d0e':'#fbbf24',
+    '#1d4ed8':'#93c5fd', '#1e40af':'#93c5fd',
+    '#6b21a8':'#c4b5fd',
+  };
+  const textMapReverse = {};
+  Object.entries(textMap).forEach(([k, v]) => { if (!textMapReverse[v]) textMapReverse[v] = k; });
+
+  const borderLightColors = ['#e2e8f0','#e5e7eb','#dee2e6','#d1d5db','#cbd5e1','#c7d2fe','#ddd','#ccc','#eee'];
+  const darkBorder = '#334155';
+
+  container.querySelectorAll('[style]').forEach(el => {
+    const s = el.style;
+    if (isDark) {
+      /* Background */
+      const bg = s.backgroundColor || s.background;
+      if (bg) {
+        const norm = bg.replace(/\s/g, '').toLowerCase();
+        Object.keys(bgMap).forEach(lc => {
+          if (norm === lc || norm.includes(lc)) {
+            if (s.backgroundColor) s.backgroundColor = bgMap[lc];
+            else s.background = bgMap[lc];
+          }
+        });
+      }
+      /* Text color */
+      const col = s.color;
+      if (col) {
+        const norm = col.replace(/\s/g, '').toLowerCase();
+        Object.keys(textMap).forEach(lc => {
+          if (norm === lc) s.color = textMap[lc];
+        });
+      }
+      /* Border */
+      const bdr = s.border || s.borderColor;
+      if (bdr) {
+        const norm = bdr.replace(/\s/g, '').toLowerCase();
+        borderLightColors.forEach(lc => {
+          if (norm.includes(lc)) {
+            if (s.borderColor) s.borderColor = darkBorder;
+            else if (s.border) s.border = s.border.replace(new RegExp(lc.replace('#','#?'), 'gi'), darkBorder);
+          }
+        });
+      }
+    } else {
+      /* Reverse: restore light-mode colors for elements we patched */
+      const bg = s.backgroundColor || s.background;
+      if (bg) {
+        const norm = bg.replace(/\s/g, '').toLowerCase();
+        Object.keys(bgMapReverse).forEach(dc => {
+          if (norm === dc) {
+            if (s.backgroundColor) s.backgroundColor = bgMapReverse[dc];
+            else s.background = bgMapReverse[dc];
+          }
+        });
+      }
+      const col = s.color;
+      if (col) {
+        const norm = col.replace(/\s/g, '').toLowerCase();
+        Object.keys(textMapReverse).forEach(dc => {
+          if (norm === dc) s.color = textMapReverse[dc];
+        });
+      }
+    }
+  });
 }
 // Apply theme immediately to avoid flash
 initTheme();
@@ -502,4 +598,16 @@ document.addEventListener('DOMContentLoaded', () => {
       label.setAttribute('for', next.id);
     }
   });
+
+  // Patch inline styles for dark mode on initial load
+  patchDarkInlineStyles();
+
+  // Observe tool-container for dynamically added elements and re-patch
+  const tc = document.querySelector('.tool-container');
+  if (tc) {
+    const obs = new MutationObserver(() => {
+      if (document.documentElement.getAttribute('data-theme') === 'dark') patchDarkInlineStyles();
+    });
+    obs.observe(tc, { childList: true, subtree: true });
+  }
 });

@@ -34,6 +34,11 @@
     .stat-chip { background:var(--bg-alt); border:1px solid var(--border); border-radius:20px; padding:4px 12px; font-size:.75rem; color:var(--text-muted); }
     .stat-chip strong { color:var(--text); }
     .err-msg { background:#fef2f2; border:1px solid #fca5a5; color:#b91c1c; padding:10px 14px; border-radius:var(--radius); font-size:.84rem; margin-top:8px; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .preview-table tr:nth-child(even) td { background:#0f172a; }
+  [data-theme="dark"] .preview-table tr:hover td { background:#2e1065; }
+  [data-theme="dark"] .err-msg { background:#7f1d1d; color: #fca5a5; }
   </style>
 </head>
 <body>

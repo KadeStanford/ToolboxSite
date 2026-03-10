@@ -39,6 +39,10 @@
     .lock-btn:hover,.lock-btn.active{border-color:var(--primary);background:var(--primary);color:#fff;}
     .copied-flash{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#333;color:#fff;padding:10px 24px;border-radius:8px;font-weight:700;z-index:9999;animation:flashIn .5s forwards;}
     @keyframes flashIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.8);}30%{opacity:1;transform:translate(-50%,-50%) scale(1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .gen-btn { background:#1e293b; color: #e2e8f0; }
+  [data-theme="dark"] .lock-btn { background:#1e293b; }
   </style>
 </head>
 <body>

@@ -24,6 +24,10 @@
     .li-output{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:.92rem;line-height:1.7;min-height:120px;max-height:500px;overflow-y:auto;white-space:pre-wrap;}
     .li-stats{display:flex;gap:16px;margin-top:12px;font-size:.78rem;color:var(--muted);}
     .li-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .li-controls select { background:#1e293b; }
+  [data-theme="dark"] .li-btn.secondary { background:#1e293b; }
   </style>
 </head>
 <body>

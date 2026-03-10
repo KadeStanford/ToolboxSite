@@ -21,6 +21,10 @@
     .split-table th,.split-table td { padding:9px 12px; border:1px solid var(--border); text-align:center; font-size:.9rem; }
     .split-table th { background:var(--surface); font-weight:600; }
     .split-table tr:nth-child(even) { background:#fafafa; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .tip-pct-btn { background:#1e293b; }
+  [data-theme="dark"] .split-table tr:nth-child(even) { background:#0f172a; }
   </style>
 </head>
 <body>
@@ -111,7 +115,11 @@
 <div class="toast" id="toast"></div>
 <script src="/js/utils.js"></script>
 <script src="/js/components.js"></script>
-<style>.tip-grid{grid-template-columns:1fr 1fr;}@media(max-width:480px){.tip-grid{grid-template-columns:1fr;}}</style>
+<style>.tip-grid{grid-template-columns:1fr 1fr;}@media(max-width:480px){.tip-grid{grid-template-columns:1fr;}}
+  /* Dark mode overrides */
+  [data-theme="dark"] .tip-pct-btn { background:#1e293b; }
+  [data-theme="dark"] .split-table tr:nth-child(even) { background:#0f172a; }
+  </style>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('tip-calculator');

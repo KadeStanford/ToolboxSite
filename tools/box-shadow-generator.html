@@ -33,6 +33,12 @@
     .preset-shadow{width:44px;height:44px;background:#fff;border-radius:8px;cursor:pointer;border:2px solid var(--border);transition:.15s;}
     .preset-shadow:hover{border-color:var(--primary);}
     @media(max-width:700px){.bs-wrap{grid-template-columns:1fr;}}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .bs-preview-area { background:#0f172a; }
+  [data-theme="dark"] .bs-box { background:#1e293b; }
+  [data-theme="dark"] .shadow-layer { background:#1e293b; }
+  [data-theme="dark"] .preset-shadow { background:#1e293b; }
   </style>
 </head>
 <body>

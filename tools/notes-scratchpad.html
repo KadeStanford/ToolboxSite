@@ -29,6 +29,15 @@
     .save-indicator{display:inline-flex;align-items:center;gap:4px;font-size:.76rem;padding:3px 8px;border-radius:20px;}
     .save-indicator.saved{background:#dcfce7;color:#16a34a;}
     .save-indicator.saving{background:#fef3c7;color:#92400e;}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .notes-wrap { background:#1e293b; }
+  [data-theme="dark"] .tab-bar { background:#0f172a; }
+  [data-theme="dark"] .tab:hover { background:#1e1b4b; }
+  [data-theme="dark"] .tab.active { background:#1e293b; }
+  [data-theme="dark"] .toolbar { background:#0f172a; }
+  [data-theme="dark"] .save-indicator.saved { background:#14532d; }
+  [data-theme="dark"] .save-indicator.saving { background:#451a03; color: #fbbf24; }
   </style>
 </head>
 <body>

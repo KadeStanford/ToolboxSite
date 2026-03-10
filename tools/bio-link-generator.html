@@ -36,6 +36,11 @@
     .bio-link-btn:hover{transform:scale(1.02);opacity:.9;}
     .export-btns{display:flex;gap:8px;margin-top:14px;}
     hr.sep{border:none;border-top:1px solid var(--border);margin:14px 0;}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .form-panel { background:#1e293b; }
+  [data-theme="dark"] .link-item { background:#0f172a; }
+  [data-theme="dark"] .preview-frame { background:#0f172a; }
   </style>
 </head>
 <body>
@@ -186,7 +191,12 @@ body{min-height:100vh;display:flex;align-items:center;justify-content:center;bac
 .name{font-size:1.3rem;font-weight:700;margin-bottom:6px;}
 .bio{font-size:.9rem;opacity:.85;margin-bottom:24px;}
 a:hover{opacity:.85;transform:scale(1.01);}
-</style>
+
+  /* Dark mode overrides */
+  [data-theme="dark"] .form-panel { background:#1e293b; }
+  [data-theme="dark"] .link-item { background:#0f172a; }
+  [data-theme="dark"] .preview-frame { background:#0f172a; }
+  </style>
 </head>
 <body>
 <div class="container">

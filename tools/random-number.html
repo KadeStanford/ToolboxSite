@@ -23,6 +23,9 @@
     .history-list { list-style:none; padding:0; margin:0; max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius); }
     .history-list li { padding:6px 12px; border-bottom:1px solid var(--border); font-size:.9rem; display:flex; justify-content:space-between; }
     .history-list li:last-child { border-bottom:none; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .dice-btn { background:#1e293b; }
   </style>
 </head>
 <body>
@@ -167,7 +170,10 @@
   .rn-grid{grid-template-columns:1fr 1fr;}
   .rn-grid3{grid-template-columns:1fr 1fr 1fr;}
   @media(max-width:480px){.rn-grid,.rn-grid3{grid-template-columns:1fr;}}
-</style>
+
+  /* Dark mode overrides */
+  [data-theme="dark"] .dice-btn { background:#1e293b; }
+  </style>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('random-number');

@@ -28,6 +28,10 @@
     .wc-card .wc-time { font-size:1.3rem; font-weight:700; color:var(--text); font-family:monospace; }
     .wc-card .wc-city { font-size:.75rem; color:var(--text-muted); margin-top:2px; }
     @media(max-width:520px){ .tz-grid{grid-template-columns:1fr; } .swap-btn{transform:rotate(90deg);width:36px;height:36px;margin:0 auto;display:block;} }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .swap-btn { border:1px solid #4338ca; }
+  [data-theme="dark"] .wc-card { background:var(--bg-#1e293b); }
   </style>
 </head>
 <body>

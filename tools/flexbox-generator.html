@@ -36,6 +36,11 @@
     .code-block .copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:none;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;}
     .code-block .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
     @media(max-width:700px){.flex-wrap{grid-template-columns:1fr;}}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .opt-btn { background:#1e293b; }
+  [data-theme="dark"] .opt-btn:hover,.opt-btn.active { background:#1e1b4b; }
+  [data-theme="dark"] .items-ctrl button { background:#1e293b; }
   </style>
 </head>
 <body>

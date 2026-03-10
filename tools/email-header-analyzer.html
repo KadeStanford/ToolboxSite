@@ -45,6 +45,16 @@
     .raw-toggle { cursor:pointer; font-weight:600; font-size:.82rem; color:var(--primary); background:none; border:none; }
     .raw-content { display:none; background:#0f172a; color:#a5f3fc; padding:14px; border-radius:var(--radius); font-family:'Courier New',monospace; font-size:.72rem; max-height:300px; overflow:auto; margin-top:8px; white-space:pre-wrap; word-break:break-all; }
     .section-title { font-weight:700; font-size:.92rem; margin:18px 0 8px; display:flex; align-items:center; gap:8px; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .sum-card { background:#1e293b; }
+  [data-theme="dark"] .auth-pass { background:#14532d; }
+  [data-theme="dark"] .auth-fail { background:#7f1d1d; }
+  [data-theme="dark"] .auth-none { background:#0f172a; }
+  [data-theme="dark"] .hop-card { background:#1e293b; }
+  [data-theme="dark"] .delay-fast { background:#14532d; color: #86efac; }
+  [data-theme="dark"] .delay-slow { background:#451a03; color: #fbbf24; }
+  [data-theme="dark"] .delay-bad { background:#7f1d1d; }
   </style>
 </head>
 <body>

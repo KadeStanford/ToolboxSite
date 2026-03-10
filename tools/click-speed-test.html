@@ -33,6 +33,13 @@
     .timer-fill{height:100%;background:var(--primary);transition:width 100ms linear;width:0;}
     .restart-btn{margin-top:16px;padding:8px 22px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-weight:600;font-size:.85rem;transition:.15s;}
     .restart-btn:hover{border-color:var(--primary);color:var(--primary);}
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .time-btn { background:#1e293b; }
+  [data-theme="dark"] .time-btn:hover,.time-btn.active { background:#1e1b4b; }
+  [data-theme="dark"] .rs-chip { background:#0f172a; }
+  [data-theme="dark"] .timer-bar { background:#334155; }
+  [data-theme="dark"] .restart-btn { background:#1e293b; }
   </style>
 </head>
 <body>

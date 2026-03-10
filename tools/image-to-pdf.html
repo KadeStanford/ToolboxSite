@@ -34,6 +34,14 @@
     .stat { padding:5px 12px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px; font-size:.76rem; font-weight:600; color:#1d4ed8; }
     .progress-bar { width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden; margin:10px 0; display:none; }
     .progress-fill { height:100%; background:var(--primary); border-radius:3px; transition:width .3s; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .drop-zone { background:#0f172a; }
+  [data-theme="dark"] .drop-zone:hover, .drop-zone.drag-over { background:#1e1b4b; }
+  [data-theme="dark"] .img-card { background:#1e293b; }
+  [data-theme="dark"] .img-remove { background:#7f1d1d; }
+  [data-theme="dark"] .stat { background:#1e1b4b; color: #93c5fd; }
+  [data-theme="dark"] .progress-bar { background:#334155; }
   </style>
 </head>
 <body>

@@ -29,6 +29,11 @@
     .output-area:focus { border-color:var(--primary); outline:none; }
     .output-actions { display:flex; gap:8px; margin-bottom:10px; }
     .disclaimer { background:#fef3c7; border:1px solid #fed7aa; border-radius:var(--radius); padding:12px; font-size:.78rem; color:#92400e; margin:14px 0; }
+  
+  /* Dark mode overrides */
+  [data-theme="dark"] .form-panel { background:#1e293b; }
+  [data-theme="dark"] .output-area { background:#1e293b; }
+  [data-theme="dark"] .disclaimer { background:#451a03; color: #fbbf24; }
   </style>
 </head>
 <body>
@@ -248,7 +253,12 @@ function downloadHTML() {
     if (p === p.toUpperCase() && p.length < 60) return `<h2>${escapeHtml(p)}</h2>`;
     return `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`;
   }).join('\n');
-  const html = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>Privacy Policy</title>\n<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.7;color:#333}h2{margin-top:30px;color:#111}ul{padding-left:20px}</style>\n</head>\n<body>\n${paragraphs}\n</body>\n</html>`;
+  const html = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>Privacy Policy</title>\n<style>body{font-family:-apple-system,sans-serif;max-width:800px;margin:40px auto;padding:0 20px;line-height:1.7;color:#333}h2{margin-top:30px;color:#111}ul{padding-left:20px}
+  /* Dark mode overrides */
+  [data-theme="dark"] .form-panel { background:#1e293b; }
+  [data-theme="dark"] .output-area { background:#1e293b; }
+  [data-theme="dark"] .disclaimer { background:#451a03; color: #fbbf24; }
+  </style>\n</head>\n<body>\n${paragraphs}\n</body>\n</html>`;
   const blob = new Blob([html], {type:'text/html'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
