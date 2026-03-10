@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG Editor — Create & Edit SVG Paths Online | ToolNook</title>
+  <meta name="description" content="Free browser-based SVG editor. Draw shapes, edit paths, adjust colors and strokes, and export clean SVG code. No software to install." />
+  <meta name="keywords" content="SVG editor, SVG path editor, online SVG tool, SVG creator, edit SVG" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/svg-editor.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .svg-workspace{display:grid;grid-template-columns:260px 1fr;gap:16px;}
+    .svg-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+    .svg-toolbar button{padding:6px 12px;border:1px solid var(--border);border-radius:6px;background:var(--card-bg);cursor:pointer;font-size:.82rem;color:var(--text);}
+    .svg-toolbar button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .svg-canvas-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;position:relative;}
+    .svg-canvas-wrap svg{display:block;cursor:crosshair;}
+    .svg-panel{background:var(--card-bg);border-radius:10px;padding:16px;}
+    .svg-panel label{display:block;font-size:.82rem;font-weight:600;margin:10px 0 4px;}
+    .svg-panel input[type="color"]{width:100%;height:34px;border:none;cursor:pointer;border-radius:4px;}
+    .shape-list{max-height:200px;overflow-y:auto;}
+    .shape-item{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;font-size:.82rem;cursor:pointer;margin:2px 0;}
+    .shape-item:hover,.shape-item.active{background:var(--primary-light,rgba(79,70,229,.1));}
+    @media(max-width:768px){.svg-workspace{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#design-tools">Design</a> &rsaquo; SVG Editor</div>
+      <h1><i class="fa-solid fa-bezier-curve"></i> SVG Editor</h1>
+      <p>Draw shapes, freehand paths, and edit SVG properties. Export clean SVG code or download as a file.</p>
+    </div>
+    <div class="tool-container">
+      <div class="svg-toolbar" id="toolbar">
+        <button class="active" data-tool="rect"><i class="fa-solid fa-square"></i> Rect</button>
+        <button data-tool="ellipse"><i class="fa-solid fa-circle"></i> Ellipse</button>
+        <button data-tool="line"><i class="fa-solid fa-minus"></i> Line</button>
+        <button data-tool="path"><i class="fa-solid fa-pen"></i> Freehand</button>
+        <button data-tool="select"><i class="fa-solid fa-arrow-pointer"></i> Select</button>
+        <button onclick="deleteSelected()"><i class="fa-solid fa-trash"></i></button>
+        <button onclick="clearAll()"><i class="fa-solid fa-broom"></i> Clear</button>
+      </div>
+      <div class="svg-workspace">
+        <div class="svg-panel">
+          <label for="fillColor">Fill</label>
+          <input type="color" id="fillColor" value="#4f46e5" />
+          <label><input type="checkbox" id="noFill"> No fill</label>
+          <label for="strokeColor">Stroke</label>
+          <input type="color" id="strokeColor" value="#000000" />
+          <label for="strokeWidth">Stroke Width</label>
+          <input type="range" id="strokeWidth" min="0" max="10" value="2" style="width:100%;" />
+          <span id="swVal">2</span>px
+          <label for="opacity">Opacity</label>
+          <input type="range" id="opacity" min="0" max="1" step="0.05" value="1" style="width:100%;" />
+          <span id="opVal">1</span>
+          <label>Shapes (<span id="shapeCount">0</span>)</label>
+          <div class="shape-list" id="shapeList"></div>
+        </div>
+        <div class="svg-canvas-wrap">
+          <svg id="canvas" xmlns="http://www.w3.org/2000/svg" width="600" height="450" viewBox="0 0 600 450" style="background:#fff;">
+            <defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="0.5"/></pattern></defs>
+            <rect width="600" height="450" fill="url(#grid)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>SVG Output</label>
+        <textarea class="tool-input" id="svgOutput" rows="8" readonly></textarea>
+        <div class="btn-group" style="margin-top:6px;">
+          <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('svgOutput').value)"><i class="fa-solid fa-copy"></i> Copy SVG</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadSVG()"><i class="fa-solid fa-download"></i> Download</button>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const svg = document.getElementById('canvas');
+const NS = 'http://www.w3.org/2000/svg';
+let currentTool = 'rect';
+let drawing = false;
+let startX = 0, startY = 0;
+let currentEl = null;
+let selectedEl = null;
+let pathPoints = [];
+let shapes = [];
+
+// Toolbar
+document.getElementById('toolbar').addEventListener('click', e => {
+  const btn = e.target.closest('[data-tool]');
+  if (!btn) return;
+  currentTool = btn.dataset.tool;
+  document.querySelectorAll('#toolbar [data-tool]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+document.getElementById('strokeWidth').oninput = function() { document.getElementById('swVal').textContent = this.value; };
+document.getElementById('opacity').oninput = function() { document.getElementById('opVal').textContent = this.value; };
+
+function getSVGPoint(e) {
+  const rect = svg.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+
+function getStyle() {
+  const fill = document.getElementById('noFill').checked ? 'none' : document.getElementById('fillColor').value;
+  const stroke = document.getElementById('strokeColor').value;
+  const sw = document.getElementById('strokeWidth').value;
+  const op = document.getElementById('opacity').value;
+  return { fill, stroke, sw, op };
+}
+
+svg.addEventListener('mousedown', e => {
+  const pt = getSVGPoint(e);
+  startX = pt.x; startY = pt.y;
+  const style = getStyle();
+
+  if (currentTool === 'select') {
+    const target = e.target;
+    if (target !== svg && target.tagName !== 'pattern' && !target.closest('defs') && target.tagName !== 'rect' || (target.tagName === 'rect' && target.getAttribute('fill') !== 'url(#grid)')) {
+      selectShape(target);
+    } else {
+      deselectAll();
+    }
+    return;
+  }
+
+  drawing = true;
+
+  if (currentTool === 'rect') {
+    currentEl = document.createElementNS(NS, 'rect');
+    currentEl.setAttribute('x', pt.x);
+    currentEl.setAttribute('y', pt.y);
+    currentEl.setAttribute('width', 0);
+    currentEl.setAttribute('height', 0);
+    currentEl.setAttribute('fill', style.fill);
+    currentEl.setAttribute('stroke', style.stroke);
+    currentEl.setAttribute('stroke-width', style.sw);
+    currentEl.setAttribute('opacity', style.op);
+    svg.appendChild(currentEl);
+  } else if (currentTool === 'ellipse') {
+    currentEl = document.createElementNS(NS, 'ellipse');
+    currentEl.setAttribute('cx', pt.x);
+    currentEl.setAttribute('cy', pt.y);
+    currentEl.setAttribute('rx', 0);
+    currentEl.setAttribute('ry', 0);
+    currentEl.setAttribute('fill', style.fill);
+    currentEl.setAttribute('stroke', style.stroke);
+    currentEl.setAttribute('stroke-width', style.sw);
+    currentEl.setAttribute('opacity', style.op);
+    svg.appendChild(currentEl);
+  } else if (currentTool === 'line') {
+    currentEl = document.createElementNS(NS, 'line');
+    currentEl.setAttribute('x1', pt.x);
+    currentEl.setAttribute('y1', pt.y);
+    currentEl.setAttribute('x2', pt.x);
+    currentEl.setAttribute('y2', pt.y);
+    currentEl.setAttribute('stroke', style.stroke);
+    currentEl.setAttribute('stroke-width', style.sw);
+    currentEl.setAttribute('opacity', style.op);
+    svg.appendChild(currentEl);
+  } else if (currentTool === 'path') {
+    pathPoints = [pt];
+    currentEl = document.createElementNS(NS, 'path');
+    currentEl.setAttribute('d', `M${pt.x},${pt.y}`);
+    currentEl.setAttribute('fill', 'none');
+    currentEl.setAttribute('stroke', style.stroke);
+    currentEl.setAttribute('stroke-width', style.sw);
+    currentEl.setAttribute('stroke-linecap', 'round');
+    currentEl.setAttribute('stroke-linejoin', 'round');
+    currentEl.setAttribute('opacity', style.op);
+    svg.appendChild(currentEl);
+  }
+});
+
+svg.addEventListener('mousemove', e => {
+  if (!drawing || !currentEl) return;
+  const pt = getSVGPoint(e);
+
+  if (currentTool === 'rect') {
+    const x = Math.min(startX, pt.x), y = Math.min(startY, pt.y);
+    currentEl.setAttribute('x', x);
+    currentEl.setAttribute('y', y);
+    currentEl.setAttribute('width', Math.abs(pt.x - startX));
+    currentEl.setAttribute('height', Math.abs(pt.y - startY));
+  } else if (currentTool === 'ellipse') {
+    currentEl.setAttribute('cx', (startX + pt.x) / 2);
+    currentEl.setAttribute('cy', (startY + pt.y) / 2);
+    currentEl.setAttribute('rx', Math.abs(pt.x - startX) / 2);
+    currentEl.setAttribute('ry', Math.abs(pt.y - startY) / 2);
+  } else if (currentTool === 'line') {
+    currentEl.setAttribute('x2', pt.x);
+    currentEl.setAttribute('y2', pt.y);
+  } else if (currentTool === 'path') {
+    pathPoints.push(pt);
+    currentEl.setAttribute('d', currentEl.getAttribute('d') + ` L${pt.x},${pt.y}`);
+  }
+});
+
+svg.addEventListener('mouseup', () => {
+  if (!drawing) return;
+  drawing = false;
+  if (currentEl) {
+    shapes.push(currentEl);
+    currentEl = null;
+    updateShapeList();
+    updateOutput();
+  }
+});
+
+function selectShape(el) {
+  deselectAll();
+  selectedEl = el;
+  el.setAttribute('data-selected', 'true');
+  el.style.outline = '2px dashed var(--primary)';
+}
+
+function deselectAll() {
+  if (selectedEl) {
+    selectedEl.style.outline = '';
+    selectedEl.removeAttribute('data-selected');
+    selectedEl = null;
+  }
+}
+
+function deleteSelected() {
+  if (!selectedEl) return;
+  const idx = shapes.indexOf(selectedEl);
+  if (idx > -1) shapes.splice(idx, 1);
+  selectedEl.remove();
+  selectedEl = null;
+  updateShapeList();
+  updateOutput();
+}
+
+function clearAll() {
+  shapes.forEach(s => s.remove());
+  shapes = [];
+  selectedEl = null;
+  updateShapeList();
+  updateOutput();
+}
+
+function updateShapeList() {
+  const list = document.getElementById('shapeList');
+  document.getElementById('shapeCount').textContent = shapes.length;
+  list.innerHTML = '';
+  shapes.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'shape-item' + (s === selectedEl ? ' active' : '');
+    div.textContent = `${s.tagName} #${i + 1}`;
+    div.onclick = () => selectShape(s);
+    list.appendChild(div);
+  });
+}
+
+function updateOutput() {
+  const clone = svg.cloneNode(true);
+  clone.querySelectorAll('[data-selected]').forEach(el => {
+    el.style.outline = '';
+    el.removeAttribute('data-selected');
+  });
+  // Remove grid
+  const defs = clone.querySelector('defs');
+  const gridRect = clone.querySelector('rect[fill="url(#grid)"]');
+  if (defs) defs.remove();
+  if (gridRect) gridRect.remove();
+  clone.removeAttribute('style');
+  document.getElementById('svgOutput').value = new XMLSerializer().serializeToString(clone);
+}
+
+function downloadSVG() {
+  const code = document.getElementById('svgOutput').value;
+  const blob = new Blob([code], { type: 'image/svg+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'drawing.svg';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+updateOutput();
+</script>
+</body>
+</html>

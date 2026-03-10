@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audio Format Converter — Convert MP3/WAV/OGG Online | ToolNook</title>
+  <meta name="description" content="Free browser-based audio converter. Convert between WAV, MP3, OGG and other formats. No upload required — all processing in your browser." />
+  <meta name="keywords" content="audio converter, MP3 to WAV, WAV to OGG, convert audio, browser audio converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/audio-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#converter-tools">Converters</a> &rsaquo; Audio Converter</div>
+      <h1><i class="fa-solid fa-music"></i> Audio Format Converter</h1>
+      <p>Convert audio files between formats in your browser. Supports WAV output with optional sample rate and channel configuration.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="audioFile">Select Audio File</label>
+        <input type="file" class="tool-input" id="audioFile" accept="audio/*" style="padding:10px;" />
+      </div>
+      <div id="fileInfo" style="display:none;margin:10px 0;padding:12px;background:var(--card-bg);border-radius:8px;"></div>
+      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div>
+          <label for="outFormat">Output Format</label>
+          <select class="tool-input" id="outFormat">
+            <option value="wav">WAV (uncompressed)</option>
+            <option value="webm">WebM (Opus)</option>
+          </select>
+        </div>
+        <div>
+          <label for="sampleRate">Sample Rate</label>
+          <select class="tool-input" id="sampleRate">
+            <option value="0">Original</option>
+            <option value="8000">8,000 Hz</option>
+            <option value="22050">22,050 Hz</option>
+            <option value="44100" selected>44,100 Hz</option>
+            <option value="48000">48,000 Hz</option>
+          </select>
+        </div>
+        <div>
+          <label for="channels">Channels</label>
+          <select class="tool-input" id="channels">
+            <option value="0">Original</option>
+            <option value="1">Mono</option>
+            <option value="2">Stereo</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="convertBtn" onclick="convert()" disabled><i class="fa-solid fa-shuffle"></i> Convert</button>
+      <div id="progress" style="display:none;margin:12px 0;">
+        <div class="meter-bar"><div class="meter-fill" id="progressBar" style="width:0%;background:var(--primary);transition:width .3s;"></div></div>
+        <div style="font-size:.82rem;color:var(--text-muted);" id="progressLabel">Processing...</div>
+      </div>
+      <div id="result" style="display:none;margin-top:16px;">
+        <label>Preview</label>
+        <audio id="audioPreview" controls style="width:100%;margin:8px 0;"></audio>
+        <button class="btn btn-primary btn-sm" id="downloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About Audio Format Converter</h2>
+      <p>This tool uses the Web Audio API to decode audio files and re-encode them in the selected format. WAV output is always lossless. WebM uses the browser's built-in Opus codec via MediaRecorder.</p>
+      <h3>Browser Limitations</h3>
+      <p>Input format support depends on your browser. Most browsers handle MP3, WAV, OGG, FLAC, and AAC. WebM output requires a browser supporting MediaRecorder with Opus codec.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let audioBuffer = null;
+let audioCtx = null;
+
+document.getElementById('audioFile').addEventListener('change', async function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  const info = document.getElementById('fileInfo');
+  info.style.display = 'block';
+  info.innerHTML = `<strong>${file.name}</strong> — ${(file.size / 1024).toFixed(1)} KB — ${file.type || 'unknown type'}`;
+
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const arrayBuffer = await file.arrayBuffer();
+    audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    info.innerHTML += `<br>Duration: ${audioBuffer.duration.toFixed(2)}s | Sample Rate: ${audioBuffer.sampleRate} Hz | Channels: ${audioBuffer.numberOfChannels}`;
+    document.getElementById('convertBtn').disabled = false;
+  } catch (e) {
+    info.innerHTML += `<br><span style="color:var(--error);">Error decoding: ${e.message}</span>`;
+    document.getElementById('convertBtn').disabled = true;
+  }
+});
+
+async function convert() {
+  if (!audioBuffer) return;
+
+  const format = document.getElementById('outFormat').value;
+  const targetSR = parseInt(document.getElementById('sampleRate').value) || audioBuffer.sampleRate;
+  const targetCH = parseInt(document.getElementById('channels').value) || audioBuffer.numberOfChannels;
+  const progress = document.getElementById('progress');
+  const bar = document.getElementById('progressBar');
+  const label = document.getElementById('progressLabel');
+
+  progress.style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+  bar.style.width = '20%';
+  label.textContent = 'Resampling...';
+
+  const offlineCtx = new OfflineAudioContext(targetCH, Math.ceil(audioBuffer.duration * targetSR), targetSR);
+  const source = offlineCtx.createBufferSource();
+  source.buffer = audioBuffer;
+  source.connect(offlineCtx.destination);
+  source.start();
+
+  const rendered = await offlineCtx.startRendering();
+  bar.style.width = '60%';
+  label.textContent = 'Encoding...';
+
+  let blob;
+  if (format === 'wav') {
+    blob = audioBufferToWav(rendered);
+    bar.style.width = '100%';
+  } else {
+    blob = await encodeWebM(rendered);
+    bar.style.width = '100%';
+  }
+
+  label.textContent = `Done — ${(blob.size / 1024).toFixed(1)} KB`;
+
+  const url = URL.createObjectURL(blob);
+  const preview = document.getElementById('audioPreview');
+  preview.src = url;
+  document.getElementById('result').style.display = 'block';
+
+  const dlBtn = document.getElementById('downloadBtn');
+  dlBtn.onclick = () => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'converted.' + format;
+    a.click();
+  };
+}
+
+function audioBufferToWav(buffer) {
+  const numChannels = buffer.numberOfChannels;
+  const sampleRate = buffer.sampleRate;
+  const length = buffer.length * numChannels * 2 + 44;
+  const out = new ArrayBuffer(length);
+  const view = new DataView(out);
+  const channels = [];
+
+  for (let i = 0; i < numChannels; i++) channels.push(buffer.getChannelData(i));
+
+  let offset = 0;
+  function writeString(s) { for (let i = 0; i < s.length; i++) view.setUint8(offset++, s.charCodeAt(i)); }
+  function writeUint32(v) { view.setUint32(offset, v, true); offset += 4; }
+  function writeUint16(v) { view.setUint16(offset, v, true); offset += 2; }
+
+  writeString('RIFF');
+  writeUint32(length - 8);
+  writeString('WAVE');
+  writeString('fmt ');
+  writeUint32(16);
+  writeUint16(1);
+  writeUint16(numChannels);
+  writeUint32(sampleRate);
+  writeUint32(sampleRate * numChannels * 2);
+  writeUint16(numChannels * 2);
+  writeUint16(16);
+  writeString('data');
+  writeUint32(length - 44);
+
+  for (let i = 0; i < buffer.length; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      let sample = Math.max(-1, Math.min(1, channels[ch][i]));
+      sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+      view.setInt16(offset, sample, true);
+      offset += 2;
+    }
+  }
+
+  return new Blob([out], { type: 'audio/wav' });
+}
+
+function encodeWebM(buffer) {
+  return new Promise((resolve, reject) => {
+    const ctx = new AudioContext({ sampleRate: buffer.sampleRate });
+    const dest = ctx.createMediaStreamDestination();
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(dest);
+
+    const recorder = new MediaRecorder(dest.stream, { mimeType: 'audio/webm;codecs=opus' });
+    const chunks = [];
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = () => {
+      ctx.close();
+      resolve(new Blob(chunks, { type: 'audio/webm' }));
+    };
+    recorder.onerror = e => reject(e);
+    recorder.start();
+    source.start();
+    source.onended = () => setTimeout(() => recorder.stop(), 100);
+  });
+}
+</script>
+</body>
+</html>

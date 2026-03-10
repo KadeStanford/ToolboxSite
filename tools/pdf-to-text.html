@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF to Text — Extract Text from PDF Online | ToolNook</title>
+  <meta name="description" content="Free online PDF to text extractor. Upload a PDF file and extract all text content instantly. No upload to servers — processed entirely in your browser." />
+  <meta name="keywords" content="PDF to text, extract text from PDF, PDF text extractor, convert PDF to text, PDF reader online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/pdf-to-text.html" />
+  <meta property="og:title" content="PDF to Text Extractor | ToolNook" />
+  <meta property="og:description" content="Extract text from PDF files in your browser. Free, no upload." />
+  <meta property="og:url" content="https://toolnook.net/tools/pdf-to-text.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#converter-tools">Converters</a> &rsaquo; PDF to Text</div>
+      <h1><i class="fa-solid fa-file-lines"></i> PDF to Text Extractor</h1>
+      <p>Upload a PDF and extract all text content. Processing happens in your browser — no files are uploaded to any server.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="pdfFile">Select PDF File</label>
+        <input type="file" class="tool-input" id="pdfFile" accept=".pdf" onchange="extractText()" style="padding:10px;" />
+      </div>
+      <div id="progress" style="display:none;margin:12px 0;">
+        <div class="meter-bar"><div class="meter-fill" id="progressBar" style="width:0%;background:var(--primary);"></div></div>
+        <div style="font-size:.82rem;color:var(--text-muted);" id="progressLabel">Extracting...</div>
+      </div>
+      <div class="form-group" id="outputGroup" style="display:none;">
+        <label>Extracted Text <span id="pageCount" style="font-weight:400;color:var(--text-muted);"></span></label>
+        <textarea class="tool-input" id="textOutput" rows="16" readonly></textarea>
+        <div class="btn-group">
+          <button class="btn btn-primary btn-sm" onclick="navigator.clipboard.writeText(document.getElementById('textOutput').value)"><i class="fa-solid fa-copy"></i> Copy All</button>
+          <button class="btn btn-secondary btn-sm" onclick="downloadText()"><i class="fa-solid fa-download"></i> Download .txt</button>
+        </div>
+      </div>
+      <div id="stats" style="margin-top:14px;"></div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About PDF to Text</h2>
+      <p>This tool uses Mozilla's PDF.js library to parse and extract text from PDF files entirely in your browser. No data is uploaded — your files stay private.</p>
+      <h3>Supported PDFs</h3>
+      <p>Works best with text-based PDFs. Scanned documents (images) require OCR, which this tool does not perform. Protected/encrypted PDFs may not be readable.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+async function extractText() {
+  const file = document.getElementById('pdfFile').files[0];
+  if (!file) return;
+
+  const progress = document.getElementById('progress');
+  const bar = document.getElementById('progressBar');
+  const label = document.getElementById('progressLabel');
+  const outputGroup = document.getElementById('outputGroup');
+  const output = document.getElementById('textOutput');
+
+  progress.style.display = 'block';
+  outputGroup.style.display = 'none';
+  bar.style.width = '0%';
+  label.textContent = 'Loading PDF...';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPages = pdf.numPages;
+    let allText = '';
+    let wordCount = 0;
+
+    for (let i = 1; i <= totalPages; i++) {
+      label.textContent = `Extracting page ${i} of ${totalPages}...`;
+      bar.style.width = (i / totalPages * 100) + '%';
+
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(item => item.str).join(' ');
+      allText += `--- Page ${i} ---\n${pageText}\n\n`;
+    }
+
+    wordCount = allText.split(/\s+/).filter(Boolean).length;
+    const charCount = allText.length;
+
+    output.value = allText;
+    outputGroup.style.display = 'block';
+    progress.style.display = 'none';
+    document.getElementById('pageCount').textContent = `(${totalPages} pages)`;
+
+    document.getElementById('stats').innerHTML = `
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">${totalPages}</div><div class="stat-label">Pages</div></div>
+        <div class="stat-item"><div class="stat-value">${wordCount.toLocaleString()}</div><div class="stat-label">Words</div></div>
+        <div class="stat-item"><div class="stat-value">${charCount.toLocaleString()}</div><div class="stat-label">Characters</div></div>
+        <div class="stat-item"><div class="stat-value">${(file.size / 1024).toFixed(1)} KB</div><div class="stat-label">File Size</div></div>
+      </div>`;
+  } catch (e) {
+    label.textContent = 'Error: ' + e.message;
+    bar.style.width = '100%';
+    bar.style.background = 'var(--error)';
+  }
+}
+
+function downloadText() {
+  const text = document.getElementById('textOutput').value;
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'extracted-text.txt';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>

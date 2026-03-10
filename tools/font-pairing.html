@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Pairing Tool — Preview Google Font Combinations | ToolNook</title>
+  <meta name="description" content="Free font pairing tool. Preview Google Font combinations for headings and body text. Find the perfect typography pairing for your project." />
+  <meta name="keywords" content="font pairing, Google Fonts, typography, font combination, web fonts preview" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/font-pairing.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#design-tools">Design</a> &rsaquo; Font Pairing</div>
+      <h1><i class="fa-solid fa-font"></i> Font Pairing Tool</h1>
+      <p>Preview Google Font combinations for headings and body text. Load fonts dynamically and find the perfect pair.</p>
+    </div>
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="form-group">
+          <label for="headingFont">Heading Font</label>
+          <select class="tool-input" id="headingFont" onchange="updatePreview()"></select>
+          <div style="margin-top:6px;display:flex;gap:8px;">
+            <select class="tool-input" id="headingWeight" onchange="updatePreview()" style="flex:1;">
+              <option value="400">Regular</option>
+              <option value="500">Medium</option>
+              <option value="600">SemiBold</option>
+              <option value="700" selected>Bold</option>
+              <option value="800">ExtraBold</option>
+              <option value="900">Black</option>
+            </select>
+            <input type="number" class="tool-input" id="headingSize" value="36" min="12" max="120" onchange="updatePreview()" style="width:80px;" />
+            <span style="align-self:center;font-size:.82rem;color:var(--text-muted);">px</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="bodyFont">Body Font</label>
+          <select class="tool-input" id="bodyFont" onchange="updatePreview()"></select>
+          <div style="margin-top:6px;display:flex;gap:8px;">
+            <select class="tool-input" id="bodyWeight" onchange="updatePreview()" style="flex:1;">
+              <option value="300">Light</option>
+              <option value="400" selected>Regular</option>
+              <option value="500">Medium</option>
+              <option value="600">SemiBold</option>
+              <option value="700">Bold</option>
+            </select>
+            <input type="number" class="tool-input" id="bodySize" value="16" min="10" max="48" onchange="updatePreview()" style="width:80px;" />
+            <span style="align-self:center;font-size:.82rem;color:var(--text-muted);">px</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <label for="lineHeight" style="align-self:center;font-size:.85rem;">Line Height</label>
+        <input type="number" class="tool-input" id="lineHeight" value="1.6" min="1" max="3" step="0.1" onchange="updatePreview()" style="width:80px;" />
+        <label for="textColor" style="align-self:center;font-size:.85rem;">Color</label>
+        <input type="color" id="textColor" value="#222222" onchange="updatePreview()" style="width:40px;height:34px;border:none;cursor:pointer;" />
+        <label for="bgColor" style="align-self:center;font-size:.85rem;">Background</label>
+        <input type="color" id="bgColor" value="#ffffff" onchange="updatePreview()" style="width:40px;height:34px;border:none;cursor:pointer;" />
+        <button class="btn btn-secondary btn-sm" onclick="randomPair()"><i class="fa-solid fa-shuffle"></i> Random</button>
+      </div>
+
+      <!-- Preview -->
+      <div id="fontPreview" style="border:1px solid var(--border);border-radius:12px;padding:32px;min-height:250px;transition:all .3s;"></div>
+
+      <!-- Popular pairings -->
+      <div class="form-group" style="margin-top:20px;">
+        <label>Popular Pairings</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;" id="popularPairings"></div>
+      </div>
+
+      <!-- CSS Output -->
+      <div class="form-group" style="margin-top:16px;">
+        <label>Generated CSS</label>
+        <textarea class="tool-input" id="cssOutput" rows="8" readonly></textarea>
+        <button class="btn btn-primary btn-sm" style="margin-top:6px;" onclick="navigator.clipboard.writeText(document.getElementById('cssOutput').value)"><i class="fa-solid fa-copy"></i> Copy CSS</button>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About Font Pairing</h2>
+      <p>Good typography starts with choosing complementary fonts. The general rule is to pair a distinctive heading font (often a serif or display face) with a clean body font (typically a sans-serif).</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const FONTS = [
+  'Roboto','Open Sans','Lato','Montserrat','Oswald','Raleway','Poppins','Nunito','Merriweather',
+  'PT Sans','PT Serif','Ubuntu','Playfair Display','Source Sans 3','Lora','Noto Sans','Inter',
+  'Fira Sans','Work Sans','Quicksand','Barlow','Rubik','Mulish','Cabin','Bitter','Arimo',
+  'Josefin Sans','Libre Baskerville','DM Sans','Space Grotesk','Outfit','Plus Jakarta Sans',
+  'Crimson Text','EB Garamond','Cormorant Garamond','Spectral','Karla','Inconsolata','IBM Plex Sans',
+  'IBM Plex Serif','Source Serif 4','Manrope','Archivo','Sora','Lexend'
+];
+
+const POPULAR = [
+  ['Playfair Display', 'Lato'],
+  ['Montserrat', 'Merriweather'],
+  ['Oswald', 'Open Sans'],
+  ['Raleway', 'Roboto'],
+  ['Lora', 'Poppins'],
+  ['DM Sans', 'Libre Baskerville'],
+  ['Space Grotesk', 'Source Serif 4'],
+  ['Cormorant Garamond', 'Fira Sans'],
+  ['Plus Jakarta Sans', 'Crimson Text'],
+  ['Sora', 'EB Garamond'],
+];
+
+const loadedFonts = new Set();
+
+function loadFont(name) {
+  if (loadedFonts.has(name)) return;
+  loadedFonts.add(name);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name)}:wght@300;400;500;600;700;800;900&display=swap`;
+  document.head.appendChild(link);
+}
+
+function init() {
+  const hSel = document.getElementById('headingFont');
+  const bSel = document.getElementById('bodyFont');
+  FONTS.forEach(f => {
+    hSel.add(new Option(f, f));
+    bSel.add(new Option(f, f));
+  });
+  hSel.value = 'Playfair Display';
+  bSel.value = 'Lato';
+
+  const container = document.getElementById('popularPairings');
+  POPULAR.forEach(([h, b]) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary btn-sm';
+    btn.textContent = `${h} + ${b}`;
+    btn.onclick = () => {
+      hSel.value = h; bSel.value = b;
+      updatePreview();
+    };
+    container.appendChild(btn);
+  });
+
+  updatePreview();
+}
+
+function updatePreview() {
+  const hFont = document.getElementById('headingFont').value;
+  const bFont = document.getElementById('bodyFont').value;
+  const hWeight = document.getElementById('headingWeight').value;
+  const bWeight = document.getElementById('bodyWeight').value;
+  const hSize = document.getElementById('headingSize').value;
+  const bSize = document.getElementById('bodySize').value;
+  const lh = document.getElementById('lineHeight').value;
+  const color = document.getElementById('textColor').value;
+  const bg = document.getElementById('bgColor').value;
+
+  loadFont(hFont);
+  loadFont(bFont);
+
+  const preview = document.getElementById('fontPreview');
+  preview.style.background = bg;
+  preview.style.color = color;
+  preview.innerHTML = `
+    <h2 style="font-family:'${hFont}',serif;font-weight:${hWeight};font-size:${hSize}px;margin:0 0 8px;line-height:1.2;">The Quick Brown Fox Jumps Over the Lazy Dog</h2>
+    <p style="font-family:'${bFont}',sans-serif;font-weight:${bWeight};font-size:${bSize}px;line-height:${lh};margin:0 0 16px;">
+      Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing, and letter-spacing.
+    </p>
+    <h3 style="font-family:'${hFont}',serif;font-weight:${hWeight};font-size:${Math.round(hSize * 0.7)}px;margin:0 0 6px;line-height:1.2;">A Secondary Heading Example</h3>
+    <p style="font-family:'${bFont}',sans-serif;font-weight:${bWeight};font-size:${bSize}px;line-height:${lh};margin:0;">
+      Good font pairing creates visual hierarchy and guides the reader's eye. A common approach is combining a serif heading with a sans-serif body, or a geometric heading with a humanist body.
+    </p>`;
+
+  document.getElementById('cssOutput').value = `/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(hFont)}:wght@${hWeight}&family=${encodeURIComponent(bFont)}:wght@${bWeight}&display=swap');
+
+/* Heading */
+h1, h2, h3, h4 {
+  font-family: '${hFont}', serif;
+  font-weight: ${hWeight};
+}
+
+/* Body */
+body, p {
+  font-family: '${bFont}', sans-serif;
+  font-weight: ${bWeight};
+  font-size: ${bSize}px;
+  line-height: ${lh};
+}`;
+}
+
+function randomPair() {
+  const h = FONTS[Math.floor(Math.random() * FONTS.length)];
+  let b = FONTS[Math.floor(Math.random() * FONTS.length)];
+  while (b === h) b = FONTS[Math.floor(Math.random() * FONTS.length)];
+  document.getElementById('headingFont').value = h;
+  document.getElementById('bodyFont').value = b;
+  updatePreview();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Binary Calculator — Binary Arithmetic Online | ToolNook</title>
+  <meta name="description" content="Free online binary calculator. Perform addition, subtraction, multiplication, and division on binary numbers. Convert results between binary, decimal, octal, and hex." />
+  <meta name="keywords" content="binary calculator, binary arithmetic, binary addition, binary subtraction, binary multiplication, binary to decimal" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/binary-calculator.html" />
+  <meta property="og:title" content="Binary Calculator | ToolNook" />
+  <meta property="og:description" content="Perform arithmetic on binary numbers. Free online binary calculator." />
+  <meta property="og:url" content="https://toolnook.net/tools/binary-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#math-tools">Math &amp; Science</a> &rsaquo; Binary Calculator</div>
+      <h1><i class="fa-solid fa-microchip"></i> Binary Calculator</h1>
+      <p>Perform arithmetic operations on binary numbers and see results in multiple bases.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="numA">First Number</label>
+        <div class="input-row" style="grid-template-columns:auto 1fr;">
+          <select class="tool-input" id="baseA" style="width:100px;" onchange="calc()">
+            <option value="2" selected>Binary</option><option value="8">Octal</option><option value="10">Decimal</option><option value="16">Hex</option>
+          </select>
+          <input type="text" class="tool-input" id="numA" value="1010" placeholder="Enter number" oninput="calc()" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Operation</label>
+        <div class="btn-group" id="opBtns">
+          <button class="btn btn-primary btn-sm op-btn active" data-op="+" onclick="setOp('+')">+ Add</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="-" onclick="setOp('-')">- Subtract</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="*" onclick="setOp('*')">&times; Multiply</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="/" onclick="setOp('/')">&divide; Divide</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="&" onclick="setOp('&')">AND</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="|" onclick="setOp('|')">OR</button>
+          <button class="btn btn-secondary btn-sm op-btn" data-op="^" onclick="setOp('^')">XOR</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="numB">Second Number</label>
+        <div class="input-row" style="grid-template-columns:auto 1fr;">
+          <select class="tool-input" id="baseB" style="width:100px;" onchange="calc()">
+            <option value="2" selected>Binary</option><option value="8">Octal</option><option value="10">Decimal</option><option value="16">Hex</option>
+          </select>
+          <input type="text" class="tool-input" id="numB" value="0110" placeholder="Enter number" oninput="calc()" />
+        </div>
+      </div>
+      <div id="result" style="margin-top:16px;"></div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About Binary Calculator</h2>
+      <p>This tool performs arithmetic and bitwise operations on numbers in any base. Enter values in binary, octal, decimal, or hexadecimal and see the result in all four formats.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let currentOp = '+';
+
+function setOp(op) {
+  currentOp = op;
+  document.querySelectorAll('.op-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.op === op);
+    b.classList.toggle('btn-primary', b.dataset.op === op);
+    b.classList.toggle('btn-secondary', b.dataset.op !== op);
+  });
+  calc();
+}
+
+function calc() {
+  const baseA = parseInt(document.getElementById('baseA').value);
+  const baseB = parseInt(document.getElementById('baseB').value);
+  const rawA = document.getElementById('numA').value.trim();
+  const rawB = document.getElementById('numB').value.trim();
+  const res = document.getElementById('result');
+
+  if (!rawA || !rawB) { res.innerHTML = ''; return; }
+
+  const a = parseInt(rawA, baseA);
+  const b = parseInt(rawB, baseB);
+
+  if (isNaN(a) || isNaN(b)) { res.innerHTML = '<p style="color:var(--error)">Invalid number for the selected base.</p>'; return; }
+
+  let result;
+  let opSymbol = currentOp;
+  switch (currentOp) {
+    case '+': result = a + b; break;
+    case '-': result = a - b; break;
+    case '*': result = a * b; break;
+    case '/':
+      if (b === 0) { res.innerHTML = '<p style="color:var(--error)">Cannot divide by zero.</p>'; return; }
+      result = Math.trunc(a / b);
+      break;
+    case '&': result = a & b; opSymbol = 'AND'; break;
+    case '|': result = a | b; opSymbol = 'OR'; break;
+    case '^': result = a ^ b; opSymbol = 'XOR'; break;
+  }
+
+  const remainder = currentOp === '/' ? a % b : null;
+
+  res.innerHTML = `
+    <div class="result-card">
+      <div class="result-label">${a} (dec) ${opSymbol} ${b} (dec)</div>
+      <div class="result-value" style="font-size:1.8rem;">${result >= 0 ? (result >>> 0).toString(2) : '-' + ((-result) >>> 0).toString(2)}</div>
+      <div class="result-label">Binary Result</div>
+      ${remainder !== null ? `<div style="font-size:.85rem;color:var(--text-muted);margin-top:4px;">Remainder: ${remainder}</div>` : ''}
+    </div>
+    <div class="stats-grid" style="margin-top:14px;">
+      <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${result >= 0 ? (result >>> 0).toString(2) : '-' + ((-result) >>> 0).toString(2)}</div><div class="stat-label">Binary</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${result >= 0 ? result.toString(8) : '-' + (-result).toString(8)}</div><div class="stat-label">Octal</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${result}</div><div class="stat-label">Decimal</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${result >= 0 ? result.toString(16).toUpperCase() : '-' + (-result).toString(16).toUpperCase()}</div><div class="stat-label">Hexadecimal</div></div>
+    </div>
+    <div class="stats-grid" style="margin-top:8px;">
+      <div class="stat-item"><div class="stat-value" style="font-size:1rem;">${a}</div><div class="stat-label">A (Decimal)</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1rem;">${(a >>> 0).toString(2)}</div><div class="stat-label">A (Binary)</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1rem;">${b}</div><div class="stat-label">B (Decimal)</div></div>
+      <div class="stat-item"><div class="stat-value" style="font-size:1rem;">${(b >>> 0).toString(2)}</div><div class="stat-label">B (Binary)</div></div>
+    </div>`;
+}
+
+calc();
+</script>
+</body>
+</html>

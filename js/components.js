@@ -167,6 +167,29 @@ const TN_TOOLS = [
   { name: 'WiFi QR Generator',        slug: 'wifi-qr-generator',     category: 'utility',    icon: '<i class="fa-solid fa-wifi"></i>', desc: 'Create QR codes for WiFi sharing' },
   { name: 'IP Subnet Calculator',     slug: 'ip-subnet-calculator',  category: 'utility',    icon: '<i class="fa-solid fa-network-wired"></i>', desc: 'Calculate subnets from IP/CIDR' },
   { name: 'Lorem Ipsum Generator',    slug: 'lorem-ipsum-generator', category: 'utility',    icon: '<i class="fa-solid fa-paragraph"></i>', desc: 'Generate placeholder Lorem Ipsum text' },
+  // ── New Math Tools ──
+  { name: 'Graph/Function Plotter',   slug: 'graph-plotter',         category: 'math',       icon: '<i class="fa-solid fa-chart-line"></i>', desc: 'Plot mathematical functions on a graph' },
+  { name: 'Chemical Equation Balancer',slug: 'chemical-equation-balancer',category:'math',     icon: '<i class="fa-solid fa-flask"></i>', desc: 'Balance chemistry equations automatically' },
+  { name: 'Binary Calculator',        slug: 'binary-calculator',     category: 'math',       icon: '<i class="fa-solid fa-microchip"></i>', desc: 'Arithmetic & logic on binary numbers' },
+  // ── New Security Tools ──
+  { name: 'CORS Tester',              slug: 'cors-tester',           category: 'security',   icon: '<i class="fa-solid fa-globe"></i>', desc: 'Test CORS headers for any URL' },
+  { name: 'SSL Certificate Checker',  slug: 'ssl-checker',           category: 'security',   icon: '<i class="fa-solid fa-certificate"></i>', desc: 'Check SSL cert & HTTPS for any site' },
+  { name: 'Encryption/Decryption',    slug: 'encryption-tool',       category: 'security',   icon: '<i class="fa-solid fa-key"></i>', desc: 'AES-256 encrypt & decrypt text in browser' },
+  { name: 'TOTP Generator',           slug: 'totp-generator',        category: 'security',   icon: '<i class="fa-solid fa-clock-rotate-left"></i>', desc: 'Generate time-based one-time passwords' },
+  // ── New Converter Tools ──
+  { name: 'PDF to Text',              slug: 'pdf-to-text',           category: 'converter',  icon: '<i class="fa-solid fa-file-lines"></i>', desc: 'Extract text content from PDF files' },
+  { name: 'Audio Format Converter',   slug: 'audio-converter',       category: 'converter',  icon: '<i class="fa-solid fa-music"></i>', desc: 'Convert audio between WAV & WebM' },
+  { name: 'Epoch Timestamp Converter',slug: 'epoch-converter',       category: 'converter',  icon: '<i class="fa-solid fa-clock"></i>', desc: 'Convert Unix timestamps to human dates' },
+  { name: 'Document to PDF',          slug: 'document-to-pdf',       category: 'converter',  icon: '<i class="fa-solid fa-file-export"></i>', desc: 'Convert HTML/Markdown to PDF' },
+  // ── New Design Tools ──
+  { name: 'Font Pairing Tool',        slug: 'font-pairing',          category: 'design',     icon: '<i class="fa-solid fa-font"></i>', desc: 'Preview Google Font combinations' },
+  { name: 'SVG Editor',               slug: 'svg-editor',            category: 'design',     icon: '<i class="fa-solid fa-bezier-curve"></i>', desc: 'Draw & edit SVG shapes in browser' },
+  // ── New CSS Generators ──
+  { name: 'CSS Grid Generator',       slug: 'css-grid-generator',    category: 'css-gen',    icon: '<i class="fa-solid fa-grip"></i>', desc: 'Visual CSS Grid layout builder' },
+  { name: 'Glassmorphism Generator',  slug: 'glassmorphism-generator',category:'css-gen',     icon: '<i class="fa-solid fa-glass-water"></i>', desc: 'Generate trendy frosted-glass CSS' },
+  { name: 'Neumorphism Generator',    slug: 'neumorphism-generator', category: 'css-gen',    icon: '<i class="fa-solid fa-clone"></i>', desc: 'Soft UI shadow CSS generator' },
+  // ── New Text Tools ──
+  { name: 'Plagiarism Checker',       slug: 'plagiarism-checker',    category: 'text',       icon: '<i class="fa-solid fa-copy"></i>', desc: 'Compare text against pasted sources' },
 ];
 
 const CATEGORY_META = {
@@ -216,6 +239,10 @@ function renderHeader() {
         <a href="/#image-tools">Images</a>
         <a href="/#generators">Generators</a>
       </nav>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <i class="fa-solid fa-moon theme-icon-dark" aria-hidden="true"></i>
+        <i class="fa-solid fa-sun theme-icon-light" aria-hidden="true"></i>
+      </button>
       <button class="hamburger" id="hamburger-btn" onclick="toggleNav()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="main-nav">
         <span aria-hidden="true"><i class="fa-solid fa-bars"></i></span>
       </button>
@@ -229,6 +256,99 @@ function toggleNav() {
   const isOpen = nav.classList.toggle('open');
   if (btn) btn.setAttribute('aria-expanded', String(isOpen));
 }
+
+/* ── Dark Mode ── */
+function initTheme() {
+  const saved = localStorage.getItem('tn-theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+}
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('tn-theme', next);
+}
+// Apply theme immediately to avoid flash
+initTheme();
+
+/* ── SEO Enhancement ── */
+function enhanceSEO() {
+  const path = window.location.pathname;
+  const slug = path.replace(/^\/tools\//, '').replace(/\.html$/, '');
+  const tool = TN_TOOLS.find(t => t.slug === slug);
+  if (!tool) return;
+
+  const head = document.head;
+  const url = 'https://toolnook.net/tools/' + tool.slug + '.html';
+  const catMeta = CATEGORY_META[tool.category];
+  const catLabel = catMeta ? catMeta.label : tool.category;
+
+  // Add og:type if missing
+  if (!head.querySelector('meta[property="og:type"]')) {
+    const m = document.createElement('meta');
+    m.setAttribute('property', 'og:type');
+    m.setAttribute('content', 'website');
+    head.appendChild(m);
+  }
+  // Add og:image if missing
+  if (!head.querySelector('meta[property="og:image"]')) {
+    const m = document.createElement('meta');
+    m.setAttribute('property', 'og:image');
+    m.setAttribute('content', 'https://toolnook.net/og-image.png');
+    head.appendChild(m);
+  }
+  // Add Twitter Card tags if missing
+  if (!head.querySelector('meta[name="twitter:card"]')) {
+    const tags = [
+      ['twitter:card', 'summary_large_image'],
+      ['twitter:title', document.title],
+      ['twitter:description', (head.querySelector('meta[name="description"]') || {}).content || tool.desc]
+    ];
+    tags.forEach(([name, content]) => {
+      const m = document.createElement('meta');
+      m.setAttribute('name', name);
+      m.setAttribute('content', content);
+      head.appendChild(m);
+    });
+  }
+  // Add JSON-LD SoftwareApplication schema if missing
+  if (!head.querySelector('script[type="application/ld+json"]')) {
+    const ld = {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': tool.name,
+      'url': url,
+      'description': tool.desc,
+      'applicationCategory': catLabel,
+      'operatingSystem': 'Any',
+      'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+      'isPartOf': { '@type': 'WebSite', 'name': 'ToolNook', 'url': 'https://toolnook.net' }
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify(ld);
+    head.appendChild(s);
+  }
+  // Add BreadcrumbList schema
+  const bcLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://toolnook.net/' },
+      { '@type': 'ListItem', 'position': 2, 'name': catLabel, 'item': 'https://toolnook.net/#' + tool.category + '-tools' },
+      { '@type': 'ListItem', 'position': 3, 'name': tool.name, 'item': url }
+    ]
+  };
+  const bcScript = document.createElement('script');
+  bcScript.type = 'application/ld+json';
+  bcScript.textContent = JSON.stringify(bcLd);
+  head.appendChild(bcScript);
+}
+enhanceSEO();
 
 function renderFooter() {
   const el = document.getElementById('site-footer');
@@ -290,7 +410,7 @@ function renderFooter() {
 function renderSidebarTools(currentSlug) {
   const others = TN_TOOLS.filter(t => t.slug !== currentSlug).slice(0, 10);
   return others.map(t =>
-    `<a href="${getToolPath(t.slug)}" class="sidebar-tool-link"><span aria-hidden="true">${t.icon}</span> ${t.name}</a>`
+    `<a href="${getToolPath(t.slug)}" class="sidebar-tool-link"><span class="cat-icon-${t.category}" aria-hidden="true">${t.icon}</span> ${t.name}</a>`
   ).join('');
 }
 
@@ -298,7 +418,7 @@ function renderRelatedTools(currentSlug, category) {
   const related = TN_TOOLS.filter(t => t.slug !== currentSlug && t.category === category).slice(0, 6);
   const others  = TN_TOOLS.filter(t => t.slug !== currentSlug && t.category !== category).slice(0, Math.max(0, 6 - related.length));
   return [...related, ...others].map(t =>
-    `<a href="${getToolPath(t.slug)}" class="related-card"><span aria-hidden="true">${t.icon}</span> ${t.name}</a>`
+    `<a href="${getToolPath(t.slug)}" class="related-card"><span class="cat-icon-${t.category}" aria-hidden="true">${t.icon}</span> ${t.name}</a>`
   ).join('');
 }
 
@@ -319,6 +439,35 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHeader();
   renderFooter();
   initSearch();
+
+  // Colorize homepage tool-card icons by category
+  document.querySelectorAll('.tool-card').forEach(card => {
+    const href = card.getAttribute('href') || '';
+    const slug = href.replace(/^\/tools\//, '').replace(/\.html$/, '');
+    const tool = TN_TOOLS.find(t => t.slug === slug);
+    if (tool) {
+      const iconEl = card.querySelector('.tool-card-icon');
+      if (iconEl) iconEl.classList.add('cat-icon-' + tool.category);
+    }
+  });
+
+  // Colorize category section heading icons
+  const sectionCatMap = {
+    'developer-tools':'developer','text-tools':'text','calculators':'calculator',
+    'generators':'generator','datetime-tools':'datetime','math-tools':'math',
+    'finance-tools':'finance','health-tools':'health','image-tools':'image',
+    'content-tools':'content','connected-tools':'connected','converter-tools':'converter',
+    'seo-tools':'seo','security-tools':'security','social-tools':'social',
+    'utility-tools':'utility','css-gen-tools':'css-gen','testing-tools':'testing',
+    'design-tools':'design'
+  };
+  document.querySelectorAll('.category-section').forEach(section => {
+    const cat = sectionCatMap[section.id];
+    if (cat) {
+      const h2Icon = section.querySelector('h2 i');
+      if (h2Icon) h2Icon.classList.add('cat-icon-' + cat);
+    }
+  });
 
   // A11y: set skip-nav target on the main content area
   const mainEl = document.querySelector('main') ||

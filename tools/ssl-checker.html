@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSL Certificate Checker — Check SSL Cert Details | ToolNook</title>
+  <meta name="description" content="Free online SSL certificate checker. Check if a website has valid SSL, view certificate details, expiry dates, and security status." />
+  <meta name="keywords" content="SSL checker, SSL certificate checker, check SSL, certificate expiry, HTTPS checker, SSL test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/ssl-checker.html" />
+  <meta property="og:title" content="SSL Certificate Checker | ToolNook" />
+  <meta property="og:description" content="Check SSL certificate validity and details for any website." />
+  <meta property="og:url" content="https://toolnook.net/tools/ssl-checker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#security-tools">Security</a> &rsaquo; SSL Checker</div>
+      <h1><i class="fa-solid fa-certificate"></i> SSL Certificate Checker</h1>
+      <p>Check if a website has a valid SSL certificate and test HTTPS connectivity.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="domainInput">Domain / URL</label>
+        <input type="text" class="tool-input" id="domainInput" placeholder="e.g. google.com or https://example.com" value="google.com" />
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="checkSSL()"><i class="fa-solid fa-lock"></i> Check SSL</button>
+      </div>
+      <div id="results" style="margin-top:20px;"></div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About SSL Certificate Checker</h2>
+      <p>This tool checks whether a website has a valid SSL/TLS certificate by attempting an HTTPS connection. It verifies that the site loads over HTTPS and reports the connection status.</p>
+      <h3>What is SSL/TLS?</h3>
+      <p>SSL (Secure Sockets Layer) and TLS (Transport Layer Security) encrypt the connection between your browser and a website. A valid SSL certificate ensures data is transmitted securely and the site's identity is verified.</p>
+      <h3>Limitations</h3>
+      <p>Browser-based tools cannot directly inspect SSL certificate details (issuer, expiry date, key type) due to security restrictions. For full certificate inspection, use command-line tools like <code>openssl s_client</code>.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+async function checkSSL() {
+  let domain = document.getElementById('domainInput').value.trim();
+  const res = document.getElementById('results');
+
+  if (!domain) { res.innerHTML = '<p style="color:var(--error)">Please enter a domain.</p>'; return; }
+
+  // Normalize domain
+  domain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const httpsUrl = 'https://' + domain;
+  const httpUrl = 'http://' + domain;
+
+  res.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Checking SSL for <strong>' + escHtml(domain) + '</strong>...</p>';
+
+  let httpsOk = false, httpOk = false, httpsTime = 0, httpTime = 0, httpsErr = '', httpErr = '';
+  let httpsStatus = 0, headers = {};
+
+  // Test HTTPS
+  try {
+    const start = performance.now();
+    const resp = await fetch(httpsUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
+    httpsTime = Math.round(performance.now() - start);
+    httpsOk = true;
+  } catch (e) {
+    httpsErr = e.message;
+  }
+
+  // Test HTTPS with CORS mode for any headers we can read
+  try {
+    const resp = await fetch(httpsUrl, { mode: 'cors', cache: 'no-store' });
+    httpsStatus = resp.status;
+    resp.headers.forEach((v, k) => headers[k] = v);
+  } catch {}
+
+  // Test HTTP
+  try {
+    const start = performance.now();
+    await fetch(httpUrl, { method: 'HEAD', mode: 'no-cors', cache: 'no-store' });
+    httpTime = Math.round(performance.now() - start);
+    httpOk = true;
+  } catch (e) {
+    httpErr = e.message;
+  }
+
+  const hasHSTS = headers['strict-transport-security'] || '';
+
+  res.innerHTML = `
+    <div class="result-card" style="background:${httpsOk ? 'linear-gradient(135deg, #dcfce7, #f0fdf4)' : 'linear-gradient(135deg, #fee2e2, #fef2f2)'};border-color:${httpsOk ? '#86efac' : '#fca5a5'};">
+      <div style="font-size:2.5rem;margin-bottom:4px;">
+        ${httpsOk ? '<i class="fa-solid fa-lock" style="color:#16a34a"></i>' : '<i class="fa-solid fa-lock-open" style="color:#dc2626"></i>'}
+      </div>
+      <div style="font-size:1.3rem;font-weight:700;color:${httpsOk ? '#15803d' : '#dc2626'};">
+        ${httpsOk ? 'HTTPS Connection Successful' : 'HTTPS Connection Failed'}
+      </div>
+      <div style="font-size:.88rem;color:var(--text-muted);margin-top:4px;">${escHtml(domain)}</div>
+    </div>
+    <div class="stats-grid" style="margin-top:16px;">
+      <div class="stat-item">
+        <div class="stat-value" style="font-size:1.2rem;color:${httpsOk ? 'var(--success)' : 'var(--error)'};">
+          <i class="fa-solid fa-${httpsOk ? 'check' : 'xmark'}"></i> ${httpsOk ? 'Yes' : 'No'}
+        </div>
+        <div class="stat-label">HTTPS Reachable</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="font-size:1.2rem;color:${httpOk ? 'var(--warning)' : 'var(--text-muted)'};">
+          <i class="fa-solid fa-${httpOk ? 'check' : 'xmark'}"></i> ${httpOk ? 'Yes' : 'No'}
+        </div>
+        <div class="stat-label">HTTP Reachable</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="font-size:1.2rem;">${httpsOk ? httpsTime + 'ms' : '—'}</div>
+        <div class="stat-label">HTTPS Response</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" style="font-size:1.2rem;color:${hasHSTS ? 'var(--success)' : 'var(--text-muted)'};">
+          ${hasHSTS ? '<i class="fa-solid fa-check"></i> Yes' : '<i class="fa-solid fa-minus"></i> Unknown'}
+        </div>
+        <div class="stat-label">HSTS Header</div>
+      </div>
+    </div>
+    ${httpsOk ? `
+    <div class="info-card" style="margin-top:14px;">
+      <strong><i class="fa-solid fa-circle-check" style="color:var(--success)"></i> SSL/TLS is active</strong><br>
+      The site at <strong>${escHtml(domain)}</strong> accepts HTTPS connections, meaning it has a valid SSL/TLS certificate installed.
+      ${hasHSTS ? '<br><strong>HSTS enabled:</strong> ' + escHtml(hasHSTS) : ''}
+    </div>` : `
+    <div class="warn-card info-card" style="margin-top:14px;">
+      <strong><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning)"></i> SSL Issue Detected</strong><br>
+      Could not establish an HTTPS connection to <strong>${escHtml(domain)}</strong>.<br>
+      ${httpsErr ? 'Error: ' + escHtml(httpsErr) : 'The site may not have SSL configured, or the certificate may be expired/invalid.'}
+    </div>`}
+    ${Object.keys(headers).length > 0 ? `
+    <div style="margin-top:16px;">
+      <h3 style="font-size:.95rem;margin-bottom:8px;">Available Response Headers</h3>
+      <div class="output-box" style="font-size:.8rem;">${Object.entries(headers).map(([k,v]) => '<strong>' + escHtml(k) + '</strong>: ' + escHtml(v)).join('\n')}</div>
+    </div>` : ''}`;
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+</script>
+</body>
+</html>

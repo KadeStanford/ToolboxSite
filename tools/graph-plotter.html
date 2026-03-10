@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph/Function Plotter — Plot Math Functions Online | ToolNook</title>
+  <meta name="description" content="Free online graph plotter. Plot mathematical functions like sin(x), x^2, log(x) and more. Interactive zoom and pan with instant rendering." />
+  <meta name="keywords" content="graph plotter, function plotter, plot math functions, graphing calculator, plot y=f(x), online graph tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/graph-plotter.html" />
+  <meta property="og:title" content="Graph/Function Plotter | ToolNook" />
+  <meta property="og:description" content="Plot mathematical functions instantly. Free online graphing tool." />
+  <meta property="og:url" content="https://toolnook.net/tools/graph-plotter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .plot-canvas{width:100%;border:1px solid var(--border);border-radius:var(--radius);background:#fff;display:block;cursor:crosshair;}
+    [data-theme="dark"] .plot-canvas{background:#0f172a;}
+    .fn-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+    .fn-row input{flex:1;}
+    .fn-color{width:36px;height:36px;border:none;border-radius:var(--radius);cursor:pointer;padding:0;}
+    .fn-list{margin-bottom:16px;}
+    .range-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+    .range-row label{font-size:.82rem;font-weight:600;}
+    .presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+    .presets button{padding:4px 10px;font-size:.78rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);cursor:pointer;font-family:inherit;}
+    .presets button:hover{border-color:var(--primary);color:var(--primary);}
+    .coord-label{font-size:.8rem;color:var(--text-muted);margin-top:4px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#math-tools">Math &amp; Science</a> &rsaquo; Graph Plotter</div>
+      <h1><i class="fa-solid fa-chart-line"></i> Graph / Function Plotter</h1>
+      <p>Enter one or more mathematical functions to plot them on an interactive graph.</p>
+    </div>
+    <div class="tool-container">
+      <div class="fn-list" id="fnList">
+        <div class="fn-row">
+          <span style="font-weight:700;min-width:30px;">y =</span>
+          <input type="text" class="tool-input fn-expr" value="sin(x)" placeholder="e.g. sin(x), x^2, log(x)" />
+          <input type="color" class="fn-color" value="#4f46e5" />
+        </div>
+      </div>
+      <div class="btn-group" style="margin-bottom:14px;">
+        <button class="btn btn-secondary btn-sm" onclick="addFunction()"><i class="fa-solid fa-plus"></i> Add Function</button>
+        <button class="btn btn-primary btn-sm" onclick="plotAll()"><i class="fa-solid fa-chart-line"></i> Plot</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetView()"><i class="fa-solid fa-arrows-to-circle"></i> Reset View</button>
+      </div>
+      <div class="presets">
+        <strong style="font-size:.82rem;">Presets:</strong>
+        <button onclick="setPreset('sin(x)')">sin(x)</button>
+        <button onclick="setPreset('cos(x)')">cos(x)</button>
+        <button onclick="setPreset('tan(x)')">tan(x)</button>
+        <button onclick="setPreset('x^2')">x&sup2;</button>
+        <button onclick="setPreset('x^3')">x&sup3;</button>
+        <button onclick="setPreset('sqrt(x)')">sqrt(x)</button>
+        <button onclick="setPreset('abs(x)')">|x|</button>
+        <button onclick="setPreset('log(x)')">ln(x)</button>
+        <button onclick="setPreset('1/x')">1/x</button>
+        <button onclick="setPreset('exp(x)')">e^x</button>
+      </div>
+      <div class="range-row">
+        <div><label>X Min</label><input type="number" class="tool-input" id="xMin" value="-10" step="1" /></div>
+        <div><label>X Max</label><input type="number" class="tool-input" id="xMax" value="10" step="1" /></div>
+        <div><label>Y Min</label><input type="number" class="tool-input" id="yMin" value="-10" step="1" /></div>
+        <div><label>Y Max</label><input type="number" class="tool-input" id="yMax" value="10" step="1" /></div>
+      </div>
+      <canvas id="plotCanvas" class="plot-canvas" width="800" height="500"></canvas>
+      <div class="coord-label" id="coordLabel">Hover over the graph to see coordinates</div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About Graph/Function Plotter</h2>
+      <p>This free online graphing tool lets you plot mathematical functions instantly. Enter any expression using x as the variable — supports trig functions, powers, logarithms, and more.</p>
+      <h3>Supported Functions</h3>
+      <p>sin, cos, tan, asin, acos, atan, sqrt, abs, log (natural), exp, ceil, floor, round, and standard arithmetic operators (+, -, *, /, ^).</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const canvas = document.getElementById('plotCanvas');
+const ctx = canvas.getContext('2d');
+let xMin=-10, xMax=10, yMin=-10, yMax=10;
+
+function safeEval(expr, x) {
+  const mathFns = {
+    sin:Math.sin, cos:Math.cos, tan:Math.tan,
+    asin:Math.asin, acos:Math.acos, atan:Math.atan,
+    sqrt:Math.sqrt, abs:Math.abs, log:Math.log, ln:Math.log,
+    exp:Math.exp, ceil:Math.ceil, floor:Math.floor, round:Math.round,
+    PI:Math.PI, E:Math.E, pi:Math.PI, e:Math.E
+  };
+  let safe = expr.replace(/\^/g, '**');
+  // Handle implicit multiplication like 2x -> 2*x
+  safe = safe.replace(/(\d)([a-zA-Z(])/g, '$1*$2');
+  safe = safe.replace(/\)(\d)/g, ')*$1');
+  safe = safe.replace(/\)([a-zA-Z(])/g, ')*$1');
+  try {
+    const fn = new Function(...Object.keys(mathFns), 'x', 'return ' + safe);
+    return fn(...Object.values(mathFns), x);
+  } catch { return NaN; }
+}
+
+function readRange() {
+  xMin = +document.getElementById('xMin').value || -10;
+  xMax = +document.getElementById('xMax').value || 10;
+  yMin = +document.getElementById('yMin').value || -10;
+  yMax = +document.getElementById('yMax').value || 10;
+}
+
+function toCanvasX(x) { return (x - xMin) / (xMax - xMin) * canvas.width; }
+function toCanvasY(y) { return canvas.height - (y - yMin) / (yMax - yMin) * canvas.height; }
+function fromCanvasX(cx) { return xMin + cx / canvas.width * (xMax - xMin); }
+function fromCanvasY(cy) { return yMax - cy / canvas.height * (yMax - yMin); }
+
+function drawGrid() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = isDark ? '#0f172a' : '#fff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Grid lines
+  ctx.strokeStyle = isDark ? '#1e293b' : '#f1f5f9';
+  ctx.lineWidth = 1;
+  for (let x = Math.ceil(xMin); x <= xMax; x++) {
+    const cx = toCanvasX(x);
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, canvas.height); ctx.stroke();
+  }
+  for (let y = Math.ceil(yMin); y <= yMax; y++) {
+    const cy = toCanvasY(y);
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(canvas.width, cy); ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle = isDark ? '#475569' : '#94a3b8';
+  ctx.lineWidth = 2;
+  const ax = toCanvasX(0), ay = toCanvasY(0);
+  ctx.beginPath(); ctx.moveTo(ax, 0); ctx.lineTo(ax, canvas.height); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, ay); ctx.lineTo(canvas.width, ay); ctx.stroke();
+
+  // Tick labels
+  ctx.fillStyle = isDark ? '#94a3b8' : '#64748b';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  for (let x = Math.ceil(xMin); x <= xMax; x++) {
+    if (x === 0) continue;
+    ctx.fillText(x, toCanvasX(x), ay + 14);
+  }
+  ctx.textAlign = 'right';
+  for (let y = Math.ceil(yMin); y <= yMax; y++) {
+    if (y === 0) continue;
+    ctx.fillText(y, ax - 6, toCanvasY(y) + 4);
+  }
+}
+
+function plotAll() {
+  readRange();
+  drawGrid();
+  const rows = document.querySelectorAll('.fn-row');
+  rows.forEach(row => {
+    const expr = row.querySelector('.fn-expr').value.trim();
+    const color = row.querySelector('.fn-color').value;
+    if (!expr) return;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let started = false;
+    const steps = canvas.width * 2;
+    for (let i = 0; i <= steps; i++) {
+      const x = xMin + (xMax - xMin) * i / steps;
+      const y = safeEval(expr, x);
+      if (!isFinite(y) || y < yMin - 100 || y > yMax + 100) { started = false; continue; }
+      const cx = toCanvasX(x), cy = toCanvasY(y);
+      if (!started) { ctx.moveTo(cx, cy); started = true; }
+      else ctx.lineTo(cx, cy);
+    }
+    ctx.stroke();
+  });
+}
+
+function addFunction() {
+  const colors = ['#ef4444','#10b981','#f59e0b','#8b5cf6','#06b6d4','#ec4899'];
+  const idx = document.querySelectorAll('.fn-row').length;
+  const div = document.createElement('div');
+  div.className = 'fn-row';
+  div.innerHTML = `<span style="font-weight:700;min-width:30px;">y =</span>
+    <input type="text" class="tool-input fn-expr" placeholder="e.g. x^2 + 1" />
+    <input type="color" class="fn-color" value="${colors[idx % colors.length]}" />
+    <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>`;
+  document.getElementById('fnList').appendChild(div);
+}
+
+function setPreset(expr) {
+  document.querySelector('.fn-expr').value = expr;
+  plotAll();
+}
+
+function resetView() {
+  document.getElementById('xMin').value = -10;
+  document.getElementById('xMax').value = 10;
+  document.getElementById('yMin').value = -10;
+  document.getElementById('yMax').value = 10;
+  plotAll();
+}
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  const sx = mx / rect.width * canvas.width, sy = my / rect.height * canvas.height;
+  const x = fromCanvasX(sx).toFixed(2), y = fromCanvasY(sy).toFixed(2);
+  document.getElementById('coordLabel').textContent = `x: ${x}, y: ${y}`;
+});
+
+// Auto-resize canvas
+function resizeCanvas() {
+  const w = canvas.parentElement.clientWidth - 2;
+  canvas.width = Math.max(400, w);
+  canvas.height = Math.round(canvas.width * 0.6);
+  plotAll();
+}
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 100);
+</script>
+</body>
+</html>

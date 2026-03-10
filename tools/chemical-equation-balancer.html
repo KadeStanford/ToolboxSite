@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chemical Equation Balancer — Balance Equations Online | ToolNook</title>
+  <meta name="description" content="Free online chemical equation balancer. Enter any unbalanced chemical equation and get the balanced version with coefficients instantly." />
+  <meta name="keywords" content="chemical equation balancer, balance chemical equations, chemistry balancer, stoichiometry calculator, balance equations online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/chemical-equation-balancer.html" />
+  <meta property="og:title" content="Chemical Equation Balancer | ToolNook" />
+  <meta property="og:description" content="Balance any chemical equation instantly online. Free chemistry tool." />
+  <meta property="og:url" content="https://toolnook.net/tools/chemical-equation-balancer.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#math-tools">Math &amp; Science</a> &rsaquo; Chemical Equation Balancer</div>
+      <h1><i class="fa-solid fa-flask"></i> Chemical Equation Balancer</h1>
+      <p>Enter an unbalanced chemical equation and get the balanced version with correct coefficients.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="eqInput">Enter Chemical Equation</label>
+        <input type="text" class="tool-input" id="eqInput" placeholder="e.g. Fe + O2 -> Fe2O3" value="Fe + O2 -> Fe2O3" />
+      </div>
+      <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Use <code>-></code> or <code>=</code> to separate reactants and products. Subscripts as numbers: H2O, Ca(OH)2, Fe2O3</div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="balance()"><i class="fa-solid fa-scale-balanced"></i> Balance</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('eqInput').value='';document.getElementById('result').innerHTML=''"><i class="fa-solid fa-trash"></i> Clear</button>
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:.85rem;">Examples:</strong>
+        <span class="presets" style="display:inline-flex;gap:6px;flex-wrap:wrap;margin-left:6px;">
+          <button class="btn btn-sm btn-secondary" onclick="setEq('H2 + O2 -> H2O')">H2 + O2 &rarr; H2O</button>
+          <button class="btn btn-sm btn-secondary" onclick="setEq('CH4 + O2 -> CO2 + H2O')">CH4 + O2 &rarr; CO2 + H2O</button>
+          <button class="btn btn-sm btn-secondary" onclick="setEq('Fe + O2 -> Fe2O3')">Fe + O2 &rarr; Fe2O3</button>
+          <button class="btn btn-sm btn-secondary" onclick="setEq('Ca(OH)2 + HCl -> CaCl2 + H2O')">Ca(OH)2 + HCl</button>
+          <button class="btn btn-sm btn-secondary" onclick="setEq('C6H12O6 + O2 -> CO2 + H2O')">Glucose combustion</button>
+          <button class="btn btn-sm btn-secondary" onclick="setEq('KMnO4 + HCl -> KCl + MnCl2 + H2O + Cl2')">KMnO4 + HCl</button>
+        </span>
+      </div>
+      <div id="result" style="margin-top:20px;"></div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About Chemical Equation Balancer</h2>
+      <p>This tool balances chemical equations using a matrix-based algebraic method. It parses molecular formulas including parentheses and subscripts, then solves for the smallest whole-number coefficients.</p>
+      <h3>How Chemical Equation Balancing Works</h3>
+      <p>Balancing follows the law of conservation of mass — atoms of each element must be equal on both sides. The tool sets up a system of linear equations (one per element) and solves for integer coefficients using Gaussian elimination.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function setEq(eq) { document.getElementById('eqInput').value = eq; balance(); }
+
+function parseFormula(str) {
+  // Returns {element: count} e.g. Ca(OH)2 -> {Ca:1, O:2, H:2}
+  const elems = {};
+  const tokens = [];
+  let i = 0;
+  while (i < str.length) {
+    if (str[i] === '(') { tokens.push('('); i++; }
+    else if (str[i] === ')') {
+      i++;
+      let num = '';
+      while (i < str.length && /\d/.test(str[i])) num += str[i++];
+      tokens.push(')'); tokens.push(num ? parseInt(num) : 1);
+    } else if (/[A-Z]/.test(str[i])) {
+      let el = str[i++];
+      while (i < str.length && /[a-z]/.test(str[i])) el += str[i++];
+      let num = '';
+      while (i < str.length && /\d/.test(str[i])) num += str[i++];
+      tokens.push({ el, n: num ? parseInt(num) : 1 });
+    } else i++;
+  }
+  // Process parentheses
+  const stack = [{}];
+  for (let t = 0; t < tokens.length; t++) {
+    if (tokens[t] === '(') stack.push({});
+    else if (tokens[t] === ')') {
+      const mult = tokens[++t] || 1;
+      const top = stack.pop();
+      const parent = stack[stack.length - 1];
+      for (const [el, n] of Object.entries(top)) parent[el] = (parent[el] || 0) + n * mult;
+    } else if (typeof tokens[t] === 'object') {
+      const cur = stack[stack.length - 1];
+      cur[tokens[t].el] = (cur[tokens[t].el] || 0) + tokens[t].n;
+    }
+  }
+  return stack[0];
+}
+
+function balance() {
+  const raw = document.getElementById('eqInput').value.trim();
+  if (!raw) return;
+  const res = document.getElementById('result');
+
+  // Split into reactants and products
+  const sep = raw.includes('->') ? '->' : raw.includes('→') ? '→' : raw.includes('=') ? '=' : null;
+  if (!sep) { res.innerHTML = '<p style="color:var(--error)">Use -> or = to separate reactants and products.</p>'; return; }
+  const [lhs, rhs] = raw.split(sep).map(s => s.trim());
+  if (!lhs || !rhs) { res.innerHTML = '<p style="color:var(--error)">Both sides of the equation are required.</p>'; return; }
+
+  const reactants = lhs.split('+').map(s => s.trim()).filter(Boolean);
+  const products = rhs.split('+').map(s => s.trim()).filter(Boolean);
+  const compounds = [...reactants, ...products];
+  const numCompounds = compounds.length;
+  const numReactants = reactants.length;
+
+  // Parse all compounds
+  const parsed = compounds.map(parseFormula);
+  const allElements = [...new Set(parsed.flatMap(p => Object.keys(p)))];
+
+  // Build matrix: rows=elements, cols=compounds
+  // reactants positive, products negative
+  const matrix = allElements.map(el =>
+    parsed.map((p, i) => (p[el] || 0) * (i < numReactants ? 1 : -1))
+  );
+
+  // Solve using null space (try coefficients by brute force for small systems)
+  const n = numCompounds;
+  const solved = solveCoefficients(matrix, n);
+
+  if (!solved) {
+    res.innerHTML = '<p style="color:var(--error)">Could not balance this equation. Please check the input.</p>';
+    return;
+  }
+
+  // Format result
+  const formatSide = (names, coeffs) =>
+    names.map((name, i) => (coeffs[i] > 1 ? '<strong>' + coeffs[i] + '</strong>' : '') + formatCompound(name)).join(' + ');
+
+  const balancedStr = formatSide(reactants, solved.slice(0, numReactants)) +
+    ' &rarr; ' +
+    formatSide(products, solved.slice(numReactants));
+
+  // Verify
+  const verify = allElements.every(el => {
+    const left = reactants.reduce((s, _, i) => s + (parsed[i][el] || 0) * solved[i], 0);
+    const right = products.reduce((s, _, i) => s + (parsed[numReactants + i][el] || 0) * solved[numReactants + i], 0);
+    return left === right;
+  });
+
+  res.innerHTML = `
+    <div class="result-card">
+      <div style="font-size:1.4rem;font-weight:700;margin-bottom:8px;">${balancedStr}</div>
+      <div style="font-size:.85rem;color:${verify ? 'var(--success)' : 'var(--error)'}">
+        <i class="fa-solid fa-${verify ? 'check-circle' : 'exclamation-circle'}"></i>
+        ${verify ? 'Balanced and verified!' : 'Verification failed — please check input'}
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <h3 style="font-size:.95rem;margin-bottom:8px;">Element Count</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+        <tr style="background:var(--bg);"><th style="padding:6px 12px;text-align:left;border:1px solid var(--border);">Element</th><th style="padding:6px 12px;border:1px solid var(--border);">Left</th><th style="padding:6px 12px;border:1px solid var(--border);">Right</th></tr>
+        ${allElements.map(el => {
+          const left = reactants.reduce((s, _, i) => s + (parsed[i][el] || 0) * solved[i], 0);
+          const right = products.reduce((s, _, i) => s + (parsed[numReactants + i][el] || 0) * solved[numReactants + i], 0);
+          return `<tr><td style="padding:6px 12px;border:1px solid var(--border);font-weight:600;">${el}</td><td style="padding:6px 12px;border:1px solid var(--border);text-align:center;">${left}</td><td style="padding:6px 12px;border:1px solid var(--border);text-align:center;">${right}</td></tr>`;
+        }).join('')}
+      </table>
+    </div>`;
+}
+
+function formatCompound(name) {
+  return name.replace(/(\d+)/g, '<sub>$1</sub>');
+}
+
+function solveCoefficients(matrix, numVars) {
+  // Brute force for small systems (coefficients 1-20)
+  const maxCoeff = 20;
+  const coeffs = new Array(numVars).fill(1);
+
+  function check(c) {
+    return matrix.every(row => row.reduce((s, v, i) => s + v * c[i], 0) === 0);
+  }
+
+  function search(idx) {
+    if (idx === numVars) return check(coeffs) ? [...coeffs] : null;
+    for (let v = 1; v <= maxCoeff; v++) {
+      coeffs[idx] = v;
+      const result = search(idx + 1);
+      if (result) return result;
+    }
+    return null;
+  }
+
+  // Optimization: fix first coefficient as 1 and try Gaussian approach
+  // For larger systems, use augmented matrix
+  const rows = matrix.length;
+  const cols = numVars;
+
+  // Try algebraic approach: Gaussian elimination on augmented matrix
+  // Set last variable = LCM target
+  const aug = matrix.map(row => [...row]);
+
+  // Gaussian elimination
+  let pivotRow = 0;
+  const pivotCols = [];
+  for (let col = 0; col < cols - 1 && pivotRow < rows; col++) {
+    let maxR = pivotRow;
+    for (let r = pivotRow + 1; r < rows; r++) {
+      if (Math.abs(aug[r][col]) > Math.abs(aug[maxR][col])) maxR = r;
+    }
+    if (aug[maxR][col] === 0) continue;
+    [aug[pivotRow], aug[maxR]] = [aug[maxR], aug[pivotRow]];
+    pivotCols.push(col);
+    for (let r = 0; r < rows; r++) {
+      if (r === pivotRow) continue;
+      const factor = aug[r][col] / aug[pivotRow][col];
+      for (let c = 0; c < cols; c++) aug[r][c] -= factor * aug[pivotRow][c];
+    }
+    pivotRow++;
+  }
+
+  // Back-substitute with last variable = 1
+  const solution = new Array(cols).fill(0);
+  const freeVar = cols - 1;
+  solution[freeVar] = 1;
+
+  for (let i = pivotCols.length - 1; i >= 0; i--) {
+    const pc = pivotCols[i];
+    let val = 0;
+    for (let c = pc + 1; c < cols; c++) val += aug[i][c] * solution[c];
+    solution[pc] = -val / aug[i][pc];
+  }
+
+  // Make all positive
+  if (solution.some(v => v < 0)) {
+    const neg = solution.some(v => v < 0);
+    if (neg) solution.forEach((v, i) => solution[i] = -v);
+  }
+  if (solution.some(v => v <= 0)) {
+    // Fallback to brute force for small problems
+    if (numVars <= 6) return search(0);
+    return null;
+  }
+
+  // Convert to integers
+  // Find LCM of denominators
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; }
+  function toFrac(x) {
+    const eps = 1e-9;
+    for (let d = 1; d <= 10000; d++) {
+      const n = Math.round(x * d);
+      if (Math.abs(x - n / d) < eps) return [n, d];
+    }
+    return [Math.round(x), 1];
+  }
+
+  const fracs = solution.map(toFrac);
+  let lcmDen = 1;
+  fracs.forEach(([, d]) => lcmDen = lcmDen / gcd(lcmDen, d) * d);
+
+  const intSol = fracs.map(([n, d]) => Math.round(n * lcmDen / d));
+
+  if (intSol.some(v => v <= 0)) {
+    if (numVars <= 6) return search(0);
+    return null;
+  }
+
+  // Reduce by GCD
+  let g = intSol[0];
+  for (let i = 1; i < intSol.length; i++) g = gcd(g, intSol[i]);
+  const final = intSol.map(v => v / g);
+
+  if (check(final)) return final;
+
+  // Fallback
+  if (numVars <= 6) return search(0);
+  return null;
+}
+
+balance();
+</script>
+</body>
+</html>

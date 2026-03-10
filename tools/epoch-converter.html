@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Epoch Timestamp Converter — Unix ↔ Human Date | ToolNook</title>
+  <meta name="description" content="Free online epoch/Unix timestamp converter. Convert timestamps to human-readable dates and vice versa. Supports seconds and milliseconds." />
+  <meta name="keywords" content="epoch converter, unix timestamp, timestamp to date, date to timestamp, epoch time" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/epoch-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#converter-tools">Converters</a> &rsaquo; Epoch Converter</div>
+      <h1><i class="fa-solid fa-clock"></i> Epoch Timestamp Converter</h1>
+      <p>Convert between Unix epoch timestamps and human-readable dates. Supports seconds and milliseconds.</p>
+    </div>
+    <div class="tool-container">
+      <!-- Current time -->
+      <div style="background:var(--card-bg);border-radius:10px;padding:18px;margin-bottom:18px;text-align:center;">
+        <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:4px;">Current Unix Timestamp</div>
+        <div id="liveTimestamp" style="font-size:2rem;font-weight:700;font-family:'Fira Mono',monospace;color:var(--primary);"></div>
+        <div id="liveDate" style="font-size:.9rem;color:var(--text-muted);margin-top:4px;"></div>
+      </div>
+
+      <!-- Epoch → Date -->
+      <div class="form-group">
+        <label for="epochInput">Epoch Timestamp → Date</label>
+        <div style="display:flex;gap:10px;">
+          <input type="text" class="tool-input" id="epochInput" placeholder="e.g. 1700000000 or 1700000000000" oninput="epochToDate()" style="flex:1;" />
+          <select class="tool-input" id="epochUnit" onchange="epochToDate()" style="width:140px;">
+            <option value="auto">Auto-detect</option>
+            <option value="s">Seconds</option>
+            <option value="ms">Milliseconds</option>
+          </select>
+        </div>
+        <div id="epochResult" class="output-box" style="margin-top:10px;display:none;"></div>
+      </div>
+
+      <div style="text-align:center;padding:12px;font-size:1.4rem;color:var(--text-muted);">⇅</div>
+
+      <!-- Date → Epoch -->
+      <div class="form-group">
+        <label>Date → Epoch Timestamp</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;">
+          <div>
+            <label style="font-size:.78rem;">Year</label>
+            <input type="number" class="tool-input" id="dYear" value="2024" min="1970" max="2099" oninput="dateToEpoch()" />
+          </div>
+          <div>
+            <label style="font-size:.78rem;">Month</label>
+            <select class="tool-input" id="dMonth" oninput="dateToEpoch()">
+              <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+              <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+              <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+              <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:.78rem;">Day</label>
+            <input type="number" class="tool-input" id="dDay" value="1" min="1" max="31" oninput="dateToEpoch()" />
+          </div>
+          <div>
+            <label style="font-size:.78rem;">Hour</label>
+            <input type="number" class="tool-input" id="dHour" value="0" min="0" max="23" oninput="dateToEpoch()" />
+          </div>
+          <div>
+            <label style="font-size:.78rem;">Minute</label>
+            <input type="number" class="tool-input" id="dMin" value="0" min="0" max="59" oninput="dateToEpoch()" />
+          </div>
+          <div>
+            <label style="font-size:.78rem;">Second</label>
+            <input type="number" class="tool-input" id="dSec" value="0" min="0" max="59" oninput="dateToEpoch()" />
+          </div>
+        </div>
+        <div style="margin-top:8px;">
+          <label><input type="radio" name="tz" value="utc" checked onchange="dateToEpoch()"> UTC</label>
+          <label style="margin-left:16px;"><input type="radio" name="tz" value="local" onchange="dateToEpoch()"> Local</label>
+        </div>
+        <div id="dateResult" class="output-box" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- Quick references -->
+      <div class="form-group">
+        <label>Common Timestamps</label>
+        <div class="table-responsive">
+          <table class="diff-table" style="width:100%;">
+            <thead><tr><th>Event</th><th>Timestamp</th><th>Date (UTC)</th></tr></thead>
+            <tbody id="refTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>What is Unix Epoch Time?</h2>
+      <p>The Unix epoch (or Unix time) is the number of seconds that have elapsed since January 1, 1970, 00:00:00 UTC. It's widely used in programming, databases, and APIs to represent dates as simple integers.</p>
+      <h3>Seconds vs Milliseconds</h3>
+      <p>Some systems (like JavaScript's <code>Date.now()</code>) use milliseconds (13 digits), while others (like Unix <code>time()</code>) use seconds (10 digits). This tool auto-detects the format based on the number of digits.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+// Live counter
+function updateLive() {
+  const now = Math.floor(Date.now() / 1000);
+  document.getElementById('liveTimestamp').textContent = now;
+  document.getElementById('liveDate').textContent = new Date(now * 1000).toUTCString();
+}
+updateLive();
+setInterval(updateLive, 1000);
+
+// Epoch → Date
+function epochToDate() {
+  const raw = document.getElementById('epochInput').value.trim();
+  const result = document.getElementById('epochResult');
+  if (!raw) { result.style.display = 'none'; return; }
+
+  let ts = parseInt(raw, 10);
+  if (isNaN(ts)) { result.style.display = 'block'; result.innerHTML = '<span style="color:var(--error);">Invalid timestamp</span>'; return; }
+
+  const unit = document.getElementById('epochUnit').value;
+  let ms;
+  if (unit === 'ms') { ms = ts; }
+  else if (unit === 's') { ms = ts * 1000; }
+  else { ms = raw.length > 12 ? ts : ts * 1000; }
+
+  const d = new Date(ms);
+  if (isNaN(d.getTime())) { result.style.display = 'block'; result.innerHTML = '<span style="color:var(--error);">Invalid timestamp</span>'; return; }
+
+  const secs = Math.floor(ms / 1000);
+  result.style.display = 'block';
+  result.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;">
+      <tr><td style="padding:4px 8px;font-weight:600;">UTC</td><td>${d.toUTCString()}</td></tr>
+      <tr><td style="padding:4px 8px;font-weight:600;">Local</td><td>${d.toString()}</td></tr>
+      <tr><td style="padding:4px 8px;font-weight:600;">ISO 8601</td><td>${d.toISOString()}</td></tr>
+      <tr><td style="padding:4px 8px;font-weight:600;">Seconds</td><td>${secs}</td></tr>
+      <tr><td style="padding:4px 8px;font-weight:600;">Milliseconds</td><td>${ms}</td></tr>
+      <tr><td style="padding:4px 8px;font-weight:600;">Relative</td><td>${relativeTime(ms)}</td></tr>
+    </table>`;
+}
+
+// Date → Epoch
+function dateToEpoch() {
+  const y = parseInt(document.getElementById('dYear').value) || 2024;
+  const mo = parseInt(document.getElementById('dMonth').value) || 0;
+  const day = parseInt(document.getElementById('dDay').value) || 1;
+  const h = parseInt(document.getElementById('dHour').value) || 0;
+  const mi = parseInt(document.getElementById('dMin').value) || 0;
+  const s = parseInt(document.getElementById('dSec').value) || 0;
+  const isUTC = document.querySelector('input[name="tz"]:checked').value === 'utc';
+
+  const d = isUTC ? new Date(Date.UTC(y, mo, day, h, mi, s)) : new Date(y, mo, day, h, mi, s);
+  const secs = Math.floor(d.getTime() / 1000);
+
+  document.getElementById('dateResult').innerHTML = `
+    <div style="font-family:'Fira Mono',monospace;">
+      <strong>Seconds:</strong> ${secs}<br>
+      <strong>Milliseconds:</strong> ${d.getTime()}<br>
+      <strong>ISO 8601:</strong> ${d.toISOString()}<br>
+      <strong>UTC:</strong> ${d.toUTCString()}
+    </div>`;
+}
+
+function relativeTime(ms) {
+  const diff = Date.now() - ms;
+  const abs = Math.abs(diff);
+  const suffix = diff > 0 ? 'ago' : 'from now';
+  if (abs < 60000) return Math.floor(abs / 1000) + ' seconds ' + suffix;
+  if (abs < 3600000) return Math.floor(abs / 60000) + ' minutes ' + suffix;
+  if (abs < 86400000) return Math.floor(abs / 3600000) + ' hours ' + suffix;
+  if (abs < 2592000000) return Math.floor(abs / 86400000) + ' days ' + suffix;
+  if (abs < 31536000000) return Math.floor(abs / 2592000000) + ' months ' + suffix;
+  return Math.floor(abs / 31536000000) + ' years ' + suffix;
+}
+
+// Reference table
+const refs = [
+  ['Unix Epoch', 0],
+  ['Y2K', 946684800],
+  ['COVID-19 Pandemic Declared', 1583971200],
+  ['Year 2038 Problem', 2147483647],
+  ['Y2K38 Max (signed 32-bit)', 2147483647],
+];
+const tbody = document.getElementById('refTable');
+refs.forEach(([name, ts]) => {
+  const d = new Date(ts * 1000).toUTCString();
+  tbody.innerHTML += `<tr><td>${name}</td><td style="font-family:'Fira Mono',monospace;cursor:pointer;" onclick="document.getElementById('epochInput').value='${ts}';epochToDate();">${ts}</td><td>${d}</td></tr>`;
+});
+
+dateToEpoch();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Grid Generator — Visual Grid Layout Builder | ToolNook</title>
+  <meta name="description" content="Free visual CSS Grid layout builder. Drag to create grid areas, set rows/columns/gaps, and export clean CSS code." />
+  <meta name="keywords" content="CSS Grid generator, grid layout builder, CSS Grid tool, grid template, CSS layout" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/css-grid-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .grid-preview{border:2px dashed var(--border);border-radius:10px;padding:16px;min-height:350px;background:var(--card-bg);transition:all .3s;}
+    .grid-cell{background:var(--primary);opacity:.75;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:.85rem;min-height:50px;transition:all .2s;cursor:pointer;}
+    .grid-cell:hover{opacity:1;transform:scale(1.02);}
+    .grid-controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:18px;}
+    .grid-controls .form-group{margin-bottom:0;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#css-gen-tools">CSS Generators</a> &rsaquo; CSS Grid Generator</div>
+      <h1><i class="fa-solid fa-grip"></i> CSS Grid Generator</h1>
+      <p>Build CSS Grid layouts visually. Adjust columns, rows, and gaps, then copy the generated CSS and HTML.</p>
+    </div>
+    <div class="tool-container">
+      <div class="grid-controls">
+        <div class="form-group">
+          <label for="cols">Columns</label>
+          <input type="number" class="tool-input" id="cols" value="3" min="1" max="12" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="rows">Rows</label>
+          <input type="number" class="tool-input" id="rows" value="3" min="1" max="12" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="colGap">Column Gap</label>
+          <input type="text" class="tool-input" id="colGap" value="16px" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="rowGap">Row Gap</label>
+          <input type="text" class="tool-input" id="rowGap" value="16px" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="colSizes">Column Sizes</label>
+          <input type="text" class="tool-input" id="colSizes" placeholder="1fr 1fr 1fr" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="rowSizes">Row Sizes</label>
+          <input type="text" class="tool-input" id="rowSizes" placeholder="auto auto auto" oninput="render()" />
+        </div>
+        <div class="form-group">
+          <label for="justifyItems">Justify Items</label>
+          <select class="tool-input" id="justifyItems" oninput="render()">
+            <option value="stretch">stretch</option>
+            <option value="start">start</option>
+            <option value="center">center</option>
+            <option value="end">end</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="alignItems">Align Items</label>
+          <select class="tool-input" id="alignItems" oninput="render()">
+            <option value="stretch">stretch</option>
+            <option value="start">start</option>
+            <option value="center">center</option>
+            <option value="end">end</option>
+          </select>
+        </div>
+      </div>
+
+      <label style="font-weight:600;margin-bottom:8px;display:block;">Preview</label>
+      <div class="grid-preview" id="gridPreview"></div>
+
+      <div class="tabs" style="margin-top:18px;">
+        <button class="tab-btn active" onclick="showTab('css')">CSS</button>
+        <button class="tab-btn" onclick="showTab('html')">HTML</button>
+      </div>
+      <div id="tab-css">
+        <textarea class="tool-input" id="cssOutput" rows="12" readonly></textarea>
+      </div>
+      <div id="tab-html" style="display:none;">
+        <textarea class="tool-input" id="htmlOutput" rows="10" readonly></textarea>
+      </div>
+      <div class="btn-group" style="margin-top:8px;">
+        <button class="btn btn-primary btn-sm" id="copyBtn" onclick="copyCurrentTab()"><i class="fa-solid fa-copy"></i> Copy CSS</button>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About CSS Grid Generator</h2>
+      <p>CSS Grid is a powerful two-dimensional layout system for the web. Use this visual tool to experiment with rows, columns, gaps, and alignment, then export the resulting CSS for your project.</p>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let currentTab = 'css';
+
+function showTab(tab) {
+  currentTab = tab;
+  document.getElementById('tab-css').style.display = tab === 'css' ? '' : 'none';
+  document.getElementById('tab-html').style.display = tab === 'html' ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', (i === 0 && tab === 'css') || (i === 1 && tab === 'html')));
+  document.getElementById('copyBtn').innerHTML = `<i class="fa-solid fa-copy"></i> Copy ${tab.toUpperCase()}`;
+}
+
+function copyCurrentTab() {
+  const id = currentTab === 'css' ? 'cssOutput' : 'htmlOutput';
+  navigator.clipboard.writeText(document.getElementById(id).value);
+}
+
+const COLORS = ['#4f46e5','#0ea5e9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16','#06b6d4'];
+
+function render() {
+  const cols = Math.max(1, Math.min(12, parseInt(document.getElementById('cols').value) || 3));
+  const rows = Math.max(1, Math.min(12, parseInt(document.getElementById('rows').value) || 3));
+  const colGap = document.getElementById('colGap').value || '16px';
+  const rowGap = document.getElementById('rowGap').value || '16px';
+  const colSizes = document.getElementById('colSizes').value || ('1fr '.repeat(cols).trim());
+  const rowSizes = document.getElementById('rowSizes').value || ('auto '.repeat(rows).trim());
+  const justify = document.getElementById('justifyItems').value;
+  const align = document.getElementById('alignItems').value;
+
+  const preview = document.getElementById('gridPreview');
+  preview.style.display = 'grid';
+  preview.style.gridTemplateColumns = colSizes;
+  preview.style.gridTemplateRows = rowSizes;
+  preview.style.columnGap = colGap;
+  preview.style.rowGap = rowGap;
+  preview.style.justifyItems = justify;
+  preview.style.alignItems = align;
+
+  const total = cols * rows;
+  preview.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+    cell.style.background = COLORS[i % COLORS.length];
+    cell.textContent = i + 1;
+    preview.appendChild(cell);
+  }
+
+  // Generate CSS
+  let css = `.grid-container {\n  display: grid;\n  grid-template-columns: ${colSizes};\n  grid-template-rows: ${rowSizes};\n  column-gap: ${colGap};\n  row-gap: ${rowGap};`;
+  if (justify !== 'stretch') css += `\n  justify-items: ${justify};`;
+  if (align !== 'stretch') css += `\n  align-items: ${align};`;
+  css += '\n}';
+
+  document.getElementById('cssOutput').value = css;
+
+  // Generate HTML
+  let html = '<div class="grid-container">\n';
+  for (let i = 0; i < total; i++) {
+    html += `  <div class="grid-item">${i + 1}</div>\n`;
+  }
+  html += '</div>';
+  document.getElementById('htmlOutput').value = html;
+}
+
+render();
+</script>
+</body>
+</html>

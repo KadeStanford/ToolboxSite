@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CORS Tester — Test CORS Headers Online | ToolNook</title>
+  <meta name="description" content="Free online CORS tester. Check if a URL supports Cross-Origin Resource Sharing. Test CORS headers, methods, and policies for any endpoint." />
+  <meta name="keywords" content="CORS tester, test CORS headers, cross-origin resource sharing, CORS checker, CORS policy test, CORS debug" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/cors-tester.html" />
+  <meta property="og:title" content="CORS Tester | ToolNook" />
+  <meta property="og:description" content="Test CORS headers and policies for any URL instantly." />
+  <meta property="og:url" content="https://toolnook.net/tools/cors-tester.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#security-tools">Security</a> &rsaquo; CORS Tester</div>
+      <h1><i class="fa-solid fa-globe"></i> CORS Tester</h1>
+      <p>Test if a URL allows Cross-Origin requests from the browser.</p>
+    </div>
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="urlInput">URL to Test</label>
+        <input type="text" class="tool-input" id="urlInput" placeholder="https://api.example.com/endpoint" value="https://httpbin.org/get" />
+      </div>
+      <div class="input-row" style="margin-bottom:14px;">
+        <div>
+          <label style="font-size:.85rem;font-weight:600;">Method</label>
+          <select class="tool-input" id="methodSelect">
+            <option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option><option>PATCH</option><option>OPTIONS</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.85rem;font-weight:600;">Origin (simulated)</label>
+          <input type="text" class="tool-input" id="originInput" placeholder="https://example.com" value="" />
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="testCORS()"><i class="fa-solid fa-paper-plane"></i> Test CORS</button>
+      </div>
+      <div id="results" style="margin-top:20px;"></div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About CORS Tester</h2>
+      <p>Cross-Origin Resource Sharing (CORS) controls which domains can make requests to an API. This tool sends real requests from your browser to check CORS behavior.</p>
+      <h3>How It Works</h3>
+      <p>The tool makes an actual fetch request from this page. If the server allows cross-origin requests, you'll see the response and CORS headers. If CORS is blocked, the browser prevents access and you'll see the error.</p>
+      <h3>Common CORS Headers</h3>
+      <ul>
+        <li><strong>Access-Control-Allow-Origin</strong> — Which origins can access the resource</li>
+        <li><strong>Access-Control-Allow-Methods</strong> — Allowed HTTP methods</li>
+        <li><strong>Access-Control-Allow-Headers</strong> — Allowed request headers</li>
+        <li><strong>Access-Control-Allow-Credentials</strong> — Whether cookies are allowed</li>
+      </ul>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+async function testCORS() {
+  const url = document.getElementById('urlInput').value.trim();
+  const method = document.getElementById('methodSelect').value;
+  const res = document.getElementById('results');
+
+  if (!url) { res.innerHTML = '<p style="color:var(--error)">Please enter a URL.</p>'; return; }
+
+  res.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Testing CORS...</p>';
+
+  const start = performance.now();
+
+  try {
+    const response = await fetch(url, { method, mode: 'cors' });
+    const elapsed = Math.round(performance.now() - start);
+
+    const headers = {};
+    const corsHeaders = ['access-control-allow-origin','access-control-allow-methods','access-control-allow-headers',
+      'access-control-allow-credentials','access-control-expose-headers','access-control-max-age',
+      'content-type','server','x-powered-by','vary'];
+    response.headers.forEach((v, k) => { headers[k] = v; });
+
+    const corsAllowOrigin = headers['access-control-allow-origin'] || '';
+    const isAllowed = response.ok || response.type === 'cors';
+
+    res.innerHTML = `
+      <div class="result-card" style="background:${isAllowed ? 'linear-gradient(135deg, #dcfce7, #f0fdf4)' : 'linear-gradient(135deg, #fee2e2, #fef2f2)'};border-color:${isAllowed ? '#86efac' : '#fca5a5'};">
+        <div style="font-size:2rem;margin-bottom:4px;">${isAllowed ? '<i class="fa-solid fa-circle-check" style="color:#16a34a"></i>' : '<i class="fa-solid fa-circle-xmark" style="color:#dc2626"></i>'}</div>
+        <div style="font-size:1.2rem;font-weight:700;color:${isAllowed ? '#15803d' : '#dc2626'};">${isAllowed ? 'CORS Allowed' : 'CORS Restricted'}</div>
+      </div>
+      <div class="stats-grid" style="margin-top:14px;">
+        <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${response.status}</div><div class="stat-label">Status Code</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${response.statusText || 'OK'}</div><div class="stat-label">Status Text</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${method}</div><div class="stat-label">Method</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1.1rem;">${elapsed}ms</div><div class="stat-label">Response Time</div></div>
+      </div>
+      <div style="margin-top:16px;">
+        <h3 style="font-size:.95rem;margin-bottom:8px;">Response Headers</h3>
+        <div class="output-box" style="font-size:.82rem;">
+${Object.entries(headers).map(([k,v]) => {
+  const isCors = k.startsWith('access-control');
+  return `<span style="color:${isCors ? 'var(--primary)' : 'var(--text-muted)'};font-weight:${isCors ? '700' : '400'}">${escHtml(k)}</span>: ${escHtml(v)}`;
+}).join('\n')}
+        </div>
+      </div>`;
+  } catch (err) {
+    const elapsed = Math.round(performance.now() - start);
+    res.innerHTML = `
+      <div class="result-card" style="background:linear-gradient(135deg, #fee2e2, #fef2f2);border-color:#fca5a5;">
+        <div style="font-size:2rem;margin-bottom:4px;"><i class="fa-solid fa-circle-xmark" style="color:#dc2626"></i></div>
+        <div style="font-size:1.2rem;font-weight:700;color:#dc2626;">CORS Blocked</div>
+        <div style="font-size:.85rem;color:#991b1b;margin-top:4px;">The browser blocked this cross-origin request</div>
+      </div>
+      <div class="info-card" style="margin-top:14px;">
+        <strong>Error:</strong> ${escHtml(err.message)}<br>
+        <strong>Time:</strong> ${elapsed}ms<br><br>
+        This typically means the server does not include the necessary CORS headers
+        (<code>Access-Control-Allow-Origin</code>) or explicitly blocks this origin.
+      </div>`;
+  }
+}
+
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+</script>
+</body>
+</html>

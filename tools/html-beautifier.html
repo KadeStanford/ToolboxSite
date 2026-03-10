@@ -83,7 +83,7 @@ function beautify(){
 
   // Tokenize
   const tokens=[];
-  const re=/<!--[\s\S]*?-->|<!DOCTYPE[^>]*>|<\/?\s*([a-zA-Z][a-zA-Z0-9-]*)[^>]*\/?>|[^<]+/gi;
+  const re=new RegExp('<!--[\\s\\S]*?-->|<!DOCTYPE[^>]*>|<\\/?\\s*([a-zA-Z][a-zA-Z0-9-]*)[^>]*\\/?>|[^<]+','gi');
   let m;
   while((m=re.exec(input))!==null){
     const t=m[0].trim();

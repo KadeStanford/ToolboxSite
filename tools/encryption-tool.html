@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Encryption/Decryption Tool — AES Encrypt Text Online | ToolNook</title>
+  <meta name="description" content="Free online AES encryption and decryption tool. Encrypt text with a password using AES-GCM 256-bit encryption. All processing happens in your browser." />
+  <meta name="keywords" content="encryption tool, AES encryption, decrypt text online, encrypt text, AES-GCM, browser encryption, password encryption" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/encryption-tool.html" />
+  <meta property="og:title" content="AES Encryption/Decryption Tool | ToolNook" />
+  <meta property="og:description" content="Encrypt and decrypt text with AES-256-GCM in your browser. No data sent to servers." />
+  <meta property="og:url" content="https://toolnook.net/tools/encryption-tool.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#security-tools">Security</a> &rsaquo; Encryption Tool</div>
+      <h1><i class="fa-solid fa-key"></i> Encryption / Decryption Tool</h1>
+      <p>Encrypt and decrypt text using AES-256-GCM. Everything runs in your browser — no data leaves your machine.</p>
+    </div>
+    <div class="tool-container">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('encrypt')">Encrypt</button>
+        <button class="tab-btn" onclick="switchTab('decrypt')">Decrypt</button>
+      </div>
+      <div class="tab-panel active" id="tab-encrypt">
+        <div class="form-group">
+          <label for="plaintext">Plaintext</label>
+          <textarea class="tool-input" id="plaintext" rows="5" placeholder="Enter text to encrypt..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="encPass">Password</label>
+          <input type="password" class="tool-input" id="encPass" placeholder="Enter a strong password" />
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="doEncrypt()"><i class="fa-solid fa-lock"></i> Encrypt</button>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Encrypted Output (Base64)</label>
+          <div class="output-box" id="encOutput" style="min-height:60px;position:relative;"></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-decrypt">
+        <div class="form-group">
+          <label for="ciphertext">Encrypted Text (Base64)</label>
+          <textarea class="tool-input" id="ciphertext" rows="5" placeholder="Paste the encrypted Base64 string..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="decPass">Password</label>
+          <input type="password" class="tool-input" id="decPass" placeholder="Enter the password used to encrypt" />
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="doDecrypt()"><i class="fa-solid fa-unlock"></i> Decrypt</button>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Decrypted Output</label>
+          <div class="output-box" id="decOutput" style="min-height:60px;position:relative;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="seo-content">
+      <h2>About This Encryption Tool</h2>
+      <p>This tool uses the Web Crypto API to perform AES-256-GCM encryption entirely in your browser. No data is ever sent to a server.</p>
+      <h3>How It Works</h3>
+      <ul>
+        <li>Your password is derived into a 256-bit key using <strong>PBKDF2</strong> with 100,000 iterations and a random salt</li>
+        <li>Text is encrypted using <strong>AES-GCM</strong> (Galois/Counter Mode) — authenticated encryption that ensures both confidentiality and integrity</li>
+        <li>The output includes the salt + IV + ciphertext, all Base64-encoded for easy sharing</li>
+      </ul>
+    </section>
+  </main>
+  <aside class="sidebar" id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', b.textContent.toLowerCase().includes(id)));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + id));
+}
+
+const enc = new TextEncoder();
+const dec = new TextDecoder();
+
+async function deriveKey(password, salt) {
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+function toBase64(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)));
+}
+function fromBase64(str) {
+  const bin = atob(str);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return arr;
+}
+
+async function doEncrypt() {
+  const text = document.getElementById('plaintext').value;
+  const pass = document.getElementById('encPass').value;
+  const out = document.getElementById('encOutput');
+
+  if (!text || !pass) { out.textContent = 'Please enter text and a password.'; return; }
+
+  try {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const key = await deriveKey(pass, salt);
+    const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+
+    // Combine: salt (16) + iv (12) + ciphertext
+    const combined = new Uint8Array(salt.length + iv.length + new Uint8Array(encrypted).length);
+    combined.set(salt, 0);
+    combined.set(iv, salt.length);
+    combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+    out.textContent = toBase64(combined);
+    out.innerHTML += '<button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById(\'encOutput\').textContent.replace(\'Copied!\',\'\').trim())">Copy</button>';
+  } catch (e) {
+    out.textContent = 'Encryption failed: ' + e.message;
+  }
+}
+
+async function doDecrypt() {
+  const cipher = document.getElementById('ciphertext').value.trim();
+  const pass = document.getElementById('decPass').value;
+  const out = document.getElementById('decOutput');
+
+  if (!cipher || !pass) { out.textContent = 'Please enter encrypted text and the password.'; return; }
+
+  try {
+    const data = fromBase64(cipher);
+    const salt = data.slice(0, 16);
+    const iv = data.slice(16, 28);
+    const ciphertext = data.slice(28);
+
+    const key = await deriveKey(pass, salt);
+    const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+
+    out.textContent = dec.decode(decrypted);
+    out.innerHTML += '<button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById(\'decOutput\').textContent.replace(\'Copied!\',\'\').trim())">Copy</button>';
+  } catch (e) {
+    out.innerHTML = '<span style="color:var(--error)">Decryption failed. Wrong password or corrupted data.</span>';
+  }
+}
+</script>
+</body>
+</html>
