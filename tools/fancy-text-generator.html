@@ -75,44 +75,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('related-grid').innerHTML  = renderRelatedTools('fancy-text-generator','text');
 });
 
-const STYLES = [
-  { name:'Bold',cat:'basic',map:s=>mapChars(s,0x1D400,0x1D41A)},
-  { name:'Italic',cat:'basic',map:s=>mapChars(s,0x1D434,0x1D44E)},
-  { name:'Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D468,0x1D482)},
-  { name:'Script',cat:'fancy',map:s=>mapChars(s,0x1D49C,0x1D4B6)},
-  { name:'Bold Script',cat:'fancy',map:s=>mapChars(s,0x1D4D0,0x1D4EA)},
-  { name:'Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D504,0x1D51E)},
-  { name:'Bold Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D56C,0x1D586)},
-  { name:'Double-Struck',cat:'fancy',map:s=>mapChars(s,0x1D538,0x1D552)},
-  { name:'Sans-Serif',cat:'basic',map:s=>mapChars(s,0x1D5A0,0x1D5BA)},
-  { name:'Sans Bold',cat:'basic',map:s=>mapChars(s,0x1D5D4,0x1D5EE)},
-  { name:'Sans Italic',cat:'basic',map:s=>mapChars(s,0x1D608,0x1D622)},
-  { name:'Sans Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D63C,0x1D656)},
-  { name:'Monospace',cat:'basic',map:s=>mapChars(s,0x1D670,0x1D68A)},
-  { name:'Circled',cat:'enclosed',map:s=>mapEnclosed(s,0x24B6,0x24D0)},
-  { name:'Negative Circled',cat:'enclosed',map:s=>mapNeg(s)},
-  { name:'Squared',cat:'enclosed',map:s=>mapSquared(s,0x1F130)},
-  { name:'Fullwidth',cat:'wide',map:s=>mapFullwidth(s)},
-  { name:'Upside Down',cat:'fun',map:s=>flipText(s)},
-  { name:'Strikethrough',cat:'deco',map:s=>[...s].map(c=>c+'\u0336').join('')},
-  { name:'Underline',cat:'deco',map:s=>[...s].map(c=>c+'\u0332').join('')},
-  { name:'Wavy',cat:'deco',map:s=>[...s].map(c=>c+'\u0330').join('')},
-  { name:'Dotted',cat:'deco',map:s=>[...s].map(c=>c+'\u0307').join('')},
-  { name:'Sparkles',cat:'fun',map:s=>'✨ '+s+' ✨'},
-  { name:'Stars',cat:'fun',map:s=>'★·.·´¯`·.·★ '+s+' ★·.·´¯`·.·★'},
-  { name:'Flowers',cat:'fun',map:s=>'❀ '+s+' ❀'},
-  { name:'Hearts',cat:'fun',map:s=>'♥ '+[...s].join(' ♥ ')+' ♥'},
-  { name:'Lenny',cat:'fun',map:s=>'( ͡° ͜ʖ ͡°) '+s+' ( ͡° ͜ʖ ͡°)'},
-  { name:'Aesthetic',cat:'wide',map:s=>[...s].join(' ')},
-];
+// Unicode exception maps for blocks with gaps
+const SCRIPT_UPPER = {B:'\u212C',E:'\u2130',F:'\u2131',H:'\u210B',I:'\u2110',L:'\u2112',M:'\u2133',R:'\u211B'};
+const SCRIPT_LOWER = {e:'\u212F',g:'\u210A',o:'\u2134'};
+const FRAKTUR_UPPER = {C:'\u212D',H:'\u210C',I:'\u2111',R:'\u211C',Z:'\u2128'};
+const DBLSTRUCK_UPPER = {C:'\u2102',H:'\u210D',N:'\u2115',P:'\u2119',Q:'\u211A',R:'\u211D',Z:'\u2124'};
 
-const CATS = ['all','basic','fancy','gothic','enclosed','wide','deco','fun'];
-
-function mapChars(s, upperStart, lowerStart) {
+function mapChars(s, upperStart, lowerStart, upperEx, lowerEx) {
   return [...s].map(c => {
     const code = c.charCodeAt(0);
-    if (code >= 65 && code <= 90) return String.fromCodePoint(upperStart + (code - 65));
-    if (code >= 97 && code <= 122) return String.fromCodePoint(lowerStart + (code - 97));
+    if (code >= 65 && code <= 90) {
+      if (upperEx && upperEx[c]) return upperEx[c];
+      return String.fromCodePoint(upperStart + (code - 65));
+    }
+    if (code >= 97 && code <= 122) {
+      if (lowerEx && lowerEx[c]) return lowerEx[c];
+      return String.fromCodePoint(lowerStart + (code - 97));
+    }
     return c;
   }).join('');
 }
@@ -126,24 +105,6 @@ function mapEnclosed(s, upperStart, lowerStart) {
   }).join('');
 }
 
-function mapNeg(s) {
-  return [...s].map(c => {
-    const code = c.charCodeAt(0);
-    if (code >= 65 && code <= 90) return String.fromCodePoint(0x1F150 + (code - 65));
-    if (code >= 97 && code <= 122) return String.fromCodePoint(0x1F150 + (code - 97));
-    return c;
-  }).join('');
-}
-
-function mapSquared(s, start) {
-  return [...s].map(c => {
-    const code = c.charCodeAt(0);
-    if (code >= 65 && code <= 90) return String.fromCodePoint(start + (code - 65));
-    if (code >= 97 && code <= 122) return String.fromCodePoint(start + (code - 97));
-    return c;
-  }).join('');
-}
-
 function mapFullwidth(s) {
   return [...s].map(c => {
     const code = c.charCodeAt(0);
@@ -153,8 +114,99 @@ function mapFullwidth(s) {
   }).join('');
 }
 
-const FLIP_MAP = {'a':'ɐ','b':'q','c':'ɔ','d':'p','e':'ǝ','f':'ɟ','g':'ƃ','h':'ɥ','i':'ᴉ','j':'ɾ','k':'ʞ','l':'l','m':'ɯ','n':'u','o':'o','p':'d','q':'b','r':'ɹ','s':'s','t':'ʇ','u':'n','v':'ʌ','w':'ʍ','x':'x','y':'ʎ','z':'z','A':'∀','B':'q','C':'Ɔ','D':'p','E':'Ǝ','F':'Ⅎ','G':'פ','H':'H','I':'I','J':'ſ','K':'ʞ','L':'˥','M':'W','N':'N','O':'O','P':'Ԁ','Q':'Q','R':'ɹ','S':'S','T':'┴','U':'∩','V':'Λ','W':'M','X':'X','Y':'⅄','Z':'Z','1':'Ɩ','2':'ᄅ','3':'Ɛ','4':'ㄣ','5':'ϛ','6':'9','7':'ㄥ','8':'8','9':'6','0':'0','.':'˙',',':'\'','\'':',','"':',,','`':',','?':'¿','!':'¡','(':')',')':'(','[':']',']':'[','{':'}','}':'{','<':'>','>':'<','&':'⅋','_':'‾'};
+const FLIP_MAP = {'a':'\u0250','b':'q','c':'\u0254','d':'p','e':'\u01DD','f':'\u025F','g':'\u0183','h':'\u0265','i':'\u1D09','j':'\u027E','k':'\u029E','l':'l','m':'\u026F','n':'u','o':'o','p':'d','q':'b','r':'\u0279','s':'s','t':'\u0287','u':'n','v':'\u028C','w':'\u028D','x':'x','y':'\u028E','z':'z','A':'\u2200','B':'q','C':'\u0186','D':'p','E':'\u018E','F':'\u2132','G':'\u05E4','H':'H','I':'I','J':'\u017F','K':'\u029E','L':'\u02E5','M':'W','N':'N','O':'O','P':'\u0500','Q':'Q','R':'\u0279','S':'S','T':'\u2534','U':'\u2229','V':'\u039B','W':'M','X':'X','Y':'\u2144','Z':'Z','1':'\u0196','2':'\u1105','3':'\u0190','4':'\u3123','5':'\u03DB','6':'9','7':'\u3125','8':'8','9':'6','0':'0','.':'\u02D9',',':'\'','\'':',','"':',,','`':',','?':'\u00BF','!':'\u00A1','(':')',')':'(','[':']',']':'[','{':'}','}':'{','<':'>','>':'<','&':'\u214B','_':'\u203E'};
 function flipText(s) { return [...s].reverse().map(c => FLIP_MAP[c] || c).join(''); }
+
+const SMALL_CAPS = {a:'\u1D00',b:'\u0299',c:'\u1D04',d:'\u1D05',e:'\u1D07',f:'\uA730',g:'\u0262',h:'\u029C',i:'\u026A',j:'\u1D0A',k:'\u1D0B',l:'\u029F',m:'\u1D0D',n:'\u0274',o:'\u1D0F',p:'\u1D18',q:'\u01EB',r:'\u0280',s:'\uA731',t:'\u1D1B',u:'\u1D1C',v:'\u1D20',w:'\u1D21',x:'x',y:'\u028F',z:'\u1D22'};
+function smallCaps(s) {
+  return [...s].map(c => {
+    if (c >= 'a' && c <= 'z') return SMALL_CAPS[c] || c;
+    if (c >= 'A' && c <= 'Z') return SMALL_CAPS[c.toLowerCase()] || c;
+    return c;
+  }).join('');
+}
+
+const SUPER_MAP = {a:'\u1D43',b:'\u1D47',c:'\u1D9C',d:'\u1D48',e:'\u1D49',f:'\u1DA0',g:'\u1D4D',h:'\u02B0',i:'\u2071',j:'\u02B2',k:'\u1D4F',l:'\u02E1',m:'\u1D50',n:'\u207F',o:'\u1D52',p:'\u1D56',r:'\u02B3',s:'\u02E2',t:'\u1D57',u:'\u1D58',v:'\u1D5B',w:'\u02B7',x:'\u02E3',y:'\u02B8',z:'\u1DBB'};
+function superscript(s) {
+  return [...s].map(c => {
+    const lower = c.toLowerCase();
+    return SUPER_MAP[lower] || c;
+  }).join('');
+}
+
+function parenthesized(s) {
+  return [...s].map(c => {
+    const code = c.charCodeAt(0);
+    if (code >= 65 && code <= 90) return String.fromCodePoint(0x249C + (code - 65));
+    if (code >= 97 && code <= 122) return String.fromCodePoint(0x249C + (code - 97));
+    return c;
+  }).join('');
+}
+
+const MORSE = {A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..',0:'-----',1:'.----',2:'..---',3:'...--',4:'....-',5:'.....',6:'-....',7:'--...',8:'---..',9:'----.'};
+function morseCode(s) { return [...s.toUpperCase()].map(c => MORSE[c] || c).join(' '); }
+
+const LEET = {a:'4',b:'8',c:'(',d:'|)',e:'3',f:'|=',g:'6',h:'#',i:'1',j:'_|',k:'|<',l:'|_',m:'/\\/\\',n:'|\\|',o:'0',p:'|>',q:'0,',r:'|2',s:'5',t:'7',u:'|_|',v:'\\/',w:'\\/\\/',x:'><',y:'`/',z:'2'};
+function leetSpeak(s) { return [...s].map(c => LEET[c.toLowerCase()] || c.toUpperCase()).join(''); }
+
+function zalgo(s) {
+  const marks = ['\u0300','\u0301','\u0302','\u0303','\u0304','\u0305','\u0306','\u0307','\u0308','\u030A','\u030B','\u030C','\u030D','\u030E','\u030F','\u0310','\u0311','\u0312','\u0313','\u0314','\u0316','\u0317','\u0318','\u0319','\u031A','\u031B','\u031C','\u031D','\u031E','\u031F','\u0320','\u0321','\u0322','\u0323','\u0324','\u0325','\u0326','\u0327','\u0328','\u0329','\u032A','\u032B','\u032C','\u032D','\u032E','\u032F','\u0330','\u0331','\u0332','\u0333','\u0334','\u0335','\u0336','\u0337','\u0338'];
+  return [...s].map(c => {
+    if (c === ' ') return c;
+    let r = c;
+    const n = 2 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < n; i++) r += marks[Math.floor(Math.random() * marks.length)];
+    return r;
+  }).join('');
+}
+
+const STYLES = [
+  { name:'Bold',cat:'basic',map:s=>mapChars(s,0x1D400,0x1D41A)},
+  { name:'Italic',cat:'basic',map:s=>mapChars(s,0x1D434,0x1D44E)},
+  { name:'Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D468,0x1D482)},
+  { name:'Script',cat:'fancy',map:s=>mapChars(s,0x1D49C,0x1D4B6,SCRIPT_UPPER,SCRIPT_LOWER)},
+  { name:'Bold Script',cat:'fancy',map:s=>mapChars(s,0x1D4D0,0x1D4EA)},
+  { name:'Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D504,0x1D51E,FRAKTUR_UPPER)},
+  { name:'Bold Fraktur',cat:'gothic',map:s=>mapChars(s,0x1D56C,0x1D586)},
+  { name:'Double-Struck',cat:'fancy',map:s=>mapChars(s,0x1D538,0x1D552,DBLSTRUCK_UPPER)},
+  { name:'Sans-Serif',cat:'basic',map:s=>mapChars(s,0x1D5A0,0x1D5BA)},
+  { name:'Sans Bold',cat:'basic',map:s=>mapChars(s,0x1D5D4,0x1D5EE)},
+  { name:'Sans Italic',cat:'basic',map:s=>mapChars(s,0x1D608,0x1D622)},
+  { name:'Sans Bold Italic',cat:'basic',map:s=>mapChars(s,0x1D63C,0x1D656)},
+  { name:'Monospace',cat:'basic',map:s=>mapChars(s,0x1D670,0x1D68A)},
+  { name:'Small Caps',cat:'fancy',map:s=>smallCaps(s)},
+  { name:'Superscript',cat:'fancy',map:s=>superscript(s)},
+  { name:'Circled',cat:'enclosed',map:s=>mapEnclosed(s,0x24B6,0x24D0)},
+  { name:'Parenthesized',cat:'enclosed',map:s=>parenthesized(s)},
+  { name:'Fullwidth',cat:'wide',map:s=>mapFullwidth(s)},
+  { name:'Upside Down',cat:'fun',map:s=>flipText(s)},
+  { name:'Strikethrough',cat:'deco',map:s=>[...s].map(c=>c+'\u0336').join('')},
+  { name:'Underline',cat:'deco',map:s=>[...s].map(c=>c+'\u0332').join('')},
+  { name:'Double Underline',cat:'deco',map:s=>[...s].map(c=>c+'\u0333').join('')},
+  { name:'Wavy',cat:'deco',map:s=>[...s].map(c=>c+'\u0330').join('')},
+  { name:'Dotted',cat:'deco',map:s=>[...s].map(c=>c+'\u0307').join('')},
+  { name:'Slash Through',cat:'deco',map:s=>[...s].map(c=>c+'\u0338').join('')},
+  { name:'X Above',cat:'deco',map:s=>[...s].map(c=>c+'\u033D').join('')},
+  { name:'Tilde Overlay',cat:'deco',map:s=>[...s].map(c=>c+'\u0334').join('')},
+  { name:'Zalgo',cat:'fun',map:s=>zalgo(s)},
+  { name:'Morse Code',cat:'fun',map:s=>morseCode(s)},
+  { name:'Leet Speak',cat:'fun',map:s=>leetSpeak(s)},
+  { name:'Aesthetic',cat:'wide',map:s=>[...s].join(' ')},
+  { name:'Brackets',cat:'deco',map:s=>[...s].map(c=>c===' '?c:'['+c+']').join('')},
+  { name:'Braces',cat:'deco',map:s=>[...s].map(c=>c===' '?c:'{'+c+'}').join('')},
+  { name:'Arrows',cat:'fun',map:s=>[...s].filter(c=>c!==' ').join('\u2192')},
+  { name:'Sparkles',cat:'fun',map:s=>'\u2728 '+s+' \u2728'},
+  { name:'Stars',cat:'fun',map:s=>'\u2605\u00B7.\u00B7\u00B4\u00AF`\u00B7.\u00B7\u2605 '+s+' \u2605\u00B7.\u00B7\u00B4\u00AF`\u00B7.\u00B7\u2605'},
+  { name:'Flowers',cat:'fun',map:s=>'\u2740 '+s+' \u2740'},
+  { name:'Hearts',cat:'fun',map:s=>'\u2665 '+[...s].join(' \u2665 ')+' \u2665'},
+  { name:'Lenny',cat:'fun',map:s=>'( \u0361\u00B0 \u035C\u0296 \u0361\u00B0) '+s+' ( \u0361\u00B0 \u035C\u0296 \u0361\u00B0)'},
+  { name:'Cloud',cat:'fun',map:s=>'\u2601 '+s+' \u2601'},
+  { name:'Lightning',cat:'fun',map:s=>'\u26A1 '+s+' \u26A1'},
+  { name:'Swords',cat:'fun',map:s=>'\u2694 '+s+' \u2694'},
+  { name:'Music',cat:'fun',map:s=>'\u266B '+[...s].join(' \u266A ')+' \u266B'},
+];
+
+const CATS = ['all','basic','fancy','gothic','enclosed','wide','deco','fun'];
 
 let currentCat = 'all';
 
@@ -174,18 +226,19 @@ function renderStyles() {
   document.getElementById('style-count').textContent = filtered.length + ' styles';
   grid.innerHTML = filtered.map((s, i) => {
     const converted = s.map(text);
-    return `<div class="style-card" onclick="copyStyle(this, ${i})" data-text="${converted.replace(/"/g,'&quot;')}">
+    const safeText = converted.replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    return `<div class="style-card" onclick="copyStyle(this)" data-text="${safeText}">
       <div class="style-top"><span class="style-name">${s.name}</span><span class="copy-tag">Click to copy</span></div>
-      <div class="style-preview">${converted}</div>
+      <div class="style-preview">${converted.replace(/</g,'&lt;')}</div>
     </div>`;
   }).join('');
 }
 
-function copyStyle(el, idx) {
+function copyStyle(el) {
   const text = el.getAttribute('data-text');
   navigator.clipboard.writeText(text).then(() => {
     el.classList.add('copied');
-    el.querySelector('.copy-tag').textContent = '✓ Copied!';
+    el.querySelector('.copy-tag').textContent = '\u2713 Copied!';
     showToast('Copied!');
     setTimeout(() => {
       el.classList.remove('copied');

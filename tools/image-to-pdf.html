@@ -10,6 +10,7 @@
   <link rel="canonical" href="https://toolnook.net/tools/image-to-pdf.html" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     .drop-zone { border:3px dashed var(--border); border-radius:var(--radius-lg); padding:40px; text-align:center; transition:.2s; cursor:pointer; background:#fafafa; }
     .drop-zone:hover, .drop-zone.drag-over { border-color:var(--primary); background:#eff6ff; }
@@ -189,148 +190,67 @@ function clearAll() { images = []; renderImages(); }
 
 async function generatePDF() {
   if (!images.length) return showToast('Add some images first');
-  
+
   const pageSize = document.getElementById('page-size').value;
   const orient = document.getElementById('orientation').value;
   const margin = parseInt(document.getElementById('margin').value);
   const quality = parseFloat(document.getElementById('quality').value);
-  
+
   const progBar = document.getElementById('progress');
   const progFill = document.getElementById('progress-fill');
   progBar.style.display = '';
   progFill.style.width = '0%';
-  
-  const SIZES = {
-    a4: [595.28, 841.89],
-    letter: [612, 792],
-    legal: [612, 1008]
-  };
-  
-  // Build PDF manually (simple PDF structure)
-  const pdfPages = [];
-  
+
+  const { jsPDF } = window.jspdf;
+  const FORMATS = { a4: 'a4', letter: 'letter', legal: 'legal' };
+  let pdf = null;
+
   for (let i = 0; i < images.length; i++) {
-    progFill.style.width = ((i + 1) / images.length * 80) + '%';
-    
+    progFill.style.width = ((i + 1) / images.length * 90) + '%';
     const img = images[i];
-    let pageW, pageH;
-    
-    if (pageSize === 'fit') {
-      pageW = img.width + margin * 2;
-      pageH = img.height + margin * 2;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    const imgEl = new Image();
+    await new Promise(resolve => { imgEl.onload = resolve; imgEl.src = img.src; });
+    ctx.drawImage(imgEl, 0, 0);
+    const imgData = canvas.toDataURL('image/jpeg', quality);
+
+    let pageOrient = orient === 'auto' ? (img.width > img.height ? 'landscape' : 'portrait') : orient;
+
+    if (i === 0) {
+      if (pageSize === 'fit') {
+        pdf = new jsPDF({ orientation: pageOrient, unit: 'pt', format: [img.width + margin * 2, img.height + margin * 2] });
+      } else {
+        pdf = new jsPDF({ orientation: pageOrient, unit: 'pt', format: FORMATS[pageSize] || 'a4' });
+      }
     } else {
-      [pageW, pageH] = SIZES[pageSize];
-      if (orient === 'landscape' || (orient === 'auto' && img.width > img.height)) {
-        [pageW, pageH] = [pageH, pageW];
+      if (pageSize === 'fit') {
+        pdf.addPage([img.width + margin * 2, img.height + margin * 2], pageOrient);
+      } else {
+        pdf.addPage(FORMATS[pageSize] || 'a4', pageOrient);
       }
     }
-    
-    // Scale image to fit page
-    const availW = pageW - margin * 2;
-    const availH = pageH - margin * 2;
+
+    const pw = pdf.internal.pageSize.getWidth();
+    const ph = pdf.internal.pageSize.getHeight();
+    const availW = pw - margin * 2;
+    const availH = ph - margin * 2;
     const scale = Math.min(availW / img.width, availH / img.height, 1);
     const drawW = img.width * scale;
     const drawH = img.height * scale;
     const x = margin + (availW - drawW) / 2;
     const y = margin + (availH - drawH) / 2;
-    
-    // Create canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = pageW;
-    canvas.height = pageH;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, pageW, pageH);
-    
-    const imgEl = new Image();
-    await new Promise(resolve => { imgEl.onload = resolve; imgEl.src = img.src; });
-    ctx.drawImage(imgEl, x, y, drawW, drawH);
-    
-    pdfPages.push({ canvas, width: pageW, height: pageH });
-  }
-  
-  progFill.style.width = '90%';
-  
-  // Build minimal PDF
-  let pdf = buildPDF(pdfPages, quality);
-  
-  progFill.style.width = '100%';
-  
-  const blob = new Blob([pdf], { type: 'application/pdf' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'images.pdf';
-  a.click();
-  URL.revokeObjectURL(url);
-  
-  setTimeout(() => { progBar.style.display = 'none'; }, 1000);
-  showToast('PDF generated! ' + formatBytes(blob.size));
-}
 
-function buildPDF(pages, quality) {
-  // Simple PDF builder using JPEG images
-  let objects = [];
-  let xref = [];
-  
-  let content = '%PDF-1.4\n';
-  
-  // Catalog
-  objects.push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
-  
-  // Build page tree
-  const pageRefs = pages.map((_, i) => (3 + i * 3) + ' 0 R').join(' ');
-  objects.push(`2 0 obj\n<< /Type /Pages /Kids [${pageRefs}] /Count ${pages.length} >>\nendobj\n`);
-  
-  let objNum = 3;
-  pages.forEach((page, i) => {
-    const jpegData = page.canvas.toDataURL('image/jpeg', quality);
-    const base64 = jpegData.split(',')[1];
-    const binaryStr = atob(base64);
-    const bytes = new Uint8Array(binaryStr.length);
-    for (let j = 0; j < binaryStr.length; j++) bytes[j] = binaryStr.charCodeAt(j);
-    
-    const imgObjNum = objNum;
-    const streamObjNum = objNum + 1;
-    const pageObjNum = objNum + 2;
-    
-    // Image XObject
-    objects.push(`${imgObjNum} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${page.width} /Height ${page.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${bytes.length} >>\nstream\n`);
-    objects.push(bytes);
-    objects.push('\nendstream\nendobj\n');
-    
-    // Content stream
-    const cs = `q ${page.width} 0 0 ${page.height} 0 0 cm /Img${i} Do Q`;
-    objects.push(`${streamObjNum} 0 obj\n<< /Length ${cs.length} >>\nstream\n${cs}\nendstream\nendobj\n`);
-    
-    // Page
-    objects.push(`${pageObjNum} 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${page.width} ${page.height}] /Contents ${streamObjNum} 0 R /Resources << /XObject << /Img${i} ${imgObjNum} 0 R >> >> >>\nendobj\n`);
-    
-    objNum += 3;
-  });
-  
-  // Assemble
-  let assembled = '%PDF-1.4\n';
-  let offsets = [];
-  
-  objects.forEach(obj => {
-    offsets.push(assembled.length || new Blob([assembled]).size);
-    if (obj instanceof Uint8Array) {
-      // Handle binary - we'll use text approach
-      assembled += '';
-    } else {
-      assembled += obj;
-    }
-  });
-  
-  // For simplicity, use canvas toBlob approach for download
-  // This simple PDF builder works for basic cases
-  const xrefOffset = assembled.length;
-  assembled += `xref\n0 ${objNum}\n0000000000 65535 f \n`;
-  
-  assembled += `trailer\n<< /Size ${objNum} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
-  
-  return assembled;
+    pdf.addImage(imgData, 'JPEG', x, y, drawW, drawH);
+  }
+
+  progFill.style.width = '100%';
+  pdf.save('images.pdf');
+  setTimeout(() => { progBar.style.display = 'none'; }, 1000);
+  showToast('PDF generated!');
 }
 </script>
 </body>

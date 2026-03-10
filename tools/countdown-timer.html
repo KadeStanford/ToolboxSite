@@ -140,9 +140,9 @@ function getQuickDates() {
     { label:'Tomorrow',       date:in1 },
     { label:'In 7 days',      date:in7 },
     { label:'In 30 days',     date:in30 },
-    { label:'Christmas Christmas',   date:christmas },
-    { label:'New Year New Year',    date:ny },
-    { label:'Halloween Halloween',   date:halloween },
+    { label:'Christmas',   date:christmas },
+    { label:'New Year',    date:ny },
+    { label:'Halloween',   date:halloween },
   ];
 }
 
@@ -195,7 +195,7 @@ function tick() {
   if (diff <= 0) {
     clearInterval(cdInterval);
     document.getElementById('cd-output').style.display = 'none';
-    document.getElementById('done-label').textContent  = (document.getElementById('ev-name').value || 'Time') + '\'s up! <i class="fa-solid fa-circle-check"></i>';
+    document.getElementById('done-label').innerHTML  = escapeHtml(document.getElementById('ev-name').value || 'Time') + '\'s up! <i class="fa-solid fa-circle-check"></i>';
     document.getElementById('cd-done').style.display   = 'flex';
     return;
   }

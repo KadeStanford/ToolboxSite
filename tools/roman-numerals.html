@@ -182,7 +182,7 @@ function buildRefTable() {
     rows.reduce((a,n,i) => {
       if (i % 2 === 0) return a + `<tr><td>${n}</td><td style="font-family:serif;">${intToRoman(n)}</td>`;
       return a + `<td>${n}</td><td style="font-family:serif;">${intToRoman(n)}</td></tr>`;
-    }, '') + '</tbody></table>';
+    }, '') + (rows.length % 2 ? '<td></td><td></td></tr>' : '') + '</tbody></table>';
   document.getElementById('ref-table').innerHTML = html;
 }
 </script>
