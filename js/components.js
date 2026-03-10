@@ -452,6 +452,35 @@ function enhanceSEO() {
 }
 enhanceSEO();
 
+/* ── Bookmark Modal (shared across all pages) ── */
+function showBookmarkModal(title, url) {
+  if (document.getElementById('bookmarkModal')) return;
+  var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  var shortcut = isMac ? '\u2318+D' : 'Ctrl+D';
+  var overlay = document.createElement('div');
+  overlay.id = 'bookmarkModal';
+  overlay.className = 'bm-overlay';
+  overlay.innerHTML =
+    '<div class="bm-popup">' +
+      '<div class="bm-header"><i class="fa-solid fa-bookmark"></i> Bookmark this page<button class="bm-close" onclick="closeBookmarkModal()" aria-label="Close">&times;</button></div>' +
+      '<div class="bm-body">' +
+        '<div class="bm-field"><label>Name</label><div class="bm-value">' + title.replace(/</g, '&lt;') + '</div></div>' +
+        '<div class="bm-field"><label>URL</label><div class="bm-value bm-url">' + url.replace(/</g, '&lt;') + '</div></div>' +
+        '<div class="bm-hint"><i class="fa-regular fa-keyboard"></i> Press <kbd>' + shortcut + '</kbd> to add this page to your bookmarks</div>' +
+      '</div>' +
+      '<div class="bm-footer"><button class="bm-btn" onclick="closeBookmarkModal()">Got it</button></div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeBookmarkModal(); });
+  document.addEventListener('keydown', _bmEscHandler);
+}
+function _bmEscHandler(e) { if (e.key === 'Escape') closeBookmarkModal(); }
+function closeBookmarkModal() {
+  var m = document.getElementById('bookmarkModal');
+  if (m) m.remove();
+  document.removeEventListener('keydown', _bmEscHandler);
+}
+
 /* ── Tool Page Share/Bookmark Bar ── */
 function renderToolCtas() {
   const path = window.location.pathname;
@@ -474,10 +503,22 @@ function renderToolCtas() {
     else { navigator.clipboard.writeText(data.url).then(function(){ showToast && showToast('Link copied — share it!'); }).catch(function(){ prompt('Copy this link:', data.url); }); }
   };
   window.bookmarkTool = function() {
-    var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    var key = isMac ? '\u2318+D' : 'Ctrl+D';
-    if (typeof showToast === 'function') showToast('Press ' + key + ' to bookmark!');
-    else alert('Press ' + key + ' to bookmark this page');
+    if (window.sidebar && window.sidebar.addPanel) {
+      window.sidebar.addPanel(document.title, window.location.href, '');
+      return;
+    }
+    if (window.external && typeof window.external.AddFavorite !== 'undefined') {
+      window.external.AddFavorite(window.location.href, document.title);
+      return;
+    }
+    if (typeof showBookmarkModal === 'function') {
+      showBookmarkModal(document.title, window.location.href);
+    } else {
+      var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+      var key = isMac ? '\u2318+D' : 'Ctrl+D';
+      if (typeof showToast === 'function') showToast('Press ' + key + ' to bookmark!');
+      else alert('Press ' + key + ' to bookmark this page');
+    }
   };
   window.copyToolLink = function() {
     navigator.clipboard.writeText(window.location.href).then(function(){

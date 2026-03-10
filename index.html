@@ -1022,21 +1022,15 @@
 <script>
 /* ── CTA Functions ── */
 function promptBookmark() {
-  var ua = navigator.userAgent.toLowerCase();
-  var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  var shortcut = isMac ? '\u2318+D' : 'Ctrl+D';
   if (window.sidebar && window.sidebar.addPanel) {
     window.sidebar.addPanel(document.title, window.location.href, '');
-  } else {
-    var toast = document.getElementById('toast');
-    if (toast) {
-      toast.textContent = 'Press ' + shortcut + ' to bookmark this page!';
-      toast.classList.add('show');
-      setTimeout(function() { toast.classList.remove('show'); }, 3000);
-    } else {
-      alert('Press ' + shortcut + ' to bookmark this page!');
-    }
+    return;
   }
+  if (window.external && typeof window.external.AddFavorite !== 'undefined') {
+    window.external.AddFavorite(window.location.href, document.title);
+    return;
+  }
+  showBookmarkModal(document.title, window.location.href);
 }
 function shareToolNook() {
   var shareData = {
@@ -1058,6 +1052,33 @@ function shareToolNook() {
       prompt('Copy this link to share:', shareData.url);
     });
   }
+}
+function showBookmarkModal(title, url) {
+  if (document.getElementById('bookmarkModal')) return;
+  var isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  var shortcut = isMac ? '\u2318+D' : 'Ctrl+D';
+  var overlay = document.createElement('div');
+  overlay.id = 'bookmarkModal';
+  overlay.className = 'bm-overlay';
+  overlay.innerHTML =
+    '<div class="bm-popup">' +
+      '<div class="bm-header"><i class="fa-solid fa-bookmark"></i> Bookmark this page<button class="bm-close" onclick="closeBookmarkModal()" aria-label="Close">&times;</button></div>' +
+      '<div class="bm-body">' +
+        '<div class="bm-field"><label>Name</label><div class="bm-value">' + title.replace(/</g, '&lt;') + '</div></div>' +
+        '<div class="bm-field"><label>URL</label><div class="bm-value bm-url">' + url.replace(/</g, '&lt;') + '</div></div>' +
+        '<div class="bm-hint"><i class="fa-regular fa-keyboard"></i> Press <kbd>' + shortcut + '</kbd> to add this page to your bookmarks</div>' +
+      '</div>' +
+      '<div class="bm-footer"><button class="bm-btn" onclick="closeBookmarkModal()">Got it</button></div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeBookmarkModal(); });
+  document.addEventListener('keydown', bookmarkEscHandler);
+}
+function bookmarkEscHandler(e) { if (e.key === 'Escape') closeBookmarkModal(); }
+function closeBookmarkModal() {
+  var m = document.getElementById('bookmarkModal');
+  if (m) m.remove();
+  document.removeEventListener('keydown', bookmarkEscHandler);
 }
 </script>
 <script>
