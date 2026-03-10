@@ -48,6 +48,16 @@
     </div>
 
     <div class="kb-area" tabindex="0" id="kbArea">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;">
+        <label for="layoutSelect" style="font-size:.8rem;font-weight:600;color:var(--muted);">Layout:</label>
+        <select id="layoutSelect" class="tool-input" style="width:auto;padding:4px 10px;font-size:.8rem;" onchange="switchLayout(this.value)">
+          <option value="QWERTY" selected>QWERTY</option>
+          <option value="AZERTY">AZERTY</option>
+          <option value="QWERTZ">QWERTZ</option>
+          <option value="Dvorak">Dvorak</option>
+          <option value="Colemak">Colemak</option>
+        </select>
+      </div>
       <div class="kb-prompt">Press any key on your keyboard</div>
       <div class="last-key" id="lastKey">—</div>
       <div class="key-details" id="keyDetails">
@@ -80,77 +90,137 @@
 <div id="site-footer"></div>
 <script src="/js/components.js"></script>
 <script>
-const KEYS=['Esc','F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12',
-  '`','1','2','3','4','5','6','7','8','9','0','-','=','Back',
-  'Tab','Q','W','E','R','T','Y','U','I','O','P','[',']','\\',
-  'Caps','A','S','D','F','G','H','J','K','L',';',"'",'Enter',
-  'Shift','Z','X','C','V','B','N','M',',','.','/','Shift',
-  'Ctrl','Win','Alt','Space','Alt','Fn','Menu','Ctrl'];
+/* ── Keyboard rows by physical key code ── */
+const ROWS = [
+  ['Escape','F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'],
+  ['Backquote','Digit1','Digit2','Digit3','Digit4','Digit5','Digit6','Digit7','Digit8','Digit9','Digit0','Minus','Equal','Backspace'],
+  ['Tab','KeyQ','KeyW','KeyE','KeyR','KeyT','KeyY','KeyU','KeyI','KeyO','KeyP','BracketLeft','BracketRight','Backslash'],
+  ['CapsLock','KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ','KeyK','KeyL','Semicolon','Quote','Enter'],
+  ['ShiftLeft','KeyZ','KeyX','KeyC','KeyV','KeyB','KeyN','KeyM','Comma','Period','Slash','ShiftRight'],
+  ['ControlLeft','MetaLeft','AltLeft','Space','AltRight','Fn','ContextMenu','ControlRight']
+];
 
-const codeMap={'Escape':'Esc','Backspace':'Back','CapsLock':'Caps','ShiftLeft':'Shift','ShiftRight':'Shift',
-  'ControlLeft':'Ctrl','ControlRight':'Ctrl','AltLeft':'Alt','AltRight':'Alt','MetaLeft':'Win','MetaRight':'Win',
-  'ContextMenu':'Menu','Space':'Space','Backquote':'`','Minus':'-','Equal':'=','BracketLeft':'[','BracketRight':']',
-  'Backslash':'\\','Semicolon':';','Quote':'\'','Comma':',','Period':'.','Slash':'/',
-  'Enter':'Enter','Tab':'Tab'};
+/* ── Fixed labels for modifier / special keys ── */
+const SPECIAL = {
+  Escape:'Esc',Backspace:'Back',Tab:'Tab',CapsLock:'Caps',
+  ShiftLeft:'Shift',ShiftRight:'Shift',Enter:'Enter',
+  ControlLeft:'Ctrl',ControlRight:'Ctrl',AltLeft:'Alt',AltRight:'Alt',
+  MetaLeft:'Win',MetaRight:'Win',ContextMenu:'Menu',Space:'Space',Fn:'Fn',
+  F1:'F1',F2:'F2',F3:'F3',F4:'F4',F5:'F5',F6:'F6',
+  F7:'F7',F8:'F8',F9:'F9',F10:'F10',F11:'F11',F12:'F12'
+};
 
-let pressCount=0,pressed=new Set();
-const vis=document.getElementById('kbVisual');
-const keyEls={};
+/* ── Layout maps: physical code → character label ── */
+const LAYOUTS = {
+  QWERTY: {
+    Backquote:'`',Digit1:'1',Digit2:'2',Digit3:'3',Digit4:'4',Digit5:'5',Digit6:'6',Digit7:'7',Digit8:'8',Digit9:'9',Digit0:'0',Minus:'-',Equal:'=',
+    KeyQ:'Q',KeyW:'W',KeyE:'E',KeyR:'R',KeyT:'T',KeyY:'Y',KeyU:'U',KeyI:'I',KeyO:'O',KeyP:'P',
+    KeyA:'A',KeyS:'S',KeyD:'D',KeyF:'F',KeyG:'G',KeyH:'H',KeyJ:'J',KeyK:'K',KeyL:'L',
+    KeyZ:'Z',KeyX:'X',KeyC:'C',KeyV:'V',KeyB:'B',KeyN:'N',KeyM:'M',
+    BracketLeft:'[',BracketRight:']',Backslash:'\\',Semicolon:';',Quote:"'",Comma:',',Period:'.',Slash:'/'
+  },
+  AZERTY: {
+    Backquote:'²',Digit1:'&',Digit2:'é',Digit3:'"',Digit4:"'",Digit5:'(',Digit6:'-',Digit7:'è',Digit8:'_',Digit9:'ç',Digit0:'à',Minus:')',Equal:'=',
+    KeyQ:'A',KeyW:'Z',KeyE:'E',KeyR:'R',KeyT:'T',KeyY:'Y',KeyU:'U',KeyI:'I',KeyO:'O',KeyP:'P',
+    KeyA:'Q',KeyS:'S',KeyD:'D',KeyF:'F',KeyG:'G',KeyH:'H',KeyJ:'J',KeyK:'K',KeyL:'L',
+    KeyZ:'W',KeyX:'X',KeyC:'C',KeyV:'V',KeyB:'B',KeyN:'N',KeyM:',',
+    BracketLeft:'^',BracketRight:'$',Backslash:'*',Semicolon:'M',Quote:'ù',Comma:';',Period:':',Slash:'!'
+  },
+  QWERTZ: {
+    Backquote:'^',Digit1:'1',Digit2:'2',Digit3:'3',Digit4:'4',Digit5:'5',Digit6:'6',Digit7:'7',Digit8:'8',Digit9:'9',Digit0:'0',Minus:'ß',Equal:'´',
+    KeyQ:'Q',KeyW:'W',KeyE:'E',KeyR:'R',KeyT:'T',KeyY:'Z',KeyU:'U',KeyI:'I',KeyO:'O',KeyP:'P',
+    KeyA:'A',KeyS:'S',KeyD:'D',KeyF:'F',KeyG:'G',KeyH:'H',KeyJ:'J',KeyK:'K',KeyL:'L',
+    KeyZ:'Y',KeyX:'X',KeyC:'C',KeyV:'V',KeyB:'B',KeyN:'N',KeyM:'M',
+    BracketLeft:'ü',BracketRight:'+',Backslash:'#',Semicolon:'ö',Quote:'ä',Comma:',',Period:'.',Slash:'-'
+  },
+  Dvorak: {
+    Backquote:'`',Digit1:'1',Digit2:'2',Digit3:'3',Digit4:'4',Digit5:'5',Digit6:'6',Digit7:'7',Digit8:'8',Digit9:'9',Digit0:'0',Minus:'[',Equal:']',
+    KeyQ:"'",KeyW:',',KeyE:'.',KeyR:'P',KeyT:'Y',KeyY:'F',KeyU:'G',KeyI:'C',KeyO:'R',KeyP:'L',
+    KeyA:'A',KeyS:'O',KeyD:'E',KeyF:'U',KeyG:'I',KeyH:'D',KeyJ:'H',KeyK:'T',KeyL:'N',
+    KeyZ:';',KeyX:'Q',KeyC:'J',KeyV:'K',KeyB:'X',KeyN:'B',KeyM:'M',
+    BracketLeft:'/',BracketRight:'=',Backslash:'\\',Semicolon:'S',Quote:'-',Comma:'W',Period:'V',Slash:'Z'
+  },
+  Colemak: {
+    Backquote:'`',Digit1:'1',Digit2:'2',Digit3:'3',Digit4:'4',Digit5:'5',Digit6:'6',Digit7:'7',Digit8:'8',Digit9:'9',Digit0:'0',Minus:'-',Equal:'=',
+    KeyQ:'Q',KeyW:'W',KeyE:'F',KeyR:'P',KeyT:'G',KeyY:'J',KeyU:'L',KeyI:'U',KeyO:'Y',KeyP:';',
+    KeyA:'A',KeyS:'R',KeyD:'S',KeyF:'T',KeyG:'D',KeyH:'H',KeyJ:'N',KeyK:'E',KeyL:'I',
+    KeyZ:'Z',KeyX:'X',KeyC:'C',KeyV:'V',KeyB:'B',KeyN:'K',KeyM:'M',
+    BracketLeft:'[',BracketRight:']',Backslash:'\\',Semicolon:'O',Quote:"'",Comma:',',Period:'.',Slash:'/'
+  }
+};
 
-KEYS.forEach(k=>{
-  const el=document.createElement('div');
-  el.className='kb-key';
-  el.textContent=k;
-  if(k==='Space')el.style.minWidth='160px';
-  if(k==='Back'||k==='Enter'||k==='Shift')el.style.minWidth='56px';
-  if(k==='Tab'||k==='Caps'||k==='Ctrl'||k==='Alt')el.style.minWidth='48px';
-  vis.appendChild(el);
-  if(!keyEls[k])keyEls[k]=[];
-  keyEls[k].push(el);
-});
+/* ── Width overrides for special keys ── */
+const WIDTHS = {Space:'160px',Backspace:'56px',Enter:'56px',ShiftLeft:'56px',ShiftRight:'56px',Tab:'48px',CapsLock:'48px',ControlLeft:'48px',ControlRight:'48px',AltLeft:'48px',AltRight:'48px'};
 
-const locations=['Standard','Left','Right','Numpad'];
+let curLayout = 'QWERTY';
+let pressCount = 0, pressed = new Set();
+const vis = document.getElementById('kbVisual');
+let codeEls = {}; // code → DOM element
 
-document.addEventListener('keydown',e=>{
+function getLabel(code) {
+  return SPECIAL[code] || LAYOUTS[curLayout][code] || code;
+}
+
+function buildKeyboard() {
+  vis.innerHTML = '';
+  codeEls = {};
+  ROWS.forEach(row => {
+    row.forEach(code => {
+      const el = document.createElement('div');
+      el.className = 'kb-key';
+      el.textContent = getLabel(code);
+      if (WIDTHS[code]) el.style.minWidth = WIDTHS[code];
+      el.dataset.code = code;
+      // Preserve pressed state across rebuilds
+      if (pressed.has(code)) el.classList.add('pressed');
+      vis.appendChild(el);
+      codeEls[code] = el;
+    });
+  });
+}
+
+function switchLayout(layout) {
+  curLayout = layout;
+  buildKeyboard();
+}
+
+buildKeyboard();
+
+const locations = ['Standard','Left','Right','Numpad'];
+
+document.addEventListener('keydown', e => {
   e.preventDefault();
   pressCount++;
-  const key=e.key.length===1?e.key.toUpperCase():e.key;
-  const label=codeMap[e.code]||(e.code.startsWith('Key')?e.code[3]:
-    e.code.startsWith('Digit')?e.code[5]:
-    e.code.startsWith('Numpad')?'Num'+e.code.slice(6):e.key);
-
-  document.getElementById('lastKey').textContent=key;
-  document.getElementById('dKey').textContent=e.key;
-  document.getElementById('dCode').textContent=e.code;
-  document.getElementById('dKeyCode').textContent=e.keyCode;
-  document.getElementById('dLoc').textContent=locations[e.location]||e.location;
-  document.getElementById('dType').textContent=e.repeat?'Repeat':'Press';
-  const mods=[];
-  if(e.ctrlKey)mods.push('Ctrl');if(e.shiftKey)mods.push('Shift');
-  if(e.altKey)mods.push('Alt');if(e.metaKey)mods.push('Meta');
-  document.getElementById('dMod').textContent=mods.join(' + ')||'None';
+  const key = e.key.length === 1 ? e.key.toUpperCase() : e.key;
+  document.getElementById('lastKey').textContent = key;
+  document.getElementById('dKey').textContent = e.key;
+  document.getElementById('dCode').textContent = e.code;
+  document.getElementById('dKeyCode').textContent = e.keyCode;
+  document.getElementById('dLoc').textContent = locations[e.location] || e.location;
+  document.getElementById('dType').textContent = e.repeat ? 'Repeat' : 'Press';
+  const mods = [];
+  if (e.ctrlKey) mods.push('Ctrl');
+  if (e.shiftKey) mods.push('Shift');
+  if (e.altKey) mods.push('Alt');
+  if (e.metaKey) mods.push('Meta');
+  document.getElementById('dMod').textContent = mods.join(' + ') || 'None';
 
   pressed.add(e.code);
-  document.getElementById('pressCount').textContent=pressCount;
-  document.getElementById('uniqueCount').textContent=pressed.size;
+  document.getElementById('pressCount').textContent = pressCount;
+  document.getElementById('uniqueCount').textContent = pressed.size;
 
-  // highlight on visual keyboard
-  const vk=codeMap[e.code]||(e.code.startsWith('Key')?e.code[3]:null);
-  if(vk&&keyEls[vk]){keyEls[vk].forEach(el=>{el.classList.add('pressed');el.classList.add('active');});}
-
-  // Remove active animation after brief delay
-  setTimeout(()=>{
-    if(vk&&keyEls[vk])keyEls[vk].forEach(el=>el.classList.remove('active'));
-  },200);
+  const el = codeEls[e.code];
+  if (el) { el.classList.add('pressed', 'active'); }
+  setTimeout(() => { if (el) el.classList.remove('active'); }, 200);
 });
 
-function resetAll(){
-  pressCount=0;pressed.clear();
-  document.getElementById('pressCount').textContent='0';
-  document.getElementById('uniqueCount').textContent='0';
-  document.getElementById('lastKey').textContent='—';
-  ['dKey','dCode','dKeyCode','dLoc','dType','dMod'].forEach(id=>document.getElementById(id).textContent='—');
-  document.querySelectorAll('.kb-key').forEach(el=>el.classList.remove('pressed','active'));
+function resetAll() {
+  pressCount = 0; pressed.clear();
+  document.getElementById('pressCount').textContent = '0';
+  document.getElementById('uniqueCount').textContent = '0';
+  document.getElementById('lastKey').textContent = '—';
+  ['dKey','dCode','dKeyCode','dLoc','dType','dMod'].forEach(id => document.getElementById(id).textContent = '—');
+  document.querySelectorAll('.kb-key').forEach(el => el.classList.remove('pressed', 'active'));
 }
 
 document.getElementById('kbArea').focus();

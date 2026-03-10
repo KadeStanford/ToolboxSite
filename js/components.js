@@ -141,6 +141,8 @@ const TN_TOOLS = [
   { name: 'Microphone Test',          slug: 'microphone-test',       category: 'testing',    icon: '<i class="fa-solid fa-microphone"></i>', desc: 'Test your mic with real-time levels' },
   { name: 'Webcam Test',              slug: 'webcam-test',           category: 'testing',    icon: '<i class="fa-solid fa-video"></i>', desc: 'Test your camera with live preview' },
   { name: 'Keyboard Tester',          slug: 'keyboard-tester',       category: 'testing',    icon: '<i class="fa-solid fa-keyboard"></i>', desc: 'Test every key on your keyboard' },
+  { name: 'Mouse Input Tester',        slug: 'mouse-input-tester',    category: 'testing',    icon: '<i class="fa-solid fa-computer-mouse"></i>', desc: 'Test mouse buttons, scroll & movement' },
+  { name: 'Gamepad Input Tester',      slug: 'gamepad-input-tester',  category: 'testing',    icon: '<i class="fa-solid fa-gamepad"></i>', desc: 'Test controller buttons, sticks & triggers' },
   { name: 'Click Speed Test',         slug: 'click-speed-test',      category: 'testing',    icon: '<i class="fa-solid fa-computer-mouse"></i>', desc: 'Measure your clicks per second' },
   { name: 'Speaker Test',             slug: 'speaker-test',          category: 'testing',    icon: '<i class="fa-solid fa-volume-high"></i>', desc: 'Test speakers with tones & channels' },
   // ── New Converters ──

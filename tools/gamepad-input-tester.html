@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gamepad Input Tester — Test Controller Buttons & Sticks | ToolNook</title>
+  <meta name="description" content="Free online gamepad tester. Test controller buttons, analog sticks, triggers, and vibration. Supports Xbox, PlayStation, and generic USB controllers." />
+  <meta name="keywords" content="gamepad tester, controller test, joystick tester, Xbox controller test, PlayStation controller test, analog stick test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/gamepad-input-tester.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .gp-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:800px;margin:0 auto;}
+    .gp-prompt{text-align:center;font-size:1rem;font-weight:600;color:var(--muted);padding:40px 20px;}
+    .gp-prompt i{font-size:2.5rem;display:block;margin-bottom:12px;color:var(--primary);}
+
+    /* Connection info */
+    .gp-info{display:flex;align-items:center;gap:12px;padding:12px;background:#f0fdf4;border:2px solid #86efac;border-radius:var(--radius);margin-bottom:16px;}
+    .gp-info .gp-dot{width:10px;height:10px;border-radius:50%;background:#16a34a;flex-shrink:0;}
+    .gp-info-text{font-weight:600;font-size:.86rem;}
+    .gp-info-sub{font-size:.72rem;color:var(--muted);}
+    .gp-selector{margin-left:auto;}
+    .gp-selector select{font-size:.8rem;padding:4px 10px;}
+
+    /* Button grid */
+    .gp-section-title{font-weight:700;font-size:.78rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;margin:16px 0 8px;}
+    .gp-buttons{display:flex;flex-wrap:wrap;gap:6px;}
+    .gp-btn{min-width:44px;height:36px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;background:#fff;transition:.12s;padding:0 8px;}
+    .gp-btn.active{border-color:var(--primary);background:#eef2ff;color:var(--primary);transform:scale(1.06);}
+    .gp-btn .gp-val{font-size:.6rem;color:var(--muted);margin-left:4px;}
+    .gp-btn.active .gp-val{color:var(--primary);}
+
+    /* Sticks */
+    .gp-sticks{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin:16px 0;}
+    .gp-stick-box{text-align:center;}
+    .gp-stick-label{font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .gp-stick-ring{width:140px;height:140px;border:3px solid var(--border);border-radius:50%;position:relative;background:#fafafa;}
+    .gp-stick-crosshair-h,.gp-stick-crosshair-v{position:absolute;background:var(--border);}
+    .gp-stick-crosshair-h{width:100%;height:1px;top:50%;}
+    .gp-stick-crosshair-v{height:100%;width:1px;left:50%;}
+    .gp-stick-dot{width:16px;height:16px;background:var(--primary);border-radius:50%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transition:none;box-shadow:0 0 8px rgba(79,70,229,.3);}
+    .gp-stick-values{font-size:.72rem;font-weight:600;color:var(--muted);margin-top:6px;}
+
+    /* Triggers */
+    .gp-triggers{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:16px 0;}
+    .gp-trigger-box{text-align:center;width:100px;}
+    .gp-trigger-label{font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+    .gp-trigger-bar{width:100%;height:18px;background:#e2e8f0;border-radius:9px;overflow:hidden;}
+    .gp-trigger-fill{height:100%;background:var(--primary);border-radius:9px;transition:width .05s;}
+    .gp-trigger-val{font-size:.7rem;font-weight:600;color:var(--muted);margin-top:2px;}
+
+    /* Vibration */
+    .gp-vibrate{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0;align-items:center;}
+    .gp-vibrate button{padding:6px 14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.78rem;font-weight:600;transition:.15s;}
+    .gp-vibrate button:hover{border-color:var(--primary);color:var(--primary);}
+
+    /* Dark mode */
+    [data-theme="dark"] .gp-btn{background-color:#1e293b;}
+    [data-theme="dark"] .gp-btn.active{background-color:#1e1b4b;}
+    [data-theme="dark"] .gp-stick-ring{background-color:#0f172a;}
+    [data-theme="dark"] .gp-trigger-bar{background-color:#334155;}
+    [data-theme="dark"] .gp-info{background-color:#14532d;border-color:#16a34a;}
+    [data-theme="dark"] .gp-vibrate button{background-color:#1e293b;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#testing-tools">Input Testing</a> › Gamepad Input Tester</div>
+      <h1><i class="fa-solid fa-gamepad"></i> Gamepad Input Tester</h1>
+      <p class="tool-desc">Test controller buttons, analog sticks, triggers, and vibration. Supports Xbox, PlayStation, and generic USB controllers.</p>
+    </div>
+
+    <div class="gp-area" id="gpArea">
+      <div class="gp-prompt" id="gpPrompt">
+        <i class="fa-solid fa-gamepad"></i>
+        Connect a controller and press any button to start.<br>
+        <span style="font-size:.8rem;font-weight:400;color:var(--muted);">Supports Xbox, PlayStation, Switch Pro, and generic USB controllers.</span>
+      </div>
+      <div id="gpContent" style="display:none;">
+        <div class="gp-info" id="gpInfo">
+          <div class="gp-dot"></div>
+          <div>
+            <div class="gp-info-text" id="gpName">—</div>
+            <div class="gp-info-sub" id="gpId">—</div>
+          </div>
+          <div class="gp-selector">
+            <select id="gpSelect" class="tool-input" style="width:auto;padding:3px 8px;font-size:.78rem;" onchange="selectedGp=parseInt(this.value);"></select>
+          </div>
+        </div>
+
+        <div class="gp-section-title">Buttons</div>
+        <div class="gp-buttons" id="gpButtons"></div>
+
+        <div class="gp-section-title">Analog Sticks</div>
+        <div class="gp-sticks" id="gpSticks">
+          <div class="gp-stick-box">
+            <div class="gp-stick-label">Left Stick</div>
+            <div class="gp-stick-ring" id="stickL">
+              <div class="gp-stick-crosshair-h"></div>
+              <div class="gp-stick-crosshair-v"></div>
+              <div class="gp-stick-dot" id="dotL"></div>
+            </div>
+            <div class="gp-stick-values" id="valL">X: 0.00 Y: 0.00</div>
+          </div>
+          <div class="gp-stick-box">
+            <div class="gp-stick-label">Right Stick</div>
+            <div class="gp-stick-ring" id="stickR">
+              <div class="gp-stick-crosshair-h"></div>
+              <div class="gp-stick-crosshair-v"></div>
+              <div class="gp-stick-dot" id="dotR"></div>
+            </div>
+            <div class="gp-stick-values" id="valR">X: 0.00 Y: 0.00</div>
+          </div>
+        </div>
+
+        <div class="gp-section-title">Triggers / Axes</div>
+        <div class="gp-triggers" id="gpTriggers"></div>
+
+        <div class="gp-section-title">Vibration</div>
+        <div class="gp-vibrate">
+          <button onclick="vibrate(0.3,'weak')"><i class="fa-solid fa-signal"></i> Weak</button>
+          <button onclick="vibrate(0.7,'medium')"><i class="fa-solid fa-signal"></i> Medium</button>
+          <button onclick="vibrate(1.0,'strong')"><i class="fa-solid fa-signal"></i> Strong</button>
+          <span style="font-size:.72rem;color:var(--muted);">(Requires browser &amp; controller support)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+    <section class="tool-info">
+      <h2>About Gamepad Input Tester</h2>
+      <p>Test any game controller connected to your computer via USB or Bluetooth. The tool uses the browser Gamepad API to read button states, analog stick positions, and trigger values in real time.</p>
+      <h3>Supported Controllers</h3>
+      <ul>
+        <li>Xbox One / Xbox Series controllers</li>
+        <li>PlayStation DualShock 4 / DualSense</li>
+        <li>Nintendo Switch Pro Controller</li>
+        <li>Generic USB/Bluetooth gamepads</li>
+      </ul>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+/* Standard mapping button names */
+const BTN_LABELS = [
+  'A / ✕','B / ○','X / □','Y / △',
+  'LB','RB','LT','RT',
+  'Back','Start','L3','R3',
+  'D-Up','D-Down','D-Left','D-Right',
+  'Home','Share'
+];
+
+let selectedGp = 0;
+let animFrame = null;
+let gpConnected = false;
+let btnEls = [], trigEls = [];
+
+/* ── Connection events ── */
+window.addEventListener('gamepadconnected', e => {
+  gpConnected = true;
+  document.getElementById('gpPrompt').style.display = 'none';
+  document.getElementById('gpContent').style.display = '';
+  updateGpList();
+  if (!animFrame) poll();
+});
+
+window.addEventListener('gamepaddisconnected', e => {
+  updateGpList();
+  const gps = navigator.getGamepads();
+  let any = false;
+  for (let i = 0; i < gps.length; i++) if (gps[i]) { any = true; break; }
+  if (!any) {
+    gpConnected = false;
+    document.getElementById('gpPrompt').style.display = '';
+    document.getElementById('gpContent').style.display = 'none';
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+  }
+});
+
+function updateGpList() {
+  const sel = document.getElementById('gpSelect');
+  sel.innerHTML = '';
+  const gps = navigator.getGamepads();
+  for (let i = 0; i < gps.length; i++) {
+    if (!gps[i]) continue;
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = 'Pad ' + (i + 1);
+    if (i === selectedGp) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+/* ── Build UI for buttons/triggers based on gamepad ── */
+function buildUI(gp) {
+  // Buttons
+  const container = document.getElementById('gpButtons');
+  container.innerHTML = '';
+  btnEls = [];
+  for (let i = 0; i < gp.buttons.length; i++) {
+    const el = document.createElement('div');
+    el.className = 'gp-btn';
+    el.innerHTML = '<span>' + (BTN_LABELS[i] || 'B' + i) + '</span><span class="gp-val" id="bv' + i + '"></span>';
+    container.appendChild(el);
+    btnEls.push(el);
+  }
+
+  // Triggers / extra axes (beyond the 4 stick axes)
+  const trigContainer = document.getElementById('gpTriggers');
+  trigContainer.innerHTML = '';
+  trigEls = [];
+  const axisCount = Math.max(gp.axes.length, 4);
+  const axisNames = ['Left X','Left Y','Right X','Right Y'];
+  for (let i = 0; i < gp.axes.length; i++) {
+    if (i < 4) continue; // First 4 are drawn as sticks
+    const box = document.createElement('div');
+    box.className = 'gp-trigger-box';
+    box.innerHTML = '<div class="gp-trigger-label">Axis ' + i + '</div>' +
+      '<div class="gp-trigger-bar"><div class="gp-trigger-fill" id="tf' + i + '"></div></div>' +
+      '<div class="gp-trigger-val" id="tv' + i + '">0.00</div>';
+    trigContainer.appendChild(box);
+    trigEls.push({ fill: null, val: null, idx: i });
+  }
+
+  // Also show LT/RT as triggers if standard mapping
+  if (gp.mapping === 'standard' && gp.buttons.length > 7) {
+    ['LT','RT'].forEach((name, j) => {
+      const bIdx = j + 6;
+      const box = document.createElement('div');
+      box.className = 'gp-trigger-box';
+      box.innerHTML = '<div class="gp-trigger-label">' + name + '</div>' +
+        '<div class="gp-trigger-bar"><div class="gp-trigger-fill" id="btf' + bIdx + '"></div></div>' +
+        '<div class="gp-trigger-val" id="btv' + bIdx + '">0.00</div>';
+      trigContainer.appendChild(box);
+    });
+  }
+}
+
+let uiBuilt = false;
+
+/* ── Poll loop ── */
+function poll() {
+  const gps = navigator.getGamepads();
+  const gp = gps[selectedGp];
+  if (!gp) { animFrame = requestAnimationFrame(poll); return; }
+
+  if (!uiBuilt) {
+    buildUI(gp);
+    document.getElementById('gpName').textContent = gp.id.split('(')[0].trim() || gp.id;
+    document.getElementById('gpId').textContent = gp.id;
+    uiBuilt = true;
+  }
+
+  // Buttons
+  for (let i = 0; i < gp.buttons.length && i < btnEls.length; i++) {
+    const b = gp.buttons[i];
+    const pressed = b.pressed || b.value > 0.1;
+    btnEls[i].classList.toggle('active', pressed);
+    const valEl = btnEls[i].querySelector('.gp-val');
+    if (valEl && b.value > 0 && b.value < 1) valEl.textContent = b.value.toFixed(2);
+    else if (valEl) valEl.textContent = '';
+  }
+
+  // Sticks (axes 0-3)
+  if (gp.axes.length >= 2) {
+    const lx = gp.axes[0], ly = gp.axes[1];
+    const dotL = document.getElementById('dotL');
+    dotL.style.left = (50 + lx * 45) + '%';
+    dotL.style.top = (50 + ly * 45) + '%';
+    document.getElementById('valL').textContent = 'X: ' + lx.toFixed(2) + ' Y: ' + ly.toFixed(2);
+  }
+  if (gp.axes.length >= 4) {
+    const rx = gp.axes[2], ry = gp.axes[3];
+    const dotR = document.getElementById('dotR');
+    dotR.style.left = (50 + rx * 45) + '%';
+    dotR.style.top = (50 + ry * 45) + '%';
+    document.getElementById('valR').textContent = 'X: ' + rx.toFixed(2) + ' Y: ' + ry.toFixed(2);
+  }
+
+  // Extra axes as trigger bars
+  for (let i = 4; i < gp.axes.length; i++) {
+    const fill = document.getElementById('tf' + i);
+    const val = document.getElementById('tv' + i);
+    if (fill) fill.style.width = (Math.abs(gp.axes[i]) * 100) + '%';
+    if (val) val.textContent = gp.axes[i].toFixed(2);
+  }
+
+  // LT/RT trigger bars (buttons 6,7)
+  [6, 7].forEach(bIdx => {
+    if (bIdx >= gp.buttons.length) return;
+    const fill = document.getElementById('btf' + bIdx);
+    const val = document.getElementById('btv' + bIdx);
+    if (fill) fill.style.width = (gp.buttons[bIdx].value * 100) + '%';
+    if (val) val.textContent = gp.buttons[bIdx].value.toFixed(2);
+  });
+
+  animFrame = requestAnimationFrame(poll);
+}
+
+/* ── Vibration ── */
+function vibrate(intensity, label) {
+  const gps = navigator.getGamepads();
+  const gp = gps[selectedGp];
+  if (!gp) return;
+  if (gp.vibrationActuator) {
+    gp.vibrationActuator.playEffect('dual-rumble', {
+      startDelay: 0,
+      duration: 300,
+      weakMagnitude: intensity * 0.5,
+      strongMagnitude: intensity
+    }).catch(() => {});
+  }
+}
+</script>
+</body>
+</html>

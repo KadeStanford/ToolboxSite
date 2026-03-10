@@ -10,9 +10,15 @@
   <link rel="canonical" href="https://toolnook.net/tools/pdf-converter.html" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <!-- PDF reading -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <!-- ZIP packaging (for DOCX) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- PPTX generation -->
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgenjs.bundle.js"></script>
+  <!-- PDF creation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* ── Tab bar ── */
     .conv-tabs{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:6px;margin-bottom:20px;}
@@ -48,7 +54,7 @@
     .pages-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:14px 0;}
     .page-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:.15s;}
     .page-card:hover{border-color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,.06);}
-    .page-card canvas{width:100%;display:block;}
+    .page-card canvas,.page-card img{width:100%;display:block;}
     .page-footer{padding:6px 10px;display:flex;align-items:center;justify-content:space-between;}
     .page-num{font-weight:700;font-size:.74rem;color:var(--text-muted);}
     .page-dl{font-size:.7rem;padding:4px 10px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-weight:600;}
@@ -63,16 +69,16 @@
     .img-num{position:absolute;top:4px;left:4px;background:var(--primary);color:#fff;width:20px;height:20px;border-radius:50%;font-size:.64rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
 
     /* ── Dark mode ── */
-    [data-theme="dark"] .drop-zone{background:#0f172a;}
-    [data-theme="dark"] .drop-zone:hover,[data-theme="dark"] .drop-zone.over{background:#1e1b4b;}
-    [data-theme="dark"] .file-info-bar{background:#0f172a;}
-    [data-theme="dark"] .prog-bar{background:#334155;}
-    [data-theme="dark"] .result-box{background:#14532d;border-color:#16a34a;}
-    [data-theme="dark"] .page-card,[data-theme="dark"] .img-card{background:#1e293b;}
-    [data-theme="dark"] .notice{background:#451a03;border-color:#92400e;color:#fbbf24;}
-    [data-theme="dark"] .conv-tabs{background:#0f172a;border-color:var(--border);}
-    [data-theme="dark"] .conv-tab:hover{background:#1e293b;}
-    [data-theme="dark"] .img-remove{background:#7f1d1d;}
+    [data-theme="dark"] .drop-zone{background-color:#0f172a;}
+    [data-theme="dark"] .drop-zone:hover,[data-theme="dark"] .drop-zone.over{background-color:#1e1b4b;}
+    [data-theme="dark"] .file-info-bar{background-color:#0f172a;}
+    [data-theme="dark"] .prog-bar{background-color:#334155;}
+    [data-theme="dark"] .result-box{background-color:#14532d;border-color:#16a34a;}
+    [data-theme="dark"] .page-card,[data-theme="dark"] .img-card{background-color:#1e293b;}
+    [data-theme="dark"] .notice{background-color:#451a03;border-color:#92400e;color:#fbbf24;}
+    [data-theme="dark"] .conv-tabs{background-color:#0f172a;border-color:var(--border);}
+    [data-theme="dark"] .conv-tab:hover{background-color:#1e293b;}
+    [data-theme="dark"] .img-remove{background-color:#7f1d1d;}
   </style>
 </head>
 <body>
@@ -237,7 +243,7 @@
         </div>
         <div id="dp-preview" style="display:none;margin-top:14px;background:#fff;color:#222;padding:20px;border-radius:var(--radius);border:1px solid var(--border);max-height:400px;overflow-y:auto;"></div>
       </div>
-    </div><!-- /tool-container -->
+    </div>
 
     <div class="ad-banner ad-inline">Advertisement</div>
     <div class="seo-content">
@@ -269,10 +275,14 @@
 <script src="/js/components.js"></script>
 <script>
 /* ── Init ── */
+let pdfLibReady = false;
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('pdf-converter');
   document.getElementById('related-grid').innerHTML = renderRelatedTools('pdf-converter','converter');
-  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfLibReady = true;
+  }
 });
 
 /* ── Tabs ── */
@@ -293,7 +303,6 @@ document.querySelectorAll('.drop-zone').forEach(zone => {
     e.preventDefault(); zone.classList.remove('over');
     const input = zone.querySelector('input[type="file"]');
     if (input && e.dataTransfer.files.length) {
-      // For multi-file inputs, merge
       if (input.multiple) { handleIpFiles(e.dataTransfer.files); return; }
       const dt = new DataTransfer();
       dt.items.add(e.dataTransfer.files[0]);
@@ -308,8 +317,21 @@ function dlBlob(blob, name) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 30000);
 }
-function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatBytes(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b/1024).toFixed(1) + ' KB'; return (b/1048576).toFixed(1) + ' MB'; }
+
+async function loadPdf(file) {
+  if (!window.pdfjsLib) throw new Error('PDF library failed to load. Please refresh the page.');
+  if (!pdfLibReady) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfLibReady = true;
+  }
+  const arrayBuffer = await file.arrayBuffer();
+  return pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+}
 
 /* ══════════════════════════════════════════
    PDF → TEXT
@@ -324,20 +346,37 @@ async function pdfToText(file) {
   fill.style.width = '0%'; status.textContent = 'Loading PDF...';
 
   try {
-    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pdf = await loadPdf(file);
     let allText = '';
     for (let i = 1; i <= pdf.numPages; i++) {
-      status.textContent = `Page ${i}/${pdf.numPages}...`;
+      status.textContent = 'Extracting page ' + i + ' of ' + pdf.numPages + '...';
       fill.style.width = (i / pdf.numPages * 100) + '%';
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      allText += `--- Page ${i} ---\n` + content.items.map(it => it.str).join(' ') + '\n\n';
+      const lines = [];
+      let curY = null, curLine = '';
+      content.items.forEach(item => {
+        if (!item.str && item.str !== '') return;
+        const y = Math.round(item.transform[5]);
+        if (curY !== null && Math.abs(y - curY) > 3) {
+          lines.push(curLine.trim());
+          curLine = '';
+        }
+        curLine += item.str;
+        curY = y;
+      });
+      if (curLine.trim()) lines.push(curLine.trim());
+      allText += '--- Page ' + i + ' ---\n' + lines.join('\n') + '\n\n';
     }
     document.getElementById('pt-textarea').value = allText;
-    document.getElementById('pt-pages').textContent = `(${pdf.numPages} pages)`;
+    document.getElementById('pt-pages').textContent = '(' + pdf.numPages + ' pages)';
     output.style.display = 'block';
     prog.style.display = 'none'; status.textContent = '';
-  } catch (e) { status.textContent = 'Error: ' + e.message; }
+  } catch (e) {
+    console.error('PDF to Text error:', e);
+    status.textContent = 'Error: ' + e.message;
+    prog.style.display = 'none';
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -346,11 +385,19 @@ async function pdfToText(file) {
 let piDoc = null, piImages = [];
 async function pdfImgLoad(file) {
   if (!file) return;
-  piDoc = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
-  document.getElementById('pi-info').style.display = '';
-  document.getElementById('pi-info').innerHTML = `<div class="file-info-bar"><div class="file-badge">PDF</div><div><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${formatBytes(file.size)} · ${piDoc.numPages} pages</div></div></div>`;
-  document.getElementById('pi-btn').disabled = false;
+  try {
+    piDoc = await loadPdf(file);
+    const infoDiv = document.getElementById('pi-info');
+    infoDiv.style.display = '';
+    infoDiv.innerHTML = '<div class="file-info-bar"><div class="file-badge">PDF</div><div><div class="file-name">' + escapeHtml(file.name) + '</div><div class="file-size">' + formatBytes(file.size) + ' · ' + piDoc.numPages + ' pages</div></div></div>';
+    document.getElementById('pi-btn').disabled = false;
+  } catch (e) {
+    console.error('PDF load error:', e);
+    document.getElementById('pi-info').style.display = '';
+    document.getElementById('pi-info').innerHTML = '<div class="notice">Error loading PDF: ' + escapeHtml(e.message) + '</div>';
+  }
 }
+
 async function pdfImgConvert() {
   if (!piDoc) return;
   const scale = parseFloat(document.getElementById('pi-scale').value);
@@ -360,59 +407,99 @@ async function pdfImgConvert() {
   const fill = document.getElementById('pi-fill');
   prog.style.display = 'block'; grid.innerHTML = ''; piImages = [];
 
-  for (let i = 1; i <= piDoc.numPages; i++) {
-    fill.style.width = (i / piDoc.numPages * 100) + '%';
-    const page = await piDoc.getPage(i);
-    const vp = page.getViewport({ scale });
-    const c = document.createElement('canvas');
-    c.width = vp.width; c.height = vp.height;
-    await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-    const dataUrl = c.toDataURL('image/' + format, format === 'jpeg' ? 0.9 : undefined);
-    piImages.push(dataUrl);
-    const card = document.createElement('div'); card.className = 'page-card';
-    const thumb = document.createElement('canvas');
-    thumb.width = vp.width; thumb.height = vp.height;
-    thumb.getContext('2d').drawImage(c, 0, 0);
-    thumb.style.width = '100%';
-    card.appendChild(thumb);
-    card.innerHTML += `<div class="page-footer"><span class="page-num">Page ${i}</span><button class="page-dl" onclick="dlPageImg(${i-1})">Download</button></div>`;
-    grid.appendChild(card);
+  try {
+    for (let i = 1; i <= piDoc.numPages; i++) {
+      fill.style.width = (i / piDoc.numPages * 100) + '%';
+      const page = await piDoc.getPage(i);
+      const vp = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      const ctx = canvas.getContext('2d');
+      if (format === 'jpeg') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      const dataUrl = canvas.toDataURL('image/' + format, format === 'jpeg' ? 0.92 : undefined);
+      piImages.push(dataUrl);
+
+      // Build card with DOM methods to preserve canvas pixel data
+      const card = document.createElement('div');
+      card.className = 'page-card';
+      const thumb = document.createElement('canvas');
+      thumb.width = vp.width;
+      thumb.height = vp.height;
+      thumb.getContext('2d').drawImage(canvas, 0, 0);
+      thumb.style.width = '100%';
+      card.appendChild(thumb);
+      const footer = document.createElement('div');
+      footer.className = 'page-footer';
+      const pageNum = document.createElement('span');
+      pageNum.className = 'page-num';
+      pageNum.textContent = 'Page ' + i;
+      const dlBtn = document.createElement('button');
+      dlBtn.className = 'page-dl';
+      dlBtn.textContent = 'Download';
+      dlBtn.setAttribute('data-idx', i - 1);
+      dlBtn.addEventListener('click', function() { dlPageImg(parseInt(this.getAttribute('data-idx'))); });
+      footer.appendChild(pageNum);
+      footer.appendChild(dlBtn);
+      card.appendChild(footer);
+      grid.appendChild(card);
+    }
+    document.getElementById('pi-dlall').disabled = false;
+    setTimeout(() => prog.style.display = 'none', 500);
+  } catch (e) {
+    console.error('PDF to Image error:', e);
+    grid.innerHTML = '<div class="notice">Error: ' + escapeHtml(e.message) + '</div>';
+    prog.style.display = 'none';
   }
-  document.getElementById('pi-dlall').disabled = false;
-  setTimeout(() => prog.style.display = 'none', 800);
 }
+
 function dlPageImg(idx) {
+  if (!piImages[idx]) return;
   const ext = document.getElementById('pi-fmt').value === 'jpeg' ? 'jpg' : 'png';
-  const a = document.createElement('a'); a.href = piImages[idx]; a.download = `page_${idx+1}.${ext}`; a.click();
+  const a = document.createElement('a');
+  a.href = piImages[idx];
+  a.download = 'page_' + (idx + 1) + '.' + ext;
+  a.click();
 }
 function pdfImgDlAll() { piImages.forEach((_, i) => dlPageImg(i)); }
 
 /* ══════════════════════════════════════════
-   PDF → WORD (DOCX)
+   PDF → WORD (DOCX) — JSZip
    ══════════════════════════════════════════ */
 async function pdfToWord(file) {
   if (!file) return;
+  if (!window.JSZip) { document.getElementById('pw-status').textContent = 'Error: JSZip library failed to load. Please refresh.'; return; }
   const prog = document.getElementById('pw-prog');
   const fill = document.getElementById('pw-fill');
   const status = document.getElementById('pw-status');
   const result = document.getElementById('pw-result');
   prog.style.display = 'block'; result.style.display = 'none';
   fill.style.width = '0%'; status.textContent = 'Loading PDF...';
-  let srcName = file.name;
+  const srcName = file.name;
 
   try {
-    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pdf = await loadPdf(file);
     const pages = [];
     for (let i = 1; i <= pdf.numPages; i++) {
-      status.textContent = `Extracting page ${i}/${pdf.numPages}...`;
+      status.textContent = 'Extracting page ' + i + ' of ' + pdf.numPages + '...';
       fill.style.width = (i / pdf.numPages * 80) + '%';
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
-      const lines = []; let curY = null, curLine = '';
+      const lines = [];
+      let curY = null, curLine = '';
       content.items.forEach(item => {
+        if (!item.str && item.str !== '') return;
         const y = Math.round(item.transform[5]);
-        if (curY !== null && Math.abs(y - curY) > 5) { lines.push(curLine); curLine = ''; }
-        curLine += item.str + ' '; curY = y;
+        if (curY !== null && Math.abs(y - curY) > 3) {
+          lines.push(curLine);
+          curLine = '';
+        }
+        curLine += item.str + ' ';
+        curY = y;
       });
       if (curLine.trim()) lines.push(curLine);
       pages.push(lines);
@@ -425,35 +512,44 @@ async function pdfToWord(file) {
       lines.forEach(line => {
         const t = line.trim();
         if (!t) { body += '<w:p/>'; return; }
-        body += `<w:p><w:r><w:t xml:space="preserve">${escXml(t)}</w:t></w:r></w:p>`;
+        body += '<w:p><w:r><w:t xml:space="preserve">' + escXml(t) + '</w:t></w:r></w:p>';
       });
     });
 
-    const docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}
-<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`;
+    const docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<w:document xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body +
+      '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>';
 
-    const blob = createZipText([
-      { name: '[Content_Types].xml', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>' },
-      { name: '_rels/.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>' },
-      { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>' },
-      { name: 'word/document.xml', data: docXml },
-    ], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    const zip = new JSZip();
+    zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+    zip.file('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+    zip.file('word/_rels/document.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>');
+    zip.file('word/document.xml', docXml);
+
+    const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 
     fill.style.width = '100%'; status.textContent = '';
     const wc = pages.flat().join(' ').split(/\s+/).filter(Boolean).length;
-    document.getElementById('pw-info').textContent = `${pdf.numPages} pages · ${wc.toLocaleString()} words · ${formatBytes(blob.size)}`;
+    document.getElementById('pw-info').textContent = pdf.numPages + ' pages · ' + wc.toLocaleString() + ' words · ' + formatBytes(blob.size);
     result.style.display = 'block';
     document.getElementById('pw-dl').onclick = () => dlBlob(blob, srcName.replace(/\.pdf$/i, '') + '.docx');
-    setTimeout(() => prog.style.display = 'none', 800);
-  } catch (e) { status.textContent = 'Error: ' + e.message; }
+    setTimeout(() => prog.style.display = 'none', 500);
+  } catch (e) {
+    console.error('PDF to Word error:', e);
+    status.textContent = 'Error: ' + e.message;
+    prog.style.display = 'none';
+  }
 }
 
 /* ══════════════════════════════════════════
-   PDF → PPTX
+   PDF → PPTX — PptxGenJS
    ══════════════════════════════════════════ */
 async function pdfToPptx(file) {
   if (!file) return;
+  if (!window.PptxGenJS) {
+    document.getElementById('pp-status').textContent = 'Error: PPTX library failed to load. Please refresh.';
+    return;
+  }
   const prog = document.getElementById('pp-prog');
   const fill = document.getElementById('pp-fill');
   const status = document.getElementById('pp-status');
@@ -461,82 +557,78 @@ async function pdfToPptx(file) {
   const grid = document.getElementById('pp-grid');
   prog.style.display = 'block'; result.style.display = 'none'; grid.innerHTML = '';
   fill.style.width = '0%';
-  let srcName = file.name;
+  const srcName = file.name;
 
   try {
     const scale = parseFloat(document.getElementById('pp-scale').value);
     const isWide = document.getElementById('pp-size').value === 'wide';
-    const slideW = isWide ? 12192000 : 9144000;
-    const slideH = 6858000;
 
-    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
-    const images = [];
+    const pdf = await loadPdf(file);
+    const pptx = new PptxGenJS();
+    pptx.layout = isWide ? 'LAYOUT_WIDE' : 'LAYOUT_4x3';
 
     for (let i = 1; i <= pdf.numPages; i++) {
-      status.textContent = `Rendering page ${i}/${pdf.numPages}...`;
-      fill.style.width = (i / pdf.numPages * 70) + '%';
+      status.textContent = 'Rendering page ' + i + ' of ' + pdf.numPages + '...';
+      fill.style.width = (i / pdf.numPages * 80) + '%';
+
       const page = await pdf.getPage(i);
       const vp = page.getViewport({ scale });
-      const c = document.createElement('canvas');
-      c.width = vp.width; c.height = vp.height;
-      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
-      images.push(c.toDataURL('image/jpeg', 0.92));
+      const canvas = document.createElement('canvas');
+      canvas.width = vp.width;
+      canvas.height = vp.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
 
-      const thumb = document.createElement('div'); thumb.className = 'page-card';
-      const tc = document.createElement('canvas'); tc.width = vp.width; tc.height = vp.height;
-      tc.getContext('2d').drawImage(c, 0, 0); tc.style.width = '100%';
-      thumb.appendChild(tc);
-      thumb.innerHTML += `<div class="page-footer"><span class="page-num">Slide ${i}</span></div>`;
-      grid.appendChild(thumb);
+      const slide = pptx.addSlide();
+      slide.addImage({
+        data: imgData,
+        x: 0, y: 0,
+        w: '100%', h: '100%',
+        sizing: { type: 'contain', w: '100%', h: '100%' }
+      });
+
+      // Thumbnail
+      const card = document.createElement('div');
+      card.className = 'page-card';
+      const thumb = document.createElement('canvas');
+      thumb.width = vp.width;
+      thumb.height = vp.height;
+      thumb.getContext('2d').drawImage(canvas, 0, 0);
+      thumb.style.width = '100%';
+      card.appendChild(thumb);
+      const footer = document.createElement('div');
+      footer.className = 'page-footer';
+      const sn = document.createElement('span');
+      sn.className = 'page-num';
+      sn.textContent = 'Slide ' + i;
+      footer.appendChild(sn);
+      card.appendChild(footer);
+      grid.appendChild(card);
     }
 
-    status.textContent = 'Building PPTX...'; fill.style.width = '85%';
+    status.textContent = 'Building PPTX...'; fill.style.width = '90%';
+    const pptxBlob = await pptx.write({ outputType: 'blob' });
 
-    // Build PPTX XML files
-    let overrides = '', presRels = '', slideList = '';
-    images.forEach((_, i) => {
-      overrides += `<Override PartName="/ppt/slides/slide${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`;
-      presRels += `<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i+1}.xml"/>`;
-      slideList += `<p:sldId id="${256+i}" r:id="rId${i+1}"/>`;
-    });
-
-    const textFiles = [
-      { name: '[Content_Types].xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/>${overrides}</Types>` },
-      { name: '_rels/.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/></Relationships>` },
-      { name: 'ppt/_rels/presentation.xml.rels', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${presRels}</Relationships>` },
-      { name: 'ppt/presentation.xml', data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:sldMasterIdLst/><p:sldIdLst>${slideList}</p:sldIdLst><p:sldSz cx="${slideW}" cy="${slideH}"/><p:notesSz cx="${slideH}" cy="${slideW}"/></p:presentation>` },
-    ];
-
-    images.forEach((_, i) => {
-      textFiles.push({ name: `ppt/slides/_rels/slide${i+1}.xml.rels`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${i+1}.jpeg"/></Relationships>` });
-      textFiles.push({ name: `ppt/slides/slide${i+1}.xml`, data: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:pic><p:nvPicPr><p:cNvPr id="2" name="Image ${i+1}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${slideW}" cy="${slideH}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic></p:spTree></p:cSld></p:sld>` });
-    });
-
-    // Convert base64 images to binary entries
-    const binaryFiles = images.map((dataUrl, i) => {
-      const b64 = dataUrl.split(',')[1];
-      const bin = atob(b64);
-      const bytes = new Uint8Array(bin.length);
-      for (let j = 0; j < bin.length; j++) bytes[j] = bin.charCodeAt(j);
-      return { name: `ppt/media/image${i+1}.jpeg`, data: bytes };
-    });
-
-    const blob = createZipMixed(textFiles, binaryFiles, 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
     fill.style.width = '100%'; status.textContent = '';
-    document.getElementById('pp-info').textContent = `${pdf.numPages} slides · ${formatBytes(blob.size)}`;
+    document.getElementById('pp-info').textContent = pdf.numPages + ' slides · ' + formatBytes(pptxBlob.size);
     result.style.display = 'block';
-    document.getElementById('pp-dl').onclick = () => dlBlob(blob, srcName.replace(/\.pdf$/i, '') + '.pptx');
-    setTimeout(() => prog.style.display = 'none', 800);
-  } catch (e) { status.textContent = 'Error: ' + e.message; }
+    document.getElementById('pp-dl').onclick = () => dlBlob(pptxBlob, srcName.replace(/\.pdf$/i, '') + '.pptx');
+    setTimeout(() => prog.style.display = 'none', 500);
+  } catch (e) {
+    console.error('PDF to PPTX error:', e);
+    status.textContent = 'Error: ' + e.message;
+    prog.style.display = 'none';
+  }
 }
 
 /* ══════════════════════════════════════════
    IMAGE → PDF
    ══════════════════════════════════════════ */
 let ipImages = [];
-const ipDrop = document.getElementById('ip-drop');
-const ipFile = document.getElementById('ip-file');
-ipFile.addEventListener('change', e => handleIpFiles(e.target.files));
+document.getElementById('ip-file').addEventListener('change', e => handleIpFiles(e.target.files));
 
 function handleIpFiles(files) {
   for (const file of files) {
@@ -556,14 +648,17 @@ function handleIpFiles(files) {
 
 function renderIpImages() {
   const grid = document.getElementById('ip-grid');
-  grid.innerHTML = ipImages.map((img, i) => `
-    <div class="img-card" draggable="true" data-idx="${i}">
-      <span class="img-num">${i+1}</span>
-      <img src="${img.src}" alt="${escapeHtml(img.name)}"/>
-      <div class="img-info"><span>${img.width}×${img.height}</span><button class="img-remove" onclick="ipImages.splice(${i},1);renderIpImages();"><i class="fa-solid fa-xmark"></i></button></div>
-    </div>`).join('');
+  grid.innerHTML = ipImages.map((img, i) =>
+    '<div class="img-card" draggable="true" data-idx="' + i + '">' +
+      '<span class="img-num">' + (i+1) + '</span>' +
+      '<img src="' + img.src + '" alt="' + escapeHtml(img.name) + '"/>' +
+      '<div class="img-info"><span>' + img.width + '\u00d7' + img.height + '</span><button class="img-remove" data-rm="' + i + '"><i class="fa-solid fa-xmark"></i></button></div>' +
+    '</div>').join('');
   document.getElementById('ip-gen').disabled = !ipImages.length;
 
+  grid.querySelectorAll('.img-remove').forEach(btn => {
+    btn.addEventListener('click', function() { ipImages.splice(parseInt(this.getAttribute('data-rm')), 1); renderIpImages(); });
+  });
   grid.querySelectorAll('.img-card').forEach(card => {
     card.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', card.dataset.idx); card.style.opacity = '.4'; });
     card.addEventListener('dragend', () => card.style.opacity = '');
@@ -619,8 +714,8 @@ async function imgToPdf() {
 
   fill.style.width = '100%';
   pdf.save('images.pdf');
-  setTimeout(() => prog.style.display = 'none', 800);
-  showToast('PDF generated!');
+  setTimeout(() => prog.style.display = 'none', 500);
+  if (typeof showToast === 'function') showToast('PDF generated!');
 }
 
 /* ══════════════════════════════════════════
@@ -668,7 +763,7 @@ function previewDoc() {
 
 function docToPdf() {
   const html = getDocHtml();
-  if (!html) return showToast('Enter some content first');
+  if (!html) { if (typeof showToast === 'function') showToast('Enter some content first'); return; }
   const el = document.createElement('div');
   el.innerHTML = html;
   el.style.cssText = 'font-family:Helvetica,Arial,sans-serif;font-size:12pt;line-height:1.6;color:#222;';
@@ -682,83 +777,11 @@ function docToPdf() {
   }).from(el).save();
 }
 
-/* ══════════════════════════════════════════
-   ZIP BUILDER (shared)
-   ══════════════════════════════════════════ */
-function crc32(data) {
-  let crc = 0xFFFFFFFF;
-  for (let i = 0; i < data.length; i++) { crc ^= data[i]; for (let j = 0; j < 8; j++) crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0); }
-  return (crc ^ 0xFFFFFFFF) >>> 0;
-}
-
-function createZipText(files, mime) {
-  const enc = new TextEncoder();
-  const entries = files.map(f => ({ name: enc.encode(f.name), data: enc.encode(f.data) }));
-  return buildZip(entries, mime);
-}
-
-function createZipMixed(textFiles, binaryFiles, mime) {
-  const enc = new TextEncoder();
-  const entries = [
-    ...textFiles.map(f => ({ name: enc.encode(f.name), data: enc.encode(f.data) })),
-    ...binaryFiles.map(f => ({ name: enc.encode(f.name), data: f.data })),
-  ];
-  return buildZip(entries, mime);
-}
-
-function buildZip(entries, mime) {
-  let offset = 0;
-  const locals = [], centrals = [];
-
-  entries.forEach(entry => {
-    const localOff = offset;
-    const local = new Uint8Array(30 + entry.name.length + entry.data.length);
-    const lv = new DataView(local.buffer);
-    lv.setUint32(0, 0x04034b50, true);
-    lv.setUint16(4, 20, true);
-    lv.setUint32(14, crc32(entry.data), true);
-    lv.setUint32(18, entry.data.length, true);
-    lv.setUint32(22, entry.data.length, true);
-    lv.setUint16(26, entry.name.length, true);
-    local.set(entry.name, 30);
-    local.set(entry.data, 30 + entry.name.length);
-    locals.push(local);
-    offset += local.length;
-
-    const central = new Uint8Array(46 + entry.name.length);
-    const cv = new DataView(central.buffer);
-    cv.setUint32(0, 0x02014b50, true);
-    cv.setUint16(4, 20, true);
-    cv.setUint16(6, 20, true);
-    cv.setUint32(16, crc32(entry.data), true);
-    cv.setUint32(20, entry.data.length, true);
-    cv.setUint32(24, entry.data.length, true);
-    cv.setUint16(28, entry.name.length, true);
-    cv.setUint32(42, localOff, true);
-    central.set(entry.name, 46);
-    centrals.push(central);
-  });
-
-  const centralOff = offset;
-  let centralSize = 0;
-  centrals.forEach(c => centralSize += c.length);
-
-  const eocd = new Uint8Array(22);
-  const ev = new DataView(eocd.buffer);
-  ev.setUint32(0, 0x06054b50, true);
-  ev.setUint16(8, entries.length, true);
-  ev.setUint16(10, entries.length, true);
-  ev.setUint32(12, centralSize, true);
-  ev.setUint32(16, centralOff, true);
-
-  return new Blob([...locals, ...centrals, eocd], { type: mime });
-}
-
 /* ── Hash-based tab switching ── */
 (function() {
   const hash = location.hash.replace('#','');
   if (hash) {
-    const tab = document.querySelector(`[data-tab="${hash}"]`);
+    const tab = document.querySelector('[data-tab="' + hash + '"]');
     if (tab) tab.click();
   }
   document.querySelectorAll('#tabs .conv-tab').forEach(t => {
