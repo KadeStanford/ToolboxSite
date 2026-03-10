@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aspect Ratio Calculator — Width/Height from Ratio | ToolNook</title>
+  <meta name="description" content="Free aspect ratio calculator. Calculate width or height from any aspect ratio. Includes presets for 16:9, 4:3, 21:9, 1:1, and more." />
+  <meta name="keywords" content="aspect ratio calculator, 16:9 calculator, calculate width from ratio, video aspect ratio, image ratio calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/aspect-ratio-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .ar-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+    .ar-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+    .ar-field{flex:1;min-width:100px;}
+    .ar-field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:4px;color:var(--muted);}
+    .ar-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.95rem;font-weight:600;}
+    .ar-sep{font-size:1.4rem;font-weight:700;color:var(--muted);padding-top:18px;}
+    .ar-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+    .ar-preset{padding:6px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;font-size:.82rem;font-weight:600;cursor:pointer;transition:.15s;}
+    .ar-preset:hover,.ar-preset.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .ar-vis{display:flex;justify-content:center;align-items:center;margin-top:16px;}
+    .ar-box{border:3px solid var(--primary);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:700;color:var(--primary);transition:.3s;max-width:100%;max-height:220px;}
+    .ar-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:16px;}
+    .ar-stat{background:#f8fafc;border-radius:var(--radius);padding:12px;text-align:center;border:1px solid var(--border);}
+    .ar-stat .val{font-size:1.3rem;font-weight:800;color:var(--primary);}
+    .ar-stat .lbl{font-size:.72rem;color:var(--muted);margin-top:2px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#design-tools">Design Tools</a> › Aspect Ratio Calculator</div>
+      <h1><i class="fa-solid fa-expand"></i> Aspect Ratio Calculator</h1>
+      <p class="tool-desc">Calculate width and height from aspect ratios. Pick a preset or enter a custom ratio to compute dimensions.</p>
+    </div>
+
+    <div class="ar-presets" id="presets"></div>
+
+    <div class="ar-card">
+      <h3 style="font-size:.88rem;margin:0 0 12px;">Aspect Ratio</h3>
+      <div class="ar-row">
+        <div class="ar-field"><label>Width Ratio</label><input type="number" id="rw" value="16" min="1" oninput="calc()"/></div>
+        <span class="ar-sep">:</span>
+        <div class="ar-field"><label>Height Ratio</label><input type="number" id="rh" value="9" min="1" oninput="calc()"/></div>
+      </div>
+      <h3 style="font-size:.88rem;margin:0 0 12px;">Dimensions (enter one, the other auto-calculates)</h3>
+      <div class="ar-row">
+        <div class="ar-field"><label>Width (px)</label><input type="number" id="dw" value="1920" min="1" oninput="calcFrom('w')"/></div>
+        <span class="ar-sep">x</span>
+        <div class="ar-field"><label>Height (px)</label><input type="number" id="dh" value="1080" min="1" oninput="calcFrom('h')"/></div>
+      </div>
+    </div>
+
+    <div class="ar-results" id="stats"></div>
+
+    <div class="ar-vis"><div class="ar-box" id="visBox"></div></div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Aspect Ratio Calculator</h2>
+      <p>Aspect ratio describes the proportional relationship between width and height. Common ratios include 16:9 (widescreen), 4:3 (standard), 1:1 (square), and 21:9 (ultrawide). This tool helps web developers, video editors, and photographers calculate exact pixel dimensions.</p>
+      <h3>How It Works</h3>
+      <p>Select a preset ratio or enter a custom one. Type a width to automatically calculate the matching height (or vice versa). The visual preview shows the proportional shape of the selected ratio.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const PRESETS=[
+  {label:'1:1',w:1,h:1},{label:'4:3',w:4,h:3},{label:'3:2',w:3,h:2},
+  {label:'16:9',w:16,h:9},{label:'16:10',w:16,h:10},{label:'21:9',w:21,h:9},
+  {label:'9:16',w:9,h:16},{label:'3:4',w:3,h:4},{label:'2:3',w:2,h:3},
+  {label:'5:4',w:5,h:4},{label:'32:9',w:32,h:9}
+];
+
+const presetsEl=document.getElementById('presets');
+PRESETS.forEach((p,i)=>{
+  const btn=document.createElement('button');
+  btn.className='ar-preset'+(i===3?' active':'');
+  btn.textContent=p.label;
+  btn.onclick=()=>{
+    document.querySelectorAll('.ar-preset').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('rw').value=p.w;
+    document.getElementById('rh').value=p.h;
+    calcFrom('w');
+  };
+  presetsEl.appendChild(btn);
+});
+
+let lastEdited='w';
+
+function calc(){
+  lastEdited==='w'?calcFrom('w'):calcFrom('h');
+}
+
+function calcFrom(which){
+  lastEdited=which;
+  const rw=parseFloat(document.getElementById('rw').value)||1;
+  const rh=parseFloat(document.getElementById('rh').value)||1;
+  const ratio=rw/rh;
+  if(which==='w'){
+    const w=parseFloat(document.getElementById('dw').value)||0;
+    document.getElementById('dh').value=Math.round(w/ratio);
+  } else {
+    const h=parseFloat(document.getElementById('dh').value)||0;
+    document.getElementById('dw').value=Math.round(h*ratio);
+  }
+  updateStats();
+  updateVis();
+}
+
+function updateStats(){
+  const rw=parseFloat(document.getElementById('rw').value)||1;
+  const rh=parseFloat(document.getElementById('rh').value)||1;
+  const dw=parseFloat(document.getElementById('dw').value)||0;
+  const dh=parseFloat(document.getElementById('dh').value)||0;
+  const ratio=(rw/rh).toFixed(4);
+  const pixels=dw*dh;
+  const diag=Math.sqrt(dw*dw+dh*dh).toFixed(1);
+  const gcd=getGcd(dw,dh);
+  const simplified=gcd?(dw/gcd)+':'+(dh/gcd):'—';
+  document.getElementById('stats').innerHTML=
+    stat(rw+':'+rh,'Ratio')+stat(ratio,'Decimal')+stat(simplified,'Simplified')+
+    stat(pixels.toLocaleString(),'Total Pixels')+stat(diag+' px','Diagonal')+stat(dw+'x'+dh,'Resolution');
+}
+
+function stat(v,l){return '<div class="ar-stat"><div class="val">'+v+'</div><div class="lbl">'+l+'</div></div>';}
+
+function getGcd(a,b){a=Math.abs(Math.round(a));b=Math.abs(Math.round(b));while(b){[a,b]=[b,a%b];}return a;}
+
+function updateVis(){
+  const rw=parseFloat(document.getElementById('rw').value)||1;
+  const rh=parseFloat(document.getElementById('rh').value)||1;
+  const box=document.getElementById('visBox');
+  const maxW=280,maxH=200;
+  let w,h;
+  if(rw/rh>=maxW/maxH){w=maxW;h=maxW*(rh/rw);}
+  else{h=maxH;w=maxH*(rw/rh);}
+  box.style.width=w+'px';box.style.height=h+'px';
+  box.textContent=rw+' : '+rh;
+}
+
+calcFrom('w');
+</script>
+</body>
+</html>

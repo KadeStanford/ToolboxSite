@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Text Shadow Generator — Visual Editor | ToolNook</title>
+  <meta name="description" content="Free CSS text-shadow generator with multi-layer support. Adjust offset, blur, and color visually and copy production-ready CSS code." />
+  <meta name="keywords" content="css text shadow generator, text shadow css, text shadow tool, css text effects, text shadow code generator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/text-shadow-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .ts-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+    .ts-preview{background:#f8fafc;border:2px solid var(--border);border-radius:var(--radius-lg);min-height:260px;display:flex;align-items:center;justify-content:center;padding:32px;overflow:hidden;}
+    .ts-preview-text{font-size:3.2rem;font-weight:800;color:#1e293b;transition:text-shadow .15s;text-align:center;word-break:break-word;}
+    .ts-controls{display:flex;flex-direction:column;gap:14px;}
+    .layer-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;position:relative;}
+    .layer-card.active{border-color:var(--primary);box-shadow:0 0 0 2px rgba(99,102,241,.15);}
+    .layer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .layer-head span{font-size:.82rem;font-weight:700;}
+    .layer-head button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;}
+    .layer-head button:hover{color:#ef4444;}
+    .ctrl-row{display:flex;align-items:center;gap:8px;margin-top:6px;}
+    .ctrl-row label{font-size:.75rem;font-weight:600;min-width:50px;}
+    .ctrl-row input[type=range]{flex:1;}
+    .ctrl-row span{font-size:.75rem;font-weight:600;min-width:38px;text-align:right;}
+    .ctrl-row input[type=color]{width:32px;height:26px;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:0;}
+    .add-layer-btn{padding:8px 16px;border:2px dashed var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);transition:.15s;text-align:center;}
+    .add-layer-btn:hover{border-color:var(--primary);color:var(--primary);}
+    .ts-code{background:#1e293b;color:#e2e8f0;border-radius:var(--radius-lg);padding:16px 20px;font-family:monospace;font-size:.85rem;white-space:pre-wrap;position:relative;margin-top:12px;}
+    .ts-code .copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:none;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;}
+    .ts-code .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+    .preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .preset-btn{padding:5px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.78rem;font-weight:600;transition:.15s;}
+    .preset-btn:hover{border-color:var(--primary);color:var(--primary);}
+    .text-input-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+    .text-input-row label{font-size:.82rem;font-weight:600;}
+    .text-input-row input{flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;}
+    @media(max-width:700px){.ts-wrap{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#css-generator-tools">CSS Generators</a> › Text Shadow</div>
+      <h1><i class="fa-solid fa-font"></i> CSS Text Shadow Generator</h1>
+      <p class="tool-desc">Create beautiful text shadow effects with multi-layer support. Adjust X/Y offset, blur radius and color for each layer.</p>
+    </div>
+
+    <div class="text-input-row">
+      <label>Preview Text</label>
+      <input type="text" id="previewInput" value="ToolNook" maxlength="40" oninput="document.getElementById('previewText').textContent=this.value||'ToolNook'">
+    </div>
+
+    <div class="ts-wrap">
+      <div>
+        <div class="ts-preview">
+          <div class="ts-preview-text" id="previewText">ToolNook</div>
+        </div>
+        <div class="ts-code">
+          <button class="copy-btn" onclick="copyCSS()"><i class="fa-regular fa-copy"></i> Copy</button>
+          <code id="css-output"></code>
+        </div>
+      </div>
+      <div class="ts-controls">
+        <div style="font-size:.82rem;font-weight:600;">Presets</div>
+        <div class="preset-row">
+          <button class="preset-btn" onclick="loadPreset('simple')">Simple</button>
+          <button class="preset-btn" onclick="loadPreset('outline')">Outline</button>
+          <button class="preset-btn" onclick="loadPreset('neon')">Neon</button>
+          <button class="preset-btn" onclick="loadPreset('retro')">Retro</button>
+          <button class="preset-btn" onclick="loadPreset('fire')">Fire</button>
+          <button class="preset-btn" onclick="loadPreset('emboss')">Emboss</button>
+        </div>
+        <div id="layerList"></div>
+        <button class="add-layer-btn" onclick="addLayer()"><i class="fa-solid fa-plus"></i> Add Shadow Layer</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About CSS Text Shadow Generator</h2>
+      <p>The <code>text-shadow</code> CSS property adds shadow effects to text. You can layer multiple shadows to create glowing, outlined, 3D, or neon text effects.</p>
+      <h3>How to Use</h3>
+      <p>Start with a preset or add individual shadow layers. Each layer has controls for horizontal/vertical offset, blur radius, and color. The preview updates in real time and you can copy the generated CSS.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let layers=[{x:2,y:2,blur:4,color:'#64748b'}];
+
+const presets={
+  simple:[{x:2,y:2,blur:4,color:'#64748b'}],
+  outline:[{x:-1,y:-1,blur:0,color:'#000'},{x:1,y:-1,blur:0,color:'#000'},{x:-1,y:1,blur:0,color:'#000'},{x:1,y:1,blur:0,color:'#000'}],
+  neon:[{x:0,y:0,blur:7,color:'#6366f1'},{x:0,y:0,blur:14,color:'#818cf8'},{x:0,y:0,blur:28,color:'#c7d2fe'}],
+  retro:[{x:3,y:3,blur:0,color:'#ef4444'},{x:6,y:6,blur:0,color:'#f59e0b'},{x:9,y:9,blur:0,color:'#10b981'}],
+  fire:[{x:0,y:0,blur:4,color:'#fbbf24'},{x:0,y:-3,blur:6,color:'#f97316'},{x:0,y:-6,blur:10,color:'#ef4444'}],
+  emboss:[{x:-1,y:-1,blur:1,color:'#ffffff'},{x:1,y:1,blur:1,color:'#00000033'}]
+};
+
+function loadPreset(name){
+  layers=presets[name].map(l=>({...l}));
+  renderLayers();
+  update();
+}
+
+function addLayer(){
+  layers.push({x:2,y:2,blur:4,color:'#64748b'});
+  renderLayers();
+  update();
+}
+
+function removeLayer(i){
+  if(layers.length<=1) return;
+  layers.splice(i,1);
+  renderLayers();
+  update();
+}
+
+function renderLayers(){
+  const list=document.getElementById('layerList');
+  list.innerHTML='';
+  layers.forEach((l,i)=>{
+    const card=document.createElement('div');
+    card.className='layer-card';
+    card.innerHTML=`
+      <div class="layer-head"><span>Layer ${i+1}</span><button onclick="removeLayer(${i})" title="Remove"><i class="fa-solid fa-xmark"></i></button></div>
+      <div class="ctrl-row"><label>X</label><input type="range" min="-20" max="20" value="${l.x}" oninput="layers[${i}].x=+this.value;update()"><span>${l.x}px</span></div>
+      <div class="ctrl-row"><label>Y</label><input type="range" min="-20" max="20" value="${l.y}" oninput="layers[${i}].y=+this.value;update()"><span>${l.y}px</span></div>
+      <div class="ctrl-row"><label>Blur</label><input type="range" min="0" max="30" value="${l.blur}" oninput="layers[${i}].blur=+this.value;update()"><span>${l.blur}px</span></div>
+      <div class="ctrl-row"><label>Color</label><input type="color" value="${l.color}" oninput="layers[${i}].color=this.value;update()"></div>`;
+    list.appendChild(card);
+  });
+}
+
+function update(){
+  const val=layers.map(l=>`${l.x}px ${l.y}px ${l.blur}px ${l.color}`).join(',\n    ');
+  document.getElementById('previewText').style.textShadow=layers.map(l=>`${l.x}px ${l.y}px ${l.blur}px ${l.color}`).join(', ');
+  document.getElementById('css-output').textContent=`text-shadow:\n    ${val};`;
+  document.querySelectorAll('.layer-card').forEach((card,i)=>{
+    const spans=card.querySelectorAll('.ctrl-row span');
+    if(spans[0])spans[0].textContent=layers[i].x+'px';
+    if(spans[1])spans[1].textContent=layers[i].y+'px';
+    if(spans[2])spans[2].textContent=layers[i].blur+'px';
+  });
+}
+
+function copyCSS(){
+  navigator.clipboard.writeText(document.getElementById('css-output').textContent).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy',1500);
+  });
+}
+
+renderLayers();
+update();
+</script>
+</body>
+</html>

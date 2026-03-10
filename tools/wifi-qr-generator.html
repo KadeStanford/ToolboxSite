@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WiFi QR Code Generator — Share Network Credentials | ToolNook</title>
+  <meta name="description" content="Free WiFi QR code generator. Create a QR code to share your WiFi network name and password. Guests just scan to connect." />
+  <meta name="keywords" content="wifi qr code generator, wifi qr code, share wifi password, wifi qr maker, network qr code" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/wifi-qr-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .wq-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;}
+    .wq-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+    .wq-field{margin-bottom:14px;}
+    .wq-field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:4px;color:var(--muted);}
+    .wq-field input,.wq-field select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;box-sizing:border-box;}
+    .wq-toggle{display:flex;align-items:center;gap:8px;font-size:.85rem;margin-bottom:14px;}
+    .wq-toggle input{width:auto;}
+    .wq-preview{text-align:center;padding:20px;}
+    .wq-preview canvas{max-width:100%;border:1px solid var(--border);border-radius:var(--radius);}
+    .wq-string{font-family:monospace;font-size:.75rem;word-break:break-all;color:var(--muted);margin-top:12px;background:#f8fafc;padding:8px;border-radius:var(--radius);}
+    .wq-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+    .wq-btn{padding:10px 22px;border:none;border-radius:var(--radius);font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;}
+    .wq-btn.primary{background:var(--primary);color:#fff;}
+    .wq-btn.primary:hover{opacity:.9;}
+    .wq-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    @media(max-width:700px){.wq-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › WiFi QR Generator</div>
+      <h1><i class="fa-solid fa-wifi"></i> WiFi QR Code Generator</h1>
+      <p class="tool-desc">Generate a QR code to share your WiFi credentials. Guests scan the code to connect instantly — no typing needed.</p>
+    </div>
+
+    <div class="wq-grid">
+      <div class="wq-panel">
+        <div class="wq-field"><label>Network Name (SSID)</label><input type="text" id="ssid" value="" placeholder="MyWiFiNetwork" oninput="generate()"/></div>
+        <div class="wq-field"><label>Password</label><input type="text" id="pass" value="" placeholder="MyPassword123" oninput="generate()"/></div>
+        <div class="wq-field"><label>Encryption</label>
+          <select id="enc" onchange="generate()">
+            <option value="WPA">WPA / WPA2 / WPA3</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">None (Open)</option>
+          </select>
+        </div>
+        <div class="wq-toggle"><input type="checkbox" id="hidden" onchange="generate()"/> <label for="hidden">Hidden network</label></div>
+        <div class="wq-field"><label>QR Size</label>
+          <select id="qrSize" onchange="generate()">
+            <option value="200">200x200</option>
+            <option value="300" selected>300x300</option>
+            <option value="400">400x400</option>
+            <option value="500">500x500</option>
+          </select>
+        </div>
+      </div>
+      <div class="wq-preview">
+        <canvas id="qrCanvas"></canvas>
+        <div class="wq-string" id="wifiString"></div>
+        <div class="wq-actions">
+          <button class="wq-btn primary" onclick="downloadQR()"><i class="fa-solid fa-download"></i> Download PNG</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About WiFi QR Code Generator</h2>
+      <p>WiFi QR codes encode your network name, password, and encryption type. When someone scans the code with their phone camera, they automatically connect to your WiFi without having to type the password manually.</p>
+      <h3>How to Use</h3>
+      <p>Enter your network name (SSID) and password, select the encryption type, and download the QR code. Print it and place it where guests can scan it.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+/* Minimal QR Code generator — Numeric/Alphanumeric/Byte mode, Version 1-10 */
+/* Uses a simplified approach with Canvas-based rendering */
+
+function generate(){
+  const ssid=document.getElementById('ssid').value;
+  const pass=document.getElementById('pass').value;
+  const enc=document.getElementById('enc').value;
+  const hidden=document.getElementById('hidden').checked;
+  const size=parseInt(document.getElementById('qrSize').value);
+
+  // WiFi QR string format: WIFI:T:<enc>;S:<ssid>;P:<password>;H:<hidden>;;
+  const escStr=s=>s.replace(/[\\;,:\"]/g,c=>'\\'+c);
+  let str='WIFI:T:'+enc+';S:'+escStr(ssid)+';';
+  if(enc!=='nopass')str+='P:'+escStr(pass)+';';
+  if(hidden)str+='H:true;';
+  str+=';';
+
+  document.getElementById('wifiString').textContent=str;
+
+  // Use QR generation via a simple matrix approach
+  const cvs=document.getElementById('qrCanvas');
+  if(!ssid){cvs.width=0;cvs.height=0;return;}
+  drawQR(cvs,str,size);
+}
+
+/* QR Code generator using bit-level encoding — simplified for byte mode */
+function drawQR(canvas,text,size){
+  // We'll use a third-party-free approach: render via a pre-computed error correction encoding
+  // For simplicity and reliability, use the qrcode generation algorithm
+  const modules=generateQRMatrix(text);
+  if(!modules){canvas.width=0;return;}
+  const n=modules.length;
+  canvas.width=size;canvas.height=size;
+  const ctx=canvas.getContext('2d');
+  const cellSize=size/n;
+  ctx.fillStyle='#ffffff';ctx.fillRect(0,0,size,size);
+  ctx.fillStyle='#000000';
+  for(let r=0;r<n;r++){
+    for(let c=0;c<n;c++){
+      if(modules[r][c]){
+        ctx.fillRect(c*cellSize,r*cellSize,cellSize+0.5,cellSize+0.5);
+      }
+    }
+  }
+}
+
+/* Minimal QR encoder — byte mode, error correction L, versions 1-10 */
+function generateQRMatrix(text){
+  const data=new TextEncoder().encode(text);
+  const dataLen=data.length;
+
+  // Version capacities for EC level L (byte mode)
+  const caps=[0,17,32,53,78,106,134,154,192,230,271];
+  let ver=1;
+  for(;ver<=10;ver++){if(caps[ver]>=dataLen)break;}
+  if(ver>10)return null; // too long
+
+  const size=17+ver*4;
+  const matrix=Array.from({length:size},()=>Array(size).fill(null));
+  const reserved=Array.from({length:size},()=>Array(size).fill(false));
+
+  // Place finder patterns
+  placeFinder(matrix,reserved,0,0);
+  placeFinder(matrix,reserved,0,size-7);
+  placeFinder(matrix,reserved,size-7,0);
+
+  // Timing patterns
+  for(let i=8;i<size-8;i++){
+    setModule(matrix,reserved,6,i,i%2===0);
+    setModule(matrix,reserved,i,6,i%2===0);
+  }
+
+  // Alignment pattern for version >= 2
+  if(ver>=2){
+    const alignPos=getAlignPos(ver);
+    for(const r of alignPos){
+      for(const c of alignPos){
+        if(reserved[r][c])continue;
+        placeAlign(matrix,reserved,r,c);
+      }
+    }
+  }
+
+  // Reserve format info areas
+  for(let i=0;i<9;i++){
+    if(i<size)reserveCell(reserved,8,i);
+    if(i<size)reserveCell(reserved,i,8);
+    reserveCell(reserved,8,size-1-i);
+    reserveCell(reserved,size-1-i,8);
+  }
+  // Dark module
+  setModule(matrix,reserved,size-8,8,true);
+
+  // Encode data
+  const encoded=encodeData(data,ver);
+  placeData(matrix,reserved,encoded,size);
+
+  // Apply mask 0 (checkerboard)
+  applyMask(matrix,reserved,size);
+
+  // Place format info
+  placeFormatInfo(matrix,size);
+
+  // Fill remaining nulls
+  for(let r=0;r<size;r++)for(let c=0;c<size;c++)if(matrix[r][c]===null)matrix[r][c]=false;
+
+  return matrix;
+}
+
+function setModule(matrix,reserved,r,c,val){
+  matrix[r][c]=val;reserved[r][c]=true;
+}
+function reserveCell(reserved,r,c){if(r>=0&&r<reserved.length&&c>=0&&c<reserved.length)reserved[r][c]=true;}
+
+function placeFinder(matrix,reserved,row,col){
+  for(let r=-1;r<=7;r++){
+    for(let c=-1;c<=7;c++){
+      const rr=row+r,cc=col+c;
+      if(rr<0||rr>=matrix.length||cc<0||cc>=matrix.length)continue;
+      let val;
+      if(r===-1||r===7||c===-1||c===7)val=false;
+      else if(r===0||r===6||c===0||c===6)val=true;
+      else if(r>=2&&r<=4&&c>=2&&c<=4)val=true;
+      else val=false;
+      setModule(matrix,reserved,rr,cc,val);
+    }
+  }
+}
+
+function placeAlign(matrix,reserved,row,col){
+  for(let r=-2;r<=2;r++){
+    for(let c=-2;c<=2;c++){
+      const val=(Math.abs(r)===2||Math.abs(c)===2||(!r&&!c));
+      setModule(matrix,reserved,row+r,col+c,val);
+    }
+  }
+}
+
+function getAlignPos(ver){
+  if(ver===1)return [];
+  const positions=[0,[],
+    [6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50]
+  ];
+  return positions[ver]||[];
+}
+
+function encodeData(data,ver){
+  const totalBits=getDataBits(ver);
+  const bits=[];
+  // Mode indicator: byte = 0100
+  bits.push(0,1,0,0);
+  // Char count (8 bits for ver 1-9, 16 for 10)
+  const ccBits=ver<=9?8:16;
+  for(let i=ccBits-1;i>=0;i--)bits.push((data.length>>i)&1);
+  // Data
+  for(const b of data)for(let i=7;i>=0;i--)bits.push((b>>i)&1);
+  // Terminator
+  for(let i=0;i<4&&bits.length<totalBits;i++)bits.push(0);
+  // Pad to byte boundary
+  while(bits.length%8)bits.push(0);
+  // Pad bytes
+  const pads=[0xEC,0x11];let pi=0;
+  while(bits.length<totalBits){
+    for(let i=7;i>=0;i--)bits.push((pads[pi]>>i)&1);
+    pi^=1;
+  }
+  // Add EC codewords (simplified — use a fixed RS approach)
+  return addEC(bits,ver);
+}
+
+function getDataBits(ver){
+  // Total data codewords * 8 for EC level L
+  const dc=[0,19,34,55,80,108,136,156,194,232,274];
+  return dc[ver]*8;
+}
+
+function addEC(dataBits,ver){
+  // EC codewords count
+  const ecCounts=[0,7,10,15,20,26,18,20,24,30,18];
+  const totalCW=[0,26,44,70,100,134,172,196,242,292,346];
+  const ecCW=ecCounts[ver];
+  const dataCW=totalCW[ver]-ecCW;
+
+  // Convert bits to bytes
+  const dataBytes=[];
+  for(let i=0;i<dataCW;i++){
+    let byte=0;
+    for(let b=0;b<8;b++)byte=(byte<<1)|(dataBits[i*8+b]||0);
+    dataBytes.push(byte);
+  }
+
+  // Reed-Solomon EC calculation
+  const ecBytes=rsEncode(dataBytes,ecCW);
+
+  // Interleave (single block for these versions at level L)
+  const allBits=[];
+  for(const b of dataBytes)for(let i=7;i>=0;i--)allBits.push((b>>i)&1);
+  for(const b of ecBytes)for(let i=7;i>=0;i--)allBits.push((b>>i)&1);
+  return allBits;
+}
+
+/* GF(256) Reed-Solomon */
+const GF_EXP=new Uint8Array(512);
+const GF_LOG=new Uint8Array(256);
+(function(){
+  let x=1;
+  for(let i=0;i<255;i++){
+    GF_EXP[i]=x;GF_LOG[x]=i;
+    x<<=1;if(x>=256)x^=0x11d;
+  }
+  for(let i=255;i<512;i++)GF_EXP[i]=GF_EXP[i-255];
+})();
+
+function gfMul(a,b){return(!a||!b)?0:GF_EXP[GF_LOG[a]+GF_LOG[b]];}
+
+function rsEncode(data,ecLen){
+  // Build generator polynomial
+  let gen=[1];
+  for(let i=0;i<ecLen;i++){
+    const ng=new Array(gen.length+1).fill(0);
+    for(let j=0;j<gen.length;j++){
+      ng[j]^=gen[j];
+      ng[j+1]^=gfMul(gen[j],GF_EXP[i]);
+    }
+    gen=ng;
+  }
+  const msg=new Uint8Array(data.length+ecLen);
+  msg.set(data);
+  for(let i=0;i<data.length;i++){
+    const coef=msg[i];
+    if(coef){
+      for(let j=0;j<gen.length;j++){
+        msg[i+j]^=gfMul(gen[j],coef);
+      }
+    }
+  }
+  return Array.from(msg.slice(data.length));
+}
+
+function placeData(matrix,reserved,bits,size){
+  let bitIdx=0;
+  let upward=true;
+  for(let col=size-1;col>=1;col-=2){
+    if(col===6)col=5; // skip timing column
+    const rows=upward?rangeDown(size-1,-1):rangeDown(0,size);
+    for(const row of rows){
+      for(const c of [col,col-1]){
+        if(!reserved[row][c]){
+          matrix[row][c]=bitIdx<bits.length?!!bits[bitIdx]:false;
+          bitIdx++;
+        }
+      }
+    }
+    upward=!upward;
+  }
+}
+
+function rangeDown(start,end){
+  const arr=[];
+  if(start>end){for(let i=start;i>end;i--)arr.push(i);}
+  else{for(let i=start;i<end;i++)arr.push(i);}
+  return arr;
+}
+
+function applyMask(matrix,reserved,size){
+  // Mask 0: (row + col) % 2 === 0
+  for(let r=0;r<size;r++){
+    for(let c=0;c<size;c++){
+      if(!reserved[r][c]&&(r+c)%2===0){
+        matrix[r][c]=!matrix[r][c];
+      }
+    }
+  }
+}
+
+function placeFormatInfo(matrix,size){
+  // Format info for EC level L (01), mask 0 (000) = 011010101011111 after BCH
+  const bits=[0,1,1,0,1,0,1,0,1,0,1,1,1,1,1];
+  // Along top-left finder
+  const positions_a=[[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[7,8],[8,8],[8,7],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0]];
+  const positions_b=[[8,size-1],[8,size-2],[8,size-3],[8,size-4],[8,size-5],[8,size-6],[8,size-7],[8,size-8],[size-7,8],[size-6,8],[size-5,8],[size-4,8],[size-3,8],[size-2,8],[size-1,8]];
+  for(let i=0;i<15;i++){
+    const val=!!bits[i];
+    const [ar,ac]=positions_a[i];
+    const [br,bc]=positions_b[i];
+    matrix[ar][ac]=val;
+    matrix[br][bc]=val;
+  }
+}
+
+function downloadQR(){
+  const cvs=document.getElementById('qrCanvas');
+  if(!cvs.width)return;
+  const a=document.createElement('a');
+  a.download='wifi-qr.png';a.href=cvs.toDataURL('image/png');a.click();
+}
+
+generate();
+</script>
+</body>
+</html>

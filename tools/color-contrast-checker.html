@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Contrast Checker — WCAG AA/AAA | ToolNook</title>
+  <meta name="description" content="Free color contrast checker. Test foreground and background color combinations against WCAG 2.1 accessibility standards (AA and AAA)." />
+  <meta name="keywords" content="color contrast checker, WCAG contrast ratio, accessibility color checker, color contrast tool, AA AAA contrast" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/color-contrast-checker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .cc-pickers{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:20px;}
+    .cc-pick{flex:1;min-width:180px;}
+    .cc-pick label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+    .cc-pick .row{display:flex;gap:8px;align-items:center;}
+    .cc-pick input[type=color]{width:48px;height:40px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px;}
+    .cc-pick input[type=text]{flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:monospace;font-size:.9rem;}
+    .swap-btn{align-self:flex-end;padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:1rem;transition:.15s;}
+    .swap-btn:hover{border-color:var(--primary);color:var(--primary);}
+    .cc-preview{border-radius:var(--radius);padding:30px;text-align:center;margin-bottom:24px;border:1px solid var(--border);}
+    .cc-preview .big{font-size:1.6rem;font-weight:700;margin-bottom:8px;}
+    .cc-preview .small{font-size:.92rem;}
+    .cc-ratio{text-align:center;margin-bottom:24px;}
+    .cc-ratio .number{font-size:2.8rem;font-weight:800;color:var(--primary);}
+    .cc-ratio .label{font-size:.82rem;color:var(--muted);}
+    .cc-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+    .cc-badge{border-radius:var(--radius);padding:16px;text-align:center;border:1px solid var(--border);}
+    .cc-badge .status{font-size:1.1rem;font-weight:800;margin-bottom:4px;}
+    .cc-badge .info{font-size:.78rem;color:var(--muted);}
+    .pass{background:#f0fdf4;border-color:#86efac;}
+    .pass .status{color:#16a34a;}
+    .fail{background:#fef2f2;border-color:#fca5a5;}
+    .fail .status{color:#dc2626;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#design-tools">Design Tools</a> › Color Contrast Checker</div>
+      <h1><i class="fa-solid fa-circle-half-stroke"></i> Color Contrast Checker</h1>
+      <p class="tool-desc">Check if your text and background color combination meets WCAG 2.1 accessibility standards for AA and AAA conformance.</p>
+    </div>
+
+    <div class="cc-pickers">
+      <div class="cc-pick">
+        <label>Foreground (Text)</label>
+        <div class="row">
+          <input type="color" id="fgColor" value="#1e293b" oninput="sync('fg')" />
+          <input type="text" id="fgHex" value="#1e293b" oninput="syncHex('fg')" />
+        </div>
+      </div>
+      <button class="swap-btn" onclick="swap()" title="Swap colors"><i class="fa-solid fa-arrows-rotate"></i></button>
+      <div class="cc-pick">
+        <label>Background</label>
+        <div class="row">
+          <input type="color" id="bgColor" value="#ffffff" oninput="sync('bg')" />
+          <input type="text" id="bgHex" value="#ffffff" oninput="syncHex('bg')" />
+        </div>
+      </div>
+    </div>
+
+    <div class="cc-preview" id="preview">
+      <div class="big">Large Text (18pt+ bold or 24pt+)</div>
+      <div class="small">Normal text — The quick brown fox jumps over the lazy dog.</div>
+    </div>
+
+    <div class="cc-ratio">
+      <div class="number" id="ratioNum">—</div>
+      <div class="label">Contrast Ratio</div>
+    </div>
+
+    <div class="cc-results" id="results"></div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Color Contrast Checker</h2>
+      <p>Web accessibility requires sufficient contrast between text and its background. WCAG 2.1 defines two conformance levels: AA (minimum) requires 4.5:1 for normal text and 3:1 for large text, while AAA (enhanced) requires 7:1 for normal text and 4.5:1 for large text.</p>
+      <h3>How to Use</h3>
+      <p>Pick or type your foreground and background colors. The tool instantly calculates the contrast ratio and shows pass/fail for each WCAG level and text size combination.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function hexToRgb(hex){
+  hex=hex.replace('#','');
+  if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  return [parseInt(hex.slice(0,2),16),parseInt(hex.slice(2,4),16),parseInt(hex.slice(4,6),16)];
+}
+
+function luminance(r,g,b){
+  const [rs,gs,bs]=[r,g,b].map(c=>{c/=255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4);});
+  return 0.2126*rs+0.7152*gs+0.0722*bs;
+}
+
+function contrastRatio(fg,bg){
+  const l1=luminance(...fg),l2=luminance(...bg);
+  const lighter=Math.max(l1,l2),darker=Math.min(l1,l2);
+  return (lighter+0.05)/(darker+0.05);
+}
+
+function sync(which){
+  const color=document.getElementById(which==='fg'?'fgColor':'bgColor').value;
+  document.getElementById(which==='fg'?'fgHex':'bgHex').value=color;
+  update();
+}
+
+function syncHex(which){
+  let hex=document.getElementById(which==='fg'?'fgHex':'bgHex').value;
+  if(/^#?[0-9a-f]{3,6}$/i.test(hex)){
+    if(!hex.startsWith('#'))hex='#'+hex;
+    document.getElementById(which==='fg'?'fgColor':'bgColor').value=hex;
+    update();
+  }
+}
+
+function swap(){
+  const fc=document.getElementById('fgColor').value;
+  const bc=document.getElementById('bgColor').value;
+  document.getElementById('fgColor').value=bc;document.getElementById('fgHex').value=bc;
+  document.getElementById('bgColor').value=fc;document.getElementById('bgHex').value=fc;
+  update();
+}
+
+function update(){
+  const fg=hexToRgb(document.getElementById('fgColor').value);
+  const bg=hexToRgb(document.getElementById('bgColor').value);
+  const ratio=contrastRatio(fg,bg);
+  const preview=document.getElementById('preview');
+  preview.style.color=document.getElementById('fgColor').value;
+  preview.style.backgroundColor=document.getElementById('bgColor').value;
+  document.getElementById('ratioNum').textContent=ratio.toFixed(2)+' : 1';
+  const checks=[
+    {label:'AA Normal Text',min:4.5,info:'Min 4.5:1 — body text, paragraphs'},
+    {label:'AA Large Text',min:3,info:'Min 3:1 — 18pt bold or 24pt+'},
+    {label:'AAA Normal Text',min:7,info:'Min 7:1 — enhanced level'},
+    {label:'AAA Large Text',min:4.5,info:'Min 4.5:1 — enhanced large text'},
+  ];
+  const res=document.getElementById('results');
+  res.innerHTML='';
+  checks.forEach(c=>{
+    const ok=ratio>=c.min;
+    const d=document.createElement('div');
+    d.className='cc-badge '+(ok?'pass':'fail');
+    d.innerHTML='<div class="status">'+(ok?'PASS':'FAIL')+'</div><div style="font-weight:700;font-size:.88rem;">'+c.label+'</div><div class="info">'+c.info+'</div>';
+    res.appendChild(d);
+  });
+}
+
+update();
+</script>
+</body>
+</html>

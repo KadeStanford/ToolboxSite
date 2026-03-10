@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Beautifier — Format & Indent HTML Online | ToolNook</title>
+  <meta name="description" content="Free online HTML beautifier and formatter. Paste minified or messy HTML and get clean, readable, properly indented code instantly." />
+  <meta name="keywords" content="html beautifier, html formatter, format html, indent html, html pretty print, beautify html online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/html-beautifier.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .bf-col label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+    .bf-col textarea{width:100%;height:360px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:.84rem;resize:vertical;background:var(--surface);tab-size:2;}
+    .bf-opts{display:flex;gap:14px;align-items:center;justify-content:center;margin-bottom:14px;flex-wrap:wrap;font-size:.82rem;}
+    .bf-opts label{font-weight:600;display:flex;align-items:center;gap:4px;cursor:pointer;}
+    .bf-opts select,.bf-opts input[type=number]{padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:.82rem;width:60px;}
+    .bf-actions{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+    .bf-btn{padding:10px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .bf-btn.primary{background:var(--primary);color:#fff;}
+    .bf-btn.primary:hover{opacity:.9;}
+    .bf-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .bf-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    @media(max-width:700px){.bf-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › HTML Beautifier</div>
+      <h1><i class="fa-solid fa-code"></i> HTML Beautifier</h1>
+      <p class="tool-desc">Paste messy or minified HTML and get clean, properly indented output. Customize indent size and style.</p>
+    </div>
+
+    <div class="bf-opts">
+      <label>Indent: <select id="indentType"><option value="spaces">Spaces</option><option value="tabs">Tabs</option></select></label>
+      <label>Size: <input type="number" id="indentSize" value="2" min="1" max="8"></label>
+    </div>
+
+    <div class="bf-grid">
+      <div class="bf-col">
+        <label><i class="fa-solid fa-code"></i> Input HTML</label>
+        <textarea id="htmlInput" placeholder="<div><p>Paste messy HTML here</p></div>" spellcheck="false"></textarea>
+      </div>
+      <div class="bf-col">
+        <label><i class="fa-solid fa-wand-magic-sparkles"></i> Beautified Output</label>
+        <textarea id="htmlOutput" readonly placeholder="Formatted HTML will appear here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="bf-actions">
+      <button class="bf-btn primary" onclick="beautify()"><i class="fa-solid fa-wand-magic-sparkles"></i> Beautify</button>
+      <button class="bf-btn secondary" onclick="copyOutput()"><i class="fa-regular fa-copy"></i> Copy</button>
+      <button class="bf-btn secondary" onclick="clearAll()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About HTML Beautifier</h2>
+      <p>Clean, readable HTML is easier to maintain and debug. This tool takes minified or poorly formatted HTML and outputs nicely indented code with proper nesting.</p>
+      <h3>How It Works</h3>
+      <p>The beautifier parses your HTML, identifies opening and closing tags, and applies consistent indentation. Self-closing tags, comments, and text nodes are all handled. Choose between spaces or tabs and set your preferred indent size.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const VOID_TAGS=new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
+
+function beautify(){
+  const input=document.getElementById('htmlInput').value;
+  if(!input.trim()){document.getElementById('htmlOutput').value='';return;}
+  const useTabs=document.getElementById('indentType').value==='tabs';
+  const size=Math.max(1,Math.min(8,+document.getElementById('indentSize').value||2));
+  const indentChar=useTabs?'\t':' '.repeat(size);
+
+  // Tokenize
+  const tokens=[];
+  const re=/<!--[\s\S]*?-->|<!DOCTYPE[^>]*>|<\/?\s*([a-zA-Z][a-zA-Z0-9-]*)[^>]*\/?>|[^<]+/gi;
+  let m;
+  while((m=re.exec(input))!==null){
+    const t=m[0].trim();
+    if(t)tokens.push(t);
+  }
+
+  let depth=0;
+  const lines=[];
+  for(const token of tokens){
+    if(token.startsWith('<!--')||token.startsWith('<!DOCTYPE')||token.startsWith('<!doctype')){
+      lines.push(indentChar.repeat(depth)+token);
+    } else if(token.startsWith('</')){
+      depth=Math.max(0,depth-1);
+      lines.push(indentChar.repeat(depth)+token);
+    } else if(token.startsWith('<')){
+      const tagMatch=token.match(/^<\s*([a-zA-Z][a-zA-Z0-9-]*)/);
+      const tag=tagMatch?tagMatch[1].toLowerCase():'';
+      const selfClose=token.endsWith('/>')||VOID_TAGS.has(tag);
+      lines.push(indentChar.repeat(depth)+token);
+      if(!selfClose)depth++;
+    } else {
+      // text node
+      const text=token.replace(/\s+/g,' ').trim();
+      if(text)lines.push(indentChar.repeat(depth)+text);
+    }
+  }
+  document.getElementById('htmlOutput').value=lines.join('\n');
+}
+
+function copyOutput(){
+  const out=document.getElementById('htmlOutput').value;
+  if(out)navigator.clipboard.writeText(out);
+}
+
+function clearAll(){
+  document.getElementById('htmlInput').value='';
+  document.getElementById('htmlOutput').value='';
+}
+</script>
+</body>
+</html>

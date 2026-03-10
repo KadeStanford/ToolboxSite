@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Speaker Test — Check Your Audio Output | ToolNook</title>
+  <meta name="description" content="Free online speaker test. Play test tones, frequency sweeps, and stereo channel checks to verify your speakers or headphones work correctly." />
+  <meta name="keywords" content="speaker test, audio test online, test speakers, headphone test, speaker checker, left right audio test" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/speaker-test.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .spk-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;max-width:600px;margin:0 auto;}
+    .spk-icon{text-align:center;font-size:3rem;color:var(--primary);margin-bottom:8px;}
+    .test-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
+    .test-btn{padding:16px 12px;border:2px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;text-align:center;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+    .test-btn:hover{border-color:var(--primary);background:#eef2ff;}
+    .test-btn.playing{border-color:#10b981;background:#d1fae5;}
+    .test-btn i{font-size:1.3rem;color:var(--primary);}
+    .test-btn span{font-size:.82rem;font-weight:700;}
+    .test-btn small{font-size:.72rem;color:var(--muted);}
+    .freq-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+    .freq-section h3{font-size:.88rem;font-weight:700;margin:0 0 10px;}
+    .freq-row{display:flex;align-items:center;gap:10px;}
+    .freq-row input[type=range]{flex:1;}
+    .freq-row span{font-size:.82rem;font-weight:600;min-width:60px;text-align:right;}
+    .freq-play{padding:8px 20px;border:none;border-radius:var(--radius);background:var(--primary);color:#fff;font-weight:700;cursor:pointer;margin-top:10px;font-size:.88rem;transition:.15s;}
+    .freq-play:hover{opacity:.9;}
+    .freq-play.stop{background:#ef4444;}
+    .vol-row{display:flex;align-items:center;gap:10px;margin-top:16px;}
+    .vol-row label{font-size:.82rem;font-weight:600;}
+    .vol-row input{flex:1;}
+    .vol-row span{font-size:.82rem;font-weight:600;min-width:35px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#testing-tools">Input Testing</a> › Speaker Test</div>
+      <h1><i class="fa-solid fa-volume-high"></i> Online Speaker Test</h1>
+      <p class="tool-desc">Test your speakers or headphones with tone generators, stereo channel tests, and frequency sweeps. All sounds generated locally in your browser.</p>
+    </div>
+
+    <div class="spk-card">
+      <div class="spk-icon"><i class="fa-solid fa-volume-high"></i></div>
+      <div class="vol-row">
+        <label><i class="fa-solid fa-volume-low"></i></label>
+        <input type="range" id="volSlider" min="0" max="100" value="50" oninput="setVol(+this.value)">
+        <span id="volVal">50%</span>
+      </div>
+
+      <div class="test-grid">
+        <button class="test-btn" onclick="playTone('left')">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Left Channel</span>
+          <small>Left speaker only</small>
+        </button>
+        <button class="test-btn" onclick="playTone('right')">
+          <i class="fa-solid fa-arrow-right"></i>
+          <span>Right Channel</span>
+          <small>Right speaker only</small>
+        </button>
+        <button class="test-btn" onclick="playTone('both')">
+          <i class="fa-solid fa-music"></i>
+          <span>Both Channels</span>
+          <small>Stereo 440 Hz tone</small>
+        </button>
+        <button class="test-btn" onclick="playSweep()">
+          <i class="fa-solid fa-wave-square"></i>
+          <span>Frequency Sweep</span>
+          <small>20 Hz to 20 kHz</small>
+        </button>
+        <button class="test-btn" onclick="playTone('bass')">
+          <i class="fa-solid fa-drum"></i>
+          <span>Bass Test</span>
+          <small>60 Hz low frequency</small>
+        </button>
+        <button class="test-btn" onclick="playTone('treble')">
+          <i class="fa-solid fa-bell"></i>
+          <span>Treble Test</span>
+          <small>8000 Hz high frequency</small>
+        </button>
+      </div>
+
+      <div class="freq-section">
+        <h3>Custom Frequency</h3>
+        <div class="freq-row">
+          <input type="range" id="freqSlider" min="20" max="20000" value="440" oninput="document.getElementById('freqVal').textContent=this.value+' Hz'">
+          <span id="freqVal">440 Hz</span>
+        </div>
+        <button class="freq-play" id="customBtn" onclick="toggleCustom()"><i class="fa-solid fa-play"></i> Play</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Online Speaker Test</h2>
+      <p>This tool uses the Web Audio API to generate test tones directly in your browser. No external audio files are loaded, and nothing is sent over the network.</p>
+      <h3>How to Use</h3>
+      <p>Adjust the volume slider first, then click the test buttons. Use Left/Right channel tests to verify stereo. The frequency sweep plays an ascending tone from 20 Hz to 20 kHz to test full range. Use the custom frequency slider to test specific frequencies.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let audioCtx=null,activeOsc=null,activeGain=null,sweepOsc=null,customOsc=null,customPlaying=false;
+let volume=0.5;
+
+function getCtx(){if(!audioCtx)audioCtx=new AudioContext();return audioCtx;}
+
+function setVol(v){volume=v/100;document.getElementById('volVal').textContent=v+'%';if(activeGain)activeGain.gain.value=volume*0.3;}
+
+function stopAll(){
+  if(activeOsc){try{activeOsc.stop();}catch(e){}activeOsc=null;}
+  if(sweepOsc){try{sweepOsc.stop();}catch(e){}sweepOsc=null;}
+  document.querySelectorAll('.test-btn').forEach(b=>b.classList.remove('playing'));
+}
+
+function playTone(type){
+  stopAll();stopCustom();
+  const ctx=getCtx();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  gain.gain.value=volume*0.3;
+  activeGain=gain;
+
+  if(type==='left'||type==='right'){
+    const panner=ctx.createStereoPanner();
+    panner.pan.value=type==='left'?-1:1;
+    osc.connect(gain).connect(panner).connect(ctx.destination);
+    osc.frequency.value=440;
+  } else if(type==='bass'){
+    osc.frequency.value=60;
+    osc.connect(gain).connect(ctx.destination);
+  } else if(type==='treble'){
+    osc.frequency.value=8000;
+    osc.connect(gain).connect(ctx.destination);
+  } else {
+    osc.frequency.value=440;
+    osc.connect(gain).connect(ctx.destination);
+  }
+
+  osc.start();
+  activeOsc=osc;
+  const btn=event.currentTarget;
+  btn.classList.add('playing');
+  osc.stop(ctx.currentTime+2);
+  osc.onended=()=>{btn.classList.remove('playing');activeOsc=null;};
+}
+
+function playSweep(){
+  stopAll();stopCustom();
+  const ctx=getCtx();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  gain.gain.value=volume*0.3;
+  activeGain=gain;
+  osc.connect(gain).connect(ctx.destination);
+  osc.frequency.setValueAtTime(20,ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(20000,ctx.currentTime+4);
+  osc.start();
+  sweepOsc=osc;
+  const btn=event.currentTarget;
+  btn.classList.add('playing');
+  osc.stop(ctx.currentTime+4);
+  osc.onended=()=>{btn.classList.remove('playing');sweepOsc=null;};
+}
+
+function toggleCustom(){
+  if(customPlaying){stopCustom();return;}
+  stopAll();
+  const ctx=getCtx();
+  customOsc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  gain.gain.value=volume*0.3;
+  activeGain=gain;
+  customOsc.frequency.value=+document.getElementById('freqSlider').value;
+  customOsc.connect(gain).connect(ctx.destination);
+  customOsc.start();
+  customPlaying=true;
+  const btn=document.getElementById('customBtn');
+  btn.innerHTML='<i class="fa-solid fa-stop"></i> Stop';
+  btn.classList.add('stop');
+  document.getElementById('freqSlider').oninput=function(){
+    document.getElementById('freqVal').textContent=this.value+' Hz';
+    if(customOsc)customOsc.frequency.value=+this.value;
+  };
+}
+
+function stopCustom(){
+  if(customOsc){try{customOsc.stop();}catch(e){}customOsc=null;}
+  customPlaying=false;
+  const btn=document.getElementById('customBtn');
+  btn.innerHTML='<i class="fa-solid fa-play"></i> Play';
+  btn.classList.remove('stop');
+}
+</script>
+</body>
+</html>

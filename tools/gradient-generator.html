@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Gradient Generator — Linear & Radial Gradients | ToolNook</title>
+  <meta name="description" content="Free CSS gradient generator. Create beautiful linear and radial gradients with a visual editor and copy the CSS code instantly." />
+  <meta name="keywords" content="css gradient generator, linear gradient, radial gradient, css background gradient, gradient maker, color gradient tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/gradient-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .gg-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+    .gg-preview{height:300px;border-radius:var(--radius-lg);border:2px solid var(--border);position:relative;}
+    .gg-code{background:#1e293b;color:#e2e8f0;border-radius:var(--radius-lg);padding:16px 20px;font-family:monospace;font-size:.88rem;white-space:pre-wrap;word-break:break-all;position:relative;min-height:80px;}
+    .gg-code .copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:none;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;}
+    .gg-code .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+    .gg-controls{display:flex;flex-direction:column;gap:14px;}
+    .gg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .gg-row label{font-weight:600;font-size:.85rem;min-width:80px;}
+    .gg-row select,.gg-row input[type=number]{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;}
+    .gg-row input[type=range]{flex:1;min-width:100px;}
+    .stop-list{display:flex;flex-direction:column;gap:8px;}
+    .stop-row{display:flex;align-items:center;gap:8px;}
+    .stop-row input[type=color]{width:36px;height:30px;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:0;}
+    .stop-row input[type=number]{width:60px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:.82rem;text-align:center;}
+    .stop-row .del-stop{background:none;border:none;color:#ef4444;cursor:pointer;font-size:1.1rem;padding:2px 6px;}
+    .add-stop-btn{padding:6px 14px;border:1px dashed var(--border);border-radius:var(--radius);background:none;cursor:pointer;font-size:.82rem;color:var(--text-muted);transition:.15s;}
+    .add-stop-btn:hover{border-color:var(--primary);color:var(--primary);}
+    .preset-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .preset-btn{width:40px;height:24px;border-radius:4px;border:2px solid var(--border);cursor:pointer;transition:.15s;}
+    .preset-btn:hover{border-color:var(--primary);transform:scale(1.1);}
+    @media(max-width:700px){.gg-wrap{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#css-generator-tools">CSS Generators</a> › Gradient Generator</div>
+      <h1><i class="fa-solid fa-palette"></i> CSS Gradient Generator</h1>
+      <p class="tool-desc">Create beautiful CSS gradients with a visual editor. Supports linear and radial gradients with multiple color stops.</p>
+    </div>
+
+    <div class="preset-bar" id="presets"></div>
+
+    <div class="gg-wrap">
+      <div>
+        <div class="gg-preview" id="preview"></div>
+        <div class="gg-code" style="margin-top:12px;">
+          <button class="copy-btn" onclick="copyCSS()"><i class="fa-regular fa-copy"></i> Copy</button>
+          <code id="css-output"></code>
+        </div>
+      </div>
+      <div class="gg-controls">
+        <div class="gg-row">
+          <label>Type</label>
+          <select id="gType" onchange="render()">
+            <option value="linear">Linear</option>
+            <option value="radial">Radial</option>
+            <option value="conic">Conic</option>
+          </select>
+        </div>
+        <div class="gg-row" id="angle-row">
+          <label>Angle</label>
+          <input type="range" id="gAngle" min="0" max="360" value="135" oninput="render();document.getElementById('angle-val').textContent=this.value+'°'">
+          <span id="angle-val" style="font-size:.85rem;font-weight:600;min-width:36px;">135°</span>
+        </div>
+        <div>
+          <label style="font-weight:600;font-size:.85rem;">Color Stops</label>
+          <div class="stop-list" id="stops"></div>
+          <button class="add-stop-btn" onclick="addStop()" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Add Color Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About CSS Gradient Generator</h2>
+      <p>CSS gradients let you display smooth transitions between two or more colors. This tool generates the CSS code for linear, radial, and conic gradients with full control over color stops, angle, and position.</p>
+      <h3>How to Use</h3>
+      <ol>
+        <li>Choose a gradient type (linear, radial, or conic)</li>
+        <li>Adjust the angle/direction using the slider</li>
+        <li>Add, remove, or modify color stops</li>
+        <li>Click "Copy" to copy the CSS code</li>
+      </ol>
+      <h3>Gradient Types</h3>
+      <ul>
+        <li><strong>Linear:</strong> Colors transition along a straight line at a specified angle</li>
+        <li><strong>Radial:</strong> Colors radiate outward from a center point in a circular or elliptical pattern</li>
+        <li><strong>Conic:</strong> Colors transition around a center point like a color wheel</li>
+      </ul>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const presets=[
+  [{c:'#667eea',p:0},{c:'#764ba2',p:100}],
+  [{c:'#f093fb',p:0},{c:'#f5576c',p:100}],
+  [{c:'#4facfe',p:0},{c:'#00f2fe',p:100}],
+  [{c:'#43e97b',p:0},{c:'#38f9d7',p:100}],
+  [{c:'#fa709a',p:0},{c:'#fee140',p:100}],
+  [{c:'#a18cd1',p:0},{c:'#fbc2eb',p:100}],
+  [{c:'#fccb90',p:0},{c:'#d57eeb',p:100}],
+  [{c:'#e0c3fc',p:0},{c:'#8ec5fc',p:100}],
+  [{c:'#f5f7fa',p:0},{c:'#c3cfe2',p:100}],
+  [{c:'#0f0c29',p:0},{c:'#302b63',p:50},{c:'#24243e',p:100}],
+  [{c:'#fc5c7d',p:0},{c:'#6a82fb',p:100}],
+  [{c:'#11998e',p:0},{c:'#38ef7d',p:100}],
+];
+
+let stops=[{c:'#6366f1',p:0},{c:'#06b6d4',p:50},{c:'#10b981',p:100}];
+
+// Build preset bar
+const presetsEl=document.getElementById('presets');
+presets.forEach((p,i)=>{
+  const btn=document.createElement('button');
+  btn.className='preset-btn';
+  btn.style.background=`linear-gradient(135deg,${p.map(s=>s.c+' '+s.p+'%').join(',')})`;
+  btn.onclick=()=>{ stops=JSON.parse(JSON.stringify(p)); render(); };
+  presetsEl.appendChild(btn);
+});
+
+function render(){
+  renderStops();
+  const type=document.getElementById('gType').value;
+  const angle=document.getElementById('gAngle').value;
+  const stopsStr=stops.map(s=>s.c+' '+s.p+'%').join(', ');
+  let css;
+  if(type==='linear') css=`linear-gradient(${angle}deg, ${stopsStr})`;
+  else if(type==='radial') css=`radial-gradient(circle, ${stopsStr})`;
+  else css=`conic-gradient(from ${angle}deg, ${stopsStr})`;
+
+  document.getElementById('preview').style.background=css;
+  document.getElementById('css-output').textContent=`background: ${css};`;
+  document.getElementById('angle-row').style.display=(type==='radial')?'none':'flex';
+}
+
+function renderStops(){
+  const el=document.getElementById('stops');
+  el.innerHTML=stops.map((s,i)=>`
+    <div class="stop-row">
+      <input type="color" value="${s.c}" onchange="stops[${i}].c=this.value;render()">
+      <input type="number" min="0" max="100" value="${s.p}" onchange="stops[${i}].p=parseInt(this.value);render()">
+      <span style="font-size:.75rem;color:var(--text-muted);">%</span>
+      ${stops.length>2?`<button class="del-stop" onclick="stops.splice(${i},1);render()"><i class="fa-solid fa-xmark"></i></button>`:''}
+    </div>`).join('');
+}
+
+function addStop(){
+  const last=stops[stops.length-1];
+  const newP=Math.min(100,last.p+10);
+  stops.push({c:'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),p:newP});
+  render();
+}
+
+function copyCSS(){
+  const text=document.getElementById('css-output').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy',1500);
+  });
+}
+
+render();
+</script>
+</body>
+</html>

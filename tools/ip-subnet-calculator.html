@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Subnet Calculator — CIDR, Network, Host Range | ToolNook</title>
+  <meta name="description" content="Free IP subnet calculator. Calculate network address, broadcast address, host range, and subnet mask from any IP/CIDR notation." />
+  <meta name="keywords" content="subnet calculator, ip subnet calculator, cidr calculator, network calculator, subnet mask calculator, ip range calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/ip-subnet-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .sc-input{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .sc-input input{flex:1;min-width:180px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);font-family:monospace;font-size:1rem;}
+    .sc-input select{padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;background:#fff;}
+    .sc-btn{padding:12px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;background:var(--primary);color:#fff;transition:.15s;}
+    .sc-btn:hover{opacity:.9;}
+    .sc-err{color:#dc2626;font-size:.82rem;margin-bottom:12px;display:none;}
+    .sc-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:20px;}
+    .sc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+    .sc-card .lbl{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+    .sc-card .val{font-size:1.05rem;font-weight:700;font-family:monospace;margin-top:4px;word-break:break-all;}
+    .sc-table{width:100%;border-collapse:collapse;margin-top:20px;font-size:.85rem;}
+    .sc-table th{text-align:left;padding:8px 12px;background:var(--surface);font-size:.78rem;color:var(--muted);border-bottom:1px solid var(--border);}
+    .sc-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-family:monospace;}
+    .sc-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .sc-preset{padding:5px 12px;font-size:.78rem;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;font-family:monospace;}
+    .sc-preset:hover{border-color:var(--primary);color:var(--primary);}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › IP Subnet Calculator</div>
+      <h1><i class="fa-solid fa-network-wired"></i> IP Subnet Calculator</h1>
+      <p class="tool-desc">Calculate network address, broadcast address, usable host range, and more from any IPv4 address with CIDR prefix length.</p>
+    </div>
+
+    <div class="sc-presets">
+      <button class="sc-preset" onclick="setInput('192.168.1.0',24)">192.168.1.0/24</button>
+      <button class="sc-preset" onclick="setInput('10.0.0.0',8)">10.0.0.0/8</button>
+      <button class="sc-preset" onclick="setInput('172.16.0.0',16)">172.16.0.0/16</button>
+      <button class="sc-preset" onclick="setInput('192.168.0.0',22)">192.168.0.0/22</button>
+      <button class="sc-preset" onclick="setInput('10.10.10.0',28)">10.10.10.0/28</button>
+    </div>
+
+    <div class="sc-input">
+      <input type="text" id="ipInput" value="192.168.1.0" placeholder="e.g. 192.168.1.0"/>
+      <select id="cidrSelect"></select>
+      <button class="sc-btn" onclick="calculate()"><i class="fa-solid fa-calculator"></i> Calculate</button>
+    </div>
+    <div class="sc-err" id="errMsg"></div>
+    <div class="sc-results" id="results"></div>
+    <table class="sc-table" id="subnetsTable" style="display:none;">
+      <thead><tr><th>Subnet</th><th>Host Range</th><th>Broadcast</th><th>Usable</th></tr></thead>
+      <tbody id="subnetsBody"></tbody>
+    </table>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About IP Subnet Calculator</h2>
+      <p>Subnetting divides an IP network into smaller segments. This calculator takes an IPv4 address and CIDR prefix length (e.g., /24) and computes the network address, broadcast address, usable host range, number of hosts, and subnet mask in various formats.</p>
+      <h3>How to Use</h3>
+      <p>Enter an IPv4 address and select a CIDR prefix length (/0 to /32). Click Calculate to see all subnet details. Common prefixes: /24 (256 addresses), /16 (65,536 addresses), /8 (16M addresses).</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+// Populate CIDR select
+const cidrSel=document.getElementById('cidrSelect');
+for(let i=0;i<=32;i++){
+  const opt=document.createElement('option');
+  opt.value=i;opt.textContent='/'+i;
+  if(i===24)opt.selected=true;
+  cidrSel.appendChild(opt);
+}
+
+function setInput(ip,cidr){
+  document.getElementById('ipInput').value=ip;
+  document.getElementById('cidrSelect').value=cidr;
+  calculate();
+}
+
+function parseIP(str){
+  const parts=str.trim().split('.');
+  if(parts.length!==4)return null;
+  const nums=parts.map(Number);
+  if(nums.some(n=>isNaN(n)||n<0||n>255))return null;
+  return (nums[0]<<24|nums[1]<<16|nums[2]<<8|nums[3])>>>0;
+}
+
+function ipToStr(ip){
+  return [(ip>>>24)&0xff,(ip>>>16)&0xff,(ip>>>8)&0xff,ip&0xff].join('.');
+}
+
+function ipToBin(ip){
+  return ip.toString(2).padStart(32,'0').match(/.{8}/g).join('.');
+}
+
+function calculate(){
+  const errEl=document.getElementById('errMsg');
+  errEl.style.display='none';
+  const ipStr=document.getElementById('ipInput').value;
+  const cidr=parseInt(document.getElementById('cidrSelect').value);
+  const ip=parseIP(ipStr);
+  if(ip===null){errEl.textContent='Invalid IPv4 address.';errEl.style.display='block';return;}
+
+  const mask=cidr===0?0:(0xFFFFFFFF<<(32-cidr))>>>0;
+  const wildcard=(~mask)>>>0;
+  const network=(ip&mask)>>>0;
+  const broadcast=(network|wildcard)>>>0;
+  const firstHost=cidr>=31?network:(network+1)>>>0;
+  const lastHost=cidr>=31?broadcast:(broadcast-1)>>>0;
+  const totalHosts=cidr>=31?(cidr===32?1:2):Math.pow(2,32-cidr)-2;
+  const totalAddresses=Math.pow(2,32-cidr);
+
+  // Determine class
+  const firstOctet=(ip>>>24)&0xff;
+  let ipClass='N/A';
+  if(firstOctet<128)ipClass='A';
+  else if(firstOctet<192)ipClass='B';
+  else if(firstOctet<224)ipClass='C';
+  else if(firstOctet<240)ipClass='D (Multicast)';
+  else ipClass='E (Reserved)';
+
+  // Private?
+  const priv=(firstOctet===10)||(firstOctet===172&&((ip>>>16)&0xff)>=16&&((ip>>>16)&0xff)<=31)||(firstOctet===192&&((ip>>>16)&0xff)===168);
+
+  const res=document.getElementById('results');
+  res.innerHTML=[
+    card('IP Address',ipToStr(ip)),
+    card('Network',ipToStr(network)+'/'+cidr),
+    card('Subnet Mask',ipToStr(mask)),
+    card('Wildcard',ipToStr(wildcard)),
+    card('Broadcast',ipToStr(broadcast)),
+    card('First Host',ipToStr(firstHost)),
+    card('Last Host',ipToStr(lastHost)),
+    card('Usable Hosts',totalHosts.toLocaleString()),
+    card('Total Addresses',totalAddresses.toLocaleString()),
+    card('IP Class',ipClass),
+    card('Private',priv?'Yes':'No'),
+    card('Binary Mask',ipToBin(mask)),
+  ].join('');
+
+  // Subnets within next CIDR up (show up to 16)
+  const tbl=document.getElementById('subnetsTable');
+  const body=document.getElementById('subnetsBody');
+  if(cidr<30&&cidr>=8){
+    tbl.style.display='';
+    body.innerHTML='';
+    const step=totalAddresses;
+    const baseNet=(network>>>(32-cidr))<<(32-cidr)>>>0;
+    const count=Math.min(16,Math.pow(2,Math.max(0,cidr-(cidr<=16?cidr-1:cidr-3))));
+    for(let i=0;i<Math.min(16,Math.ceil(256*256/totalAddresses));i++){
+      const sn=(baseNet+i*step)>>>0;
+      if(sn<baseNet&&i>0)break;
+      const sb=(sn|wildcard)>>>0;
+      const fh=cidr>=31?sn:(sn+1)>>>0;
+      const lh=cidr>=31?sb:(sb-1)>>>0;
+      body.innerHTML+='<tr><td>'+ipToStr(sn)+'/'+cidr+'</td><td>'+ipToStr(fh)+' - '+ipToStr(lh)+'</td><td>'+ipToStr(sb)+'</td><td>'+totalHosts.toLocaleString()+'</td></tr>';
+    }
+  } else {
+    tbl.style.display='none';
+  }
+}
+
+function card(label,value){
+  return '<div class="sc-card"><div class="lbl">'+label+'</div><div class="val">'+value+'</div></div>';
+}
+
+calculate();
+</script>
+</body>
+</html>

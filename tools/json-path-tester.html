@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Path Tester — Query & Extract JSON Data | ToolNook</title>
+  <meta name="description" content="Free JSONPath tester. Paste JSON and write JSONPath expressions to query and extract data. See matched results instantly." />
+  <meta name="keywords" content="jsonpath tester, jsonpath query, json path evaluator, json query tool, jsonpath expression tester" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/json-path-tester.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .jp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .jp-col label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+    .jp-col textarea{width:100%;height:300px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:.85rem;resize:vertical;background:var(--surface);}
+    .jp-expr{margin:16px 0;}
+    .jp-expr input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-family:monospace;font-size:.9rem;}
+    .jp-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .jp-btn{padding:8px 20px;border:none;border-radius:var(--radius);font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;}
+    .jp-btn.primary{background:var(--primary);color:#fff;}
+    .jp-btn.primary:hover{opacity:.9;}
+    .jp-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .jp-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    .jp-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+    .jp-preset{padding:4px 10px;font-size:.75rem;border:1px solid var(--border);border-radius:999px;background:#f8fafc;cursor:pointer;font-family:monospace;}
+    .jp-preset:hover{border-color:var(--primary);color:var(--primary);}
+    .match-count{font-size:.82rem;color:var(--muted);margin-left:auto;}
+    .err-box{color:#dc2626;font-size:.82rem;padding:8px 12px;background:#fef2f2;border-radius:var(--radius);margin-bottom:12px;display:none;}
+    @media(max-width:700px){.jp-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › JSON Path Tester</div>
+      <h1><i class="fa-solid fa-magnifying-glass-location"></i> JSON Path Tester</h1>
+      <p class="tool-desc">Query JSON data with JSONPath expressions. Paste your JSON, write a path expression, and see matched results instantly.</p>
+    </div>
+
+    <div class="jp-expr">
+      <label style="font-size:.82rem;font-weight:700;margin-bottom:6px;display:block;"><i class="fa-solid fa-terminal"></i> JSONPath Expression</label>
+      <input id="pathInput" type="text" value="$" placeholder="e.g. $.store.book[*].title" oninput="evaluate()" />
+    </div>
+    <div class="jp-presets">
+      <button class="jp-preset" onclick="setPath('$')">$ (root)</button>
+      <button class="jp-preset" onclick="setPath('$..*')">$..* (all values)</button>
+      <button class="jp-preset" onclick="setPath('$[0]')">$[0] (first)</button>
+      <button class="jp-preset" onclick="setPath('$[-1:]')">$[-1:] (last)</button>
+      <button class="jp-preset" onclick="setPath('$[0:3]')">$[0:3] (slice)</button>
+    </div>
+    <div class="jp-actions">
+      <button class="jp-btn primary" onclick="evaluate()"><i class="fa-solid fa-play"></i> Evaluate</button>
+      <button class="jp-btn secondary" onclick="prettyInput()"><i class="fa-solid fa-align-left"></i> Format JSON</button>
+      <button class="jp-btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('resultArea').value)"><i class="fa-regular fa-copy"></i> Copy Result</button>
+      <button class="jp-btn secondary" onclick="loadSample()"><i class="fa-solid fa-flask"></i> Sample</button>
+      <span class="match-count" id="matchCount"></span>
+    </div>
+    <div class="err-box" id="errBox"></div>
+    <div class="jp-grid">
+      <div class="jp-col">
+        <label><i class="fa-solid fa-code"></i> JSON Input</label>
+        <textarea id="jsonInput" oninput="evaluate()" placeholder='{"key":"value"}'></textarea>
+      </div>
+      <div class="jp-col">
+        <label><i class="fa-solid fa-check"></i> Result</label>
+        <textarea id="resultArea" readonly placeholder="Results will appear here..."></textarea>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About JSON Path Tester</h2>
+      <p>JSONPath is a query language for JSON, similar to XPath for XML. This tool lets you write JSONPath expressions and instantly see the matched data from your JSON document.</p>
+      <h3>Supported Syntax</h3>
+      <p><strong>$</strong> — root object. <strong>.key</strong> or <strong>['key']</strong> — child access. <strong>[0]</strong> — array index. <strong>[*]</strong> — wildcard. <strong>..</strong> — recursive descent. <strong>[start:end]</strong> — array slice. <strong>[-n:]</strong> — last n elements.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const SAMPLE=JSON.stringify({store:{book:[{category:"reference",author:"Nigel Rees",title:"Sayings of the Century",price:8.95},{category:"fiction",author:"Evelyn Waugh",title:"Sword of Honour",price:12.99},{category:"fiction",author:"Herman Melville",title:"Moby Dick",isbn:"0-553-21311-3",price:8.99}],bicycle:{color:"red",price:399}}},null,2);
+
+function loadSample(){document.getElementById('jsonInput').value=SAMPLE;evaluate();}
+
+function setPath(p){document.getElementById('pathInput').value=p;evaluate();}
+
+function prettyInput(){
+  const el=document.getElementById('jsonInput');
+  try{el.value=JSON.stringify(JSON.parse(el.value),null,2);hideErr();}catch(e){showErr(e.message);}
+}
+
+function showErr(msg){const b=document.getElementById('errBox');b.textContent=msg;b.style.display='block';}
+function hideErr(){document.getElementById('errBox').style.display='none';}
+
+function evaluate(){
+  hideErr();
+  const jsonStr=document.getElementById('jsonInput').value.trim();
+  const path=document.getElementById('pathInput').value.trim();
+  if(!jsonStr){document.getElementById('resultArea').value='';document.getElementById('matchCount').textContent='';return;}
+  let data;
+  try{data=JSON.parse(jsonStr);}catch(e){showErr('Invalid JSON: '+e.message);document.getElementById('resultArea').value='';document.getElementById('matchCount').textContent='';return;}
+  try{
+    const results=jsonPath(data,path);
+    document.getElementById('resultArea').value=JSON.stringify(results,null,2);
+    const count=Array.isArray(results)?results.length:1;
+    document.getElementById('matchCount').textContent=count+' match'+(count!==1?'es':'');
+  }catch(e){
+    showErr('Path error: '+e.message);
+    document.getElementById('resultArea').value='';
+    document.getElementById('matchCount').textContent='';
+  }
+}
+
+/* Minimal JSONPath implementation supporting:
+   $ . [] [*] .. [n] [n:m] [-n:] ['key'] */
+function jsonPath(obj,expr){
+  if(!expr||expr==='$')return [obj];
+  const tokens=tokenize(expr);
+  let results=[obj];
+  for(let i=0;i<tokens.length;i++){
+    const t=tokens[i];
+    if(t==='$')continue;
+    if(t==='..'){
+      // recursive descent — apply next token to all descendants
+      i++;
+      if(i>=tokens.length)throw new Error('.. must be followed by a key or wildcard');
+      const next=tokens[i];
+      const pool=descendants(results);
+      results=applyToken(pool,next);
+      continue;
+    }
+    results=applyToken(results,t);
+  }
+  return results;
+}
+
+function descendants(nodes){
+  const all=[];
+  const stack=[...nodes];
+  while(stack.length){
+    const n=stack.pop();
+    all.push(n);
+    if(n&&typeof n==='object'){
+      for(const v of Object.values(n)){
+        stack.push(v);
+      }
+    }
+  }
+  return all;
+}
+
+function applyToken(nodes,token){
+  const out=[];
+  if(token==='*'){
+    for(const n of nodes){
+      if(n&&typeof n==='object'){
+        for(const v of Object.values(n))out.push(v);
+      }
+    }
+  } else if(token.includes(':')){
+    // slice
+    for(const n of nodes){
+      if(!Array.isArray(n))continue;
+      const parts=token.split(':');
+      let start=parts[0]===''?0:parseInt(parts[0],10);
+      let end=parts[1]===''?n.length:parseInt(parts[1],10);
+      if(start<0)start=n.length+start;
+      if(end<0)end=n.length+end;
+      for(let j=Math.max(0,start);j<Math.min(n.length,end);j++)out.push(n[j]);
+    }
+  } else if(/^-?\d+$/.test(token)){
+    const idx=parseInt(token,10);
+    for(const n of nodes){
+      if(Array.isArray(n)){
+        const i=idx<0?n.length+idx:idx;
+        if(i>=0&&i<n.length)out.push(n[i]);
+      }
+    }
+  } else {
+    // key access
+    for(const n of nodes){
+      if(n&&typeof n==='object'&&!Array.isArray(n)&&token in n){
+        out.push(n[token]);
+      }
+    }
+  }
+  return out;
+}
+
+function tokenize(expr){
+  const tokens=[];
+  let i=0;
+  while(i<expr.length){
+    if(expr[i]==='$'){tokens.push('$');i++;continue;}
+    if(expr[i]==='.'&&expr[i+1]==='.'){tokens.push('..');i+=2;continue;}
+    if(expr[i]==='.'){
+      i++;
+      let key='';
+      while(i<expr.length&&expr[i]!=='.'&&expr[i]!=='['){key+=expr[i++];}
+      if(key)tokens.push(key);
+      continue;
+    }
+    if(expr[i]==='['){
+      i++;
+      let inner='';
+      while(i<expr.length&&expr[i]!==']'){inner+=expr[i++];}
+      i++; // skip ]
+      inner=inner.replace(/^['"]|['"]$/g,'');
+      tokens.push(inner);
+      continue;
+    }
+    i++;
+  }
+  return tokens;
+}
+</script>
+</body>
+</html>

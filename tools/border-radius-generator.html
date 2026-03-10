@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Border Radius Generator — Visual Corner Editor | ToolNook</title>
+  <meta name="description" content="Free CSS border-radius generator. Visually create rounded corners with independent control over each corner and copy the CSS code." />
+  <meta name="keywords" content="css border radius generator, rounded corners css, border radius tool, css rounded corners, border radius maker" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/border-radius-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .br-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+    .br-preview-area{background:repeating-conic-gradient(#f1f5f9 0%25%,#fff 0%50%) 0/20px 20px;border:2px solid var(--border);border-radius:var(--radius-lg);min-height:340px;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;}
+    .br-box{width:220px;height:220px;background:linear-gradient(135deg,#6366f1,#06b6d4);transition:border-radius .2s;position:relative;}
+    .corner-handle{position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--primary);cursor:pointer;z-index:2;font-size:.6rem;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary);}
+    .br-code{background:#1e293b;color:#e2e8f0;border-radius:var(--radius-lg);padding:16px 20px;font-family:monospace;font-size:.88rem;white-space:pre-wrap;position:relative;margin-top:12px;}
+    .br-code .copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:none;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;}
+    .br-code .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+    .br-controls{display:flex;flex-direction:column;gap:14px;}
+    .br-row{display:flex;align-items:center;gap:10px;}
+    .br-row label{font-size:.82rem;font-weight:600;min-width:110px;}
+    .br-row input[type=range]{flex:1;}
+    .br-row span{font-size:.82rem;font-weight:600;min-width:45px;text-align:right;}
+    .link-toggle{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:.82rem;font-weight:600;transition:.15s;}
+    .link-toggle:hover{border-color:var(--primary);}
+    .link-toggle.linked i{color:var(--primary);}
+    .size-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .size-btn{padding:5px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.78rem;font-weight:600;transition:.15s;}
+    .size-btn:hover{border-color:var(--primary);color:var(--primary);}
+    @media(max-width:700px){.br-wrap{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#css-generator-tools">CSS Generators</a> › Border Radius</div>
+      <h1><i class="fa-solid fa-vector-square"></i> CSS Border Radius Generator</h1>
+      <p class="tool-desc">Create custom border-radius values with independent control over each corner. Preview live and copy the CSS.</p>
+    </div>
+
+    <div class="br-wrap">
+      <div>
+        <div class="br-preview-area">
+          <div class="br-box" id="preview-box"></div>
+        </div>
+        <div class="br-code">
+          <button class="copy-btn" onclick="copyCSS()"><i class="fa-regular fa-copy"></i> Copy</button>
+          <code id="css-output"></code>
+        </div>
+      </div>
+      <div class="br-controls">
+        <div class="link-toggle linked" id="linkBtn" onclick="toggleLink()">
+          <i class="fa-solid fa-link"></i> <span>All corners linked</span>
+        </div>
+        <div class="br-row"><label>All Corners</label><input type="range" id="rAll" min="0" max="50" value="16" oninput="setAll(+this.value)"><span id="vAll">16%</span></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:4px 0;">
+        <div class="br-row"><label>Top Left</label><input type="range" id="rTL" min="0" max="50" value="16" oninput="setCorner('tl',+this.value)"><span id="vTL">16%</span></div>
+        <div class="br-row"><label>Top Right</label><input type="range" id="rTR" min="0" max="50" value="16" oninput="setCorner('tr',+this.value)"><span id="vTR">16%</span></div>
+        <div class="br-row"><label>Bottom Right</label><input type="range" id="rBR" min="0" max="50" value="16" oninput="setCorner('br',+this.value)"><span id="vBR">16%</span></div>
+        <div class="br-row"><label>Bottom Left</label><input type="range" id="rBL" min="0" max="50" value="16" oninput="setCorner('bl',+this.value)"><span id="vBL">16%</span></div>
+        <div style="font-size:.82rem;font-weight:600;margin-top:4px;">Quick Presets</div>
+        <div class="size-btns">
+          <button class="size-btn" onclick="quickSet(0,0,0,0)">Square</button>
+          <button class="size-btn" onclick="quickSet(8,8,8,8)">Slightly</button>
+          <button class="size-btn" onclick="quickSet(16,16,16,16)">Rounded</button>
+          <button class="size-btn" onclick="quickSet(50,50,50,50)">Circle</button>
+          <button class="size-btn" onclick="quickSet(24,0,24,0)">Leaf</button>
+          <button class="size-btn" onclick="quickSet(50,0,50,0)">Diagonal</button>
+          <button class="size-btn" onclick="quickSet(24,24,0,0)">Ticket</button>
+          <button class="size-btn" onclick="quickSet(50,50,0,0)">Half Pill</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About CSS Border Radius Generator</h2>
+      <p>The <code>border-radius</code> property rounds the corners of an element. You can set each corner independently to create unique shapes like pills, leaves, and organic forms.</p>
+      <h3>How It Works</h3>
+      <p>Values are expressed as percentages. At 50%, a square element becomes a circle. You can toggle linked mode to adjust all corners together, or unlink them for independent control.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let linked=true;
+let corners={tl:16,tr:16,br:16,bl:16};
+
+function toggleLink(){
+  linked=!linked;
+  const btn=document.getElementById('linkBtn');
+  btn.className=linked?'link-toggle linked':'link-toggle';
+  btn.querySelector('i').className=linked?'fa-solid fa-link':'fa-solid fa-link-slash';
+  btn.querySelector('span').textContent=linked?'All corners linked':'Corners independent';
+}
+
+function setAll(v){
+  if(linked){corners.tl=corners.tr=corners.br=corners.bl=v;}
+  document.getElementById('rTL').value=corners.tl;
+  document.getElementById('rTR').value=corners.tr;
+  document.getElementById('rBR').value=corners.br;
+  document.getElementById('rBL').value=corners.bl;
+  update();
+}
+
+function setCorner(c,v){
+  if(linked){corners.tl=corners.tr=corners.br=corners.bl=v;
+    document.getElementById('rAll').value=v;
+    document.getElementById('rTL').value=v;
+    document.getElementById('rTR').value=v;
+    document.getElementById('rBR').value=v;
+    document.getElementById('rBL').value=v;
+  } else {corners[c]=v;}
+  update();
+}
+
+function quickSet(tl,tr,br,bl){
+  corners={tl,tr,br,bl};
+  document.getElementById('rAll').value=tl;
+  document.getElementById('rTL').value=tl;
+  document.getElementById('rTR').value=tr;
+  document.getElementById('rBR').value=br;
+  document.getElementById('rBL').value=bl;
+  update();
+}
+
+function update(){
+  const {tl,tr,br,bl}=corners;
+  document.getElementById('vAll').textContent=tl+'%';
+  document.getElementById('vTL').textContent=tl+'%';
+  document.getElementById('vTR').textContent=tr+'%';
+  document.getElementById('vBR').textContent=br+'%';
+  document.getElementById('vBL').textContent=bl+'%';
+  const val=`${tl}% ${tr}% ${br}% ${bl}%`;
+  document.getElementById('preview-box').style.borderRadius=val;
+  const allSame=tl===tr&&tr===br&&br===bl;
+  document.getElementById('css-output').textContent=allSame?`border-radius: ${tl}%;`:`border-radius: ${val};`;
+}
+
+function copyCSS(){
+  navigator.clipboard.writeText(document.getElementById('css-output').textContent).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy',1500);
+  });
+}
+
+update();
+</script>
+</body>
+</html>

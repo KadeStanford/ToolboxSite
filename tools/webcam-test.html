@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Webcam Test — Check Your Camera Instantly | ToolNook</title>
+  <meta name="description" content="Free online webcam test. Check if your camera works, see resolution, FPS, and device info. Everything stays in your browser — no recording." />
+  <meta name="keywords" content="webcam test, camera test online, test my webcam, check camera, webcam tester, online camera check" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/webcam-test.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .cam-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center;max-width:640px;margin:0 auto;}
+    .cam-icon{font-size:3rem;color:var(--primary);margin-bottom:10px;}
+    .cam-status{font-size:1rem;font-weight:700;margin-bottom:16px;}
+    .cam-status.active{color:#10b981;}
+    .cam-status.inactive{color:var(--muted);}
+    .cam-status.error{color:#ef4444;}
+    .start-btn{padding:12px 32px;border:none;border-radius:var(--radius);background:var(--primary);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:.15s;}
+    .start-btn:hover{opacity:.9;}
+    .start-btn.stop{background:#ef4444;}
+    .video-wrap{margin:16px auto 0;border-radius:var(--radius-lg);overflow:hidden;background:#0f172a;position:relative;display:none;}
+    .video-wrap video{width:100%;display:block;transform:scaleX(-1);}
+    .cam-info{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;font-size:.82rem;}
+    .info-chip{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;}
+    .info-chip dt{font-weight:700;font-size:.72rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;}
+    .info-chip dd{margin:2px 0 0;font-weight:600;}
+    .snap-btn{margin-top:12px;padding:8px 20px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-weight:600;font-size:.85rem;transition:.15s;}
+    .snap-btn:hover{border-color:var(--primary);color:var(--primary);}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#testing-tools">Input Testing</a> › Webcam Test</div>
+      <h1><i class="fa-solid fa-video"></i> Online Webcam Test</h1>
+      <p class="tool-desc">Test your webcam instantly in the browser. See live video, resolution, FPS, and device details. Nothing is recorded or sent.</p>
+    </div>
+
+    <div class="cam-card">
+      <div class="cam-icon"><i class="fa-solid fa-video"></i></div>
+      <div class="cam-status inactive" id="status">Click the button to test your webcam</div>
+      <button class="start-btn" id="toggleBtn" onclick="toggleCam()"><i class="fa-solid fa-play"></i> Start Test</button>
+      <div class="video-wrap" id="videoWrap">
+        <video id="camVideo" autoplay playsinline muted></video>
+      </div>
+      <button class="snap-btn" id="snapBtn" style="display:none;" onclick="takeSnapshot()"><i class="fa-solid fa-camera"></i> Take Snapshot</button>
+      <div class="cam-info" id="camInfo" style="display:none;"></div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Online Webcam Test</h2>
+      <p>This tool uses the MediaDevices API to access your camera directly in the browser. No video is recorded or transmitted — everything is local.</p>
+      <h3>How It Works</h3>
+      <p>Click "Start Test" and grant camera access. You will see your live video feed mirrored, along with device info like resolution, frame rate, and camera name. You can take a snapshot and download it.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let stream=null,fpsInterval=null;
+
+async function toggleCam(){
+  if(stream){stopCam();return;}
+  const btn=document.getElementById('toggleBtn');
+  const status=document.getElementById('status');
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1920},height:{ideal:1080}}});
+    const video=document.getElementById('camVideo');
+    video.srcObject=stream;
+    document.getElementById('videoWrap').style.display='';
+    document.getElementById('snapBtn').style.display='';
+    status.textContent='Camera is active';
+    status.className='cam-status active';
+    btn.innerHTML='<i class="fa-solid fa-stop"></i> Stop Test';
+    btn.classList.add('stop');
+    video.onloadedmetadata=()=>{showInfo();};
+  } catch(e){
+    status.textContent='Camera access denied or not available';
+    status.className='cam-status error';
+  }
+}
+
+function stopCam(){
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  document.getElementById('camVideo').srcObject=null;
+  document.getElementById('videoWrap').style.display='none';
+  document.getElementById('snapBtn').style.display='none';
+  document.getElementById('camInfo').style.display='none';
+  const btn=document.getElementById('toggleBtn');
+  btn.innerHTML='<i class="fa-solid fa-play"></i> Start Test';
+  btn.classList.remove('stop');
+  document.getElementById('status').textContent='Test stopped';
+  document.getElementById('status').className='cam-status inactive';
+  if(fpsInterval){clearInterval(fpsInterval);fpsInterval=null;}
+}
+
+function showInfo(){
+  const track=stream.getVideoTracks()[0];
+  const settings=track.getSettings();
+  const info=document.getElementById('camInfo');
+  info.style.display='';
+  navigator.mediaDevices.enumerateDevices().then(devices=>{
+    const cams=devices.filter(d=>d.kind==='videoinput');
+    info.innerHTML=`
+      <div class="info-chip"><dl style="margin:0"><dt>Device</dt><dd>${sanitize(track.label||'Default Camera')}</dd></dl></div>
+      <div class="info-chip"><dl style="margin:0"><dt>Resolution</dt><dd>${settings.width||'?'} x ${settings.height||'?'}</dd></dl></div>
+      <div class="info-chip"><dl style="margin:0"><dt>Frame Rate</dt><dd>${Math.round(settings.frameRate||0)} fps</dd></dl></div>
+      <div class="info-chip"><dl style="margin:0"><dt>Cameras Found</dt><dd>${cams.length}</dd></dl></div>`;
+  });
+}
+
+function takeSnapshot(){
+  const video=document.getElementById('camVideo');
+  const canvas=document.createElement('canvas');
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+  const ctx=canvas.getContext('2d');
+  ctx.translate(canvas.width,0);
+  ctx.scale(-1,1);
+  ctx.drawImage(video,0,0);
+  const link=document.createElement('a');
+  link.download='webcam-snapshot.png';
+  link.href=canvas.toDataURL('image/png');
+  link.click();
+}
+
+function sanitize(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+</script>
+</body>
+</html>

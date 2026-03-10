@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Favicon Generator — Create Favicons from Text or Image | ToolNook</title>
+  <meta name="description" content="Free favicon generator. Create favicons from text, emoji, or uploaded images. Download in multiple sizes as PNG." />
+  <meta name="keywords" content="favicon generator, create favicon, favicon maker, favicon from text, favicon from image, ico generator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/favicon-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .fv-tabs{display:flex;gap:2px;margin-bottom:20px;}
+    .fv-tab{padding:10px 22px;border:1px solid var(--border);background:#fff;font-weight:700;font-size:.85rem;cursor:pointer;border-radius:var(--radius) var(--radius) 0 0;transition:.15s;}
+    .fv-tab.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+    .fv-panel{display:none;background:var(--surface);border:1px solid var(--border);border-radius:0 var(--radius) var(--radius) var(--radius);padding:20px;}
+    .fv-panel.active{display:block;}
+    .fv-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+    .fv-row label{font-size:.82rem;font-weight:700;min-width:100px;}
+    .fv-row input[type=text],.fv-row input[type=number]{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.95rem;}
+    .fv-row input[type=color]{width:40px;height:36px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px;}
+    .fv-row select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.88rem;}
+    .fv-preview{display:flex;flex-wrap:wrap;gap:14px;margin:20px 0;justify-content:center;}
+    .fv-size{text-align:center;}
+    .fv-size canvas{border:1px solid var(--border);border-radius:4px;image-rendering:pixelated;}
+    .fv-size .lbl{font-size:.72rem;color:var(--muted);margin-top:4px;}
+    .fv-btn{padding:10px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .fv-btn.primary{background:var(--primary);color:#fff;}
+    .fv-btn.primary:hover{opacity:.9;}
+    .fv-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .fv-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:30px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);}
+    .fv-drop:hover{border-color:var(--primary);color:var(--primary);}
+    .fv-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#design-tools">Design Tools</a> › Favicon Generator</div>
+      <h1><i class="fa-solid fa-icons"></i> Favicon Generator</h1>
+      <p class="tool-desc">Create favicons from text, emoji, or uploaded images. Preview at multiple sizes and download as PNG.</p>
+    </div>
+
+    <div class="fv-tabs">
+      <button class="fv-tab active" onclick="switchTab('text')">Text / Emoji</button>
+      <button class="fv-tab" onclick="switchTab('image')">Upload Image</button>
+    </div>
+
+    <div class="fv-panel active" id="panel-text">
+      <div class="fv-row"><label>Text / Emoji</label><input type="text" id="fvText" value="TN" maxlength="4" oninput="generate()" style="width:100px;font-size:1.2rem;text-align:center;"/></div>
+      <div class="fv-row"><label>Font Size</label><input type="number" id="fvFontSize" value="60" min="10" max="100" oninput="generate()" style="width:80px;"/> %</div>
+      <div class="fv-row"><label>Font</label>
+        <select id="fvFont" onchange="generate()">
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Impact, sans-serif">Impact</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+        </select>
+      </div>
+      <div class="fv-row"><label>Text Color</label><input type="color" id="fvFg" value="#ffffff" oninput="generate()"/></div>
+      <div class="fv-row"><label>Background</label><input type="color" id="fvBg" value="#3b82f6" oninput="generate()"/></div>
+      <div class="fv-row"><label>Shape</label>
+        <select id="fvShape" onchange="generate()">
+          <option value="square">Square</option>
+          <option value="rounded" selected>Rounded</option>
+          <option value="circle">Circle</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="fv-panel" id="panel-image">
+      <div class="fv-drop" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="fa-solid fa-cloud-arrow-up" style="font-size:1.6rem;display:block;margin-bottom:8px;"></i>
+        Click or drag an image here
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(this.files[0])" />
+    </div>
+
+    <div class="fv-preview" id="previews"></div>
+    <div class="fv-actions">
+      <button class="fv-btn primary" onclick="downloadAll()"><i class="fa-solid fa-download"></i> Download All Sizes</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Favicon Generator</h2>
+      <p>A favicon is the small icon shown in browser tabs. This tool lets you quickly create one from text, an emoji, or an uploaded image, and generates it in all common sizes: 16x16, 32x32, 48x48, 64x64, 128x128, and 256x256 pixels.</p>
+      <h3>How to Use</h3>
+      <p>Enter text (1-4 characters) or an emoji, pick colors and shape, then download. Or switch to the Upload tab to crop an existing image into favicon sizes.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const SIZES=[16,32,48,64,128,256];
+let uploadedImg=null;
+
+function switchTab(tab){
+  document.querySelectorAll('.fv-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.fv-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.fv-tab:nth-child('+(tab==='text'?1:2)+')').classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if(tab==='text'){uploadedImg=null;generate();}
+}
+
+function generate(){
+  const container=document.getElementById('previews');
+  container.innerHTML='';
+  SIZES.forEach(size=>{
+    const cvs=document.createElement('canvas');
+    cvs.width=size;cvs.height=size;
+    const ctx=cvs.getContext('2d');
+    if(uploadedImg){
+      drawImage(ctx,uploadedImg,size);
+    } else {
+      drawText(ctx,size);
+    }
+    const wrap=document.createElement('div');
+    wrap.className='fv-size';
+    const displaySize=Math.max(size,48);
+    cvs.style.width=displaySize+'px';cvs.style.height=displaySize+'px';
+    wrap.appendChild(cvs);
+    const lbl=document.createElement('div');
+    lbl.className='lbl';lbl.textContent=size+'x'+size;
+    wrap.appendChild(lbl);
+    container.appendChild(wrap);
+  });
+}
+
+function drawText(ctx,size){
+  const text=document.getElementById('fvText').value||'FV';
+  const fg=document.getElementById('fvFg').value;
+  const bg=document.getElementById('fvBg').value;
+  const shape=document.getElementById('fvShape').value;
+  const fontPct=parseInt(document.getElementById('fvFontSize').value)||60;
+  const font=document.getElementById('fvFont').value;
+  ctx.clearRect(0,0,size,size);
+  // background shape
+  ctx.fillStyle=bg;
+  if(shape==='circle'){
+    ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
+  } else if(shape==='rounded'){
+    const r=size*0.18;
+    roundRect(ctx,0,0,size,size,r);ctx.fill();
+  } else {
+    ctx.fillRect(0,0,size,size);
+  }
+  // text
+  const fontSize=size*fontPct/100;
+  ctx.fillStyle=fg;
+  ctx.font='bold '+fontSize+'px '+font;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(text,size/2,size/2+size*0.03);
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function drawImage(ctx,img,size){
+  const s=Math.min(img.width,img.height);
+  const sx=(img.width-s)/2,sy=(img.height-s)/2;
+  ctx.drawImage(img,sx,sy,s,s,0,0,size,size);
+}
+
+function handleFile(file){
+  if(!file)return;
+  const img=new Image();
+  img.onload=()=>{uploadedImg=img;generate();};
+  img.src=URL.createObjectURL(file);
+}
+
+// Drag and drop
+const drop=document.getElementById('dropZone');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.borderColor='var(--primary)';});
+drop.addEventListener('dragleave',()=>drop.style.borderColor='');
+drop.addEventListener('drop',e=>{e.preventDefault();drop.style.borderColor='';if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+
+function downloadAll(){
+  const canvases=document.querySelectorAll('#previews canvas');
+  canvases.forEach((cvs,i)=>{
+    const a=document.createElement('a');
+    a.download='favicon-'+SIZES[i]+'x'+SIZES[i]+'.png';
+    a.href=cvs.toDataURL('image/png');
+    a.click();
+  });
+}
+
+generate();
+</script>
+</body>
+</html>

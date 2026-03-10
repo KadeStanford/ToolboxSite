@@ -426,4 +426,46 @@
   <url><loc>https://toolnook.net/tools/speed-test.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://toolnook.net/tools/random-color.html</loc><lastmod>2025-07-01</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
+  <!-- CSS Generators -->
+  <url><loc>https://toolnook.net/tools/gradient-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/box-shadow-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/border-radius-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/flexbox-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/text-shadow-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Input Testing -->
+  <url><loc>https://toolnook.net/tools/microphone-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/webcam-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/keyboard-tester.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/click-speed-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/speaker-test.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- New Converters -->
+  <url><loc>https://toolnook.net/tools/xml-to-json.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/json-to-xml.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/image-format-converter.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/svg-to-png.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/text-to-binary.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- New Developer Tools -->
+  <url><loc>https://toolnook.net/tools/js-minifier.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/html-beautifier.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/dns-lookup.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/morse-code.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/json-path-tester.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- Design Tools -->
+  <url><loc>https://toolnook.net/tools/color-contrast-checker.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/aspect-ratio-calculator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/px-converter.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/favicon-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/image-compressor.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <!-- New Utility Tools -->
+  <url><loc>https://toolnook.net/tools/barcode-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/placeholder-image.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/wifi-qr-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/ip-subnet-calculator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://toolnook.net/tools/lorem-ipsum-generator.html</loc><lastmod>2025-07-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
 </urlset>

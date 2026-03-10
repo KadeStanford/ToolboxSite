@@ -131,6 +131,42 @@ const TN_TOOLS = [
   { name: 'Typing Speed Test',        slug: 'typing-test',           category: 'utility',    icon: '<i class="fa-solid fa-keyboard"></i>', desc: 'Test your typing speed & accuracy' },
   { name: 'Internet Speed Test',      slug: 'speed-test',            category: 'utility',    icon: '<i class="fa-solid fa-gauge-high"></i>', desc: 'Estimate your download speed' },
   { name: 'Random Color Generator',   slug: 'random-color',          category: 'utility',    icon: '<i class="fa-solid fa-droplet"></i>', desc: 'Generate random colors & palettes' },
+  // ── CSS Generators ──
+  { name: 'Gradient Generator',       slug: 'gradient-generator',    category: 'css-gen',    icon: '<i class="fa-solid fa-fill-drip"></i>', desc: 'Create CSS linear & radial gradients' },
+  { name: 'Box Shadow Generator',     slug: 'box-shadow-generator',  category: 'css-gen',    icon: '<i class="fa-solid fa-square"></i>', desc: 'Design CSS box shadows visually' },
+  { name: 'Border Radius Generator',  slug: 'border-radius-generator',category:'css-gen',    icon: '<i class="fa-solid fa-vector-square"></i>', desc: 'Build custom CSS border-radius values' },
+  { name: 'Flexbox Playground',       slug: 'flexbox-generator',     category: 'css-gen',    icon: '<i class="fa-solid fa-table-columns"></i>', desc: 'Visual CSS Flexbox layout builder' },
+  { name: 'Text Shadow Generator',    slug: 'text-shadow-generator', category: 'css-gen',    icon: '<i class="fa-solid fa-text-width"></i>', desc: 'Create multi-layer CSS text shadows' },
+  // ── Input Testing ──
+  { name: 'Microphone Test',          slug: 'microphone-test',       category: 'testing',    icon: '<i class="fa-solid fa-microphone"></i>', desc: 'Test your mic with real-time levels' },
+  { name: 'Webcam Test',              slug: 'webcam-test',           category: 'testing',    icon: '<i class="fa-solid fa-video"></i>', desc: 'Test your camera with live preview' },
+  { name: 'Keyboard Tester',          slug: 'keyboard-tester',       category: 'testing',    icon: '<i class="fa-solid fa-keyboard"></i>', desc: 'Test every key on your keyboard' },
+  { name: 'Click Speed Test',         slug: 'click-speed-test',      category: 'testing',    icon: '<i class="fa-solid fa-computer-mouse"></i>', desc: 'Measure your clicks per second' },
+  { name: 'Speaker Test',             slug: 'speaker-test',          category: 'testing',    icon: '<i class="fa-solid fa-volume-high"></i>', desc: 'Test speakers with tones & channels' },
+  // ── New Converters ──
+  { name: 'XML to JSON',              slug: 'xml-to-json',           category: 'converter',  icon: '<i class="fa-solid fa-file-code"></i>', desc: 'Convert XML data to JSON format' },
+  { name: 'JSON to XML',              slug: 'json-to-xml',           category: 'converter',  icon: '<i class="fa-solid fa-file-code"></i>', desc: 'Convert JSON data to XML format' },
+  { name: 'Image Format Converter',   slug: 'image-format-converter',category:'converter',   icon: '<i class="fa-solid fa-images"></i>', desc: 'Convert images between PNG, JPG, WebP' },
+  { name: 'SVG to PNG Converter',     slug: 'svg-to-png',            category: 'converter',  icon: '<i class="fa-solid fa-file-image"></i>', desc: 'Convert SVG code or files to PNG' },
+  { name: 'Text to Binary',           slug: 'text-to-binary',        category: 'converter',  icon: '<i class="fa-solid fa-binary"></i>', desc: 'Convert text to binary and back' },
+  // ── New Developer Tools ──
+  { name: 'JS Minifier',              slug: 'js-minifier',           category: 'developer',  icon: '<i class="fa-brands fa-js"></i>', desc: 'Minify JavaScript code in browser' },
+  { name: 'HTML Beautifier',          slug: 'html-beautifier',       category: 'developer',  icon: '<i class="fa-brands fa-html5"></i>', desc: 'Format & beautify HTML code' },
+  { name: 'DNS Lookup',               slug: 'dns-lookup',            category: 'developer',  icon: '<i class="fa-solid fa-server"></i>', desc: 'Query DNS records for any domain' },
+  { name: 'Morse Code Translator',    slug: 'morse-code',            category: 'developer',  icon: '<i class="fa-solid fa-tower-broadcast"></i>', desc: 'Translate text to Morse code & back' },
+  { name: 'JSON Path Tester',         slug: 'json-path-tester',      category: 'developer',  icon: '<i class="fa-solid fa-magnifying-glass-location"></i>', desc: 'Query JSON with JSONPath expressions' },
+  // ── Design Tools ──
+  { name: 'Color Contrast Checker',   slug: 'color-contrast-checker',category:'design',      icon: '<i class="fa-solid fa-circle-half-stroke"></i>', desc: 'Check WCAG AA/AAA contrast ratios' },
+  { name: 'Aspect Ratio Calculator',  slug: 'aspect-ratio-calculator',category:'design',     icon: '<i class="fa-solid fa-expand"></i>', desc: 'Calculate dimensions from aspect ratios' },
+  { name: 'PX/REM/EM Converter',      slug: 'px-converter',          category: 'design',     icon: '<i class="fa-solid fa-ruler-combined"></i>', desc: 'Convert between CSS units: px, rem, em, pt' },
+  { name: 'Favicon Generator',        slug: 'favicon-generator',     category: 'design',     icon: '<i class="fa-solid fa-icons"></i>', desc: 'Create favicons from text or images' },
+  { name: 'Image Compressor',         slug: 'image-compressor',      category: 'design',     icon: '<i class="fa-solid fa-compress"></i>', desc: 'Compress images with quality control' },
+  // ── New Utility Tools ──
+  { name: 'Barcode Generator',        slug: 'barcode-generator',     category: 'utility',    icon: '<i class="fa-solid fa-barcode"></i>', desc: 'Generate Code128 barcodes from text' },
+  { name: 'Placeholder Image',        slug: 'placeholder-image',     category: 'utility',    icon: '<i class="fa-solid fa-image"></i>', desc: 'Generate placeholder images with text' },
+  { name: 'WiFi QR Generator',        slug: 'wifi-qr-generator',     category: 'utility',    icon: '<i class="fa-solid fa-wifi"></i>', desc: 'Create QR codes for WiFi sharing' },
+  { name: 'IP Subnet Calculator',     slug: 'ip-subnet-calculator',  category: 'utility',    icon: '<i class="fa-solid fa-network-wired"></i>', desc: 'Calculate subnets from IP/CIDR' },
+  { name: 'Lorem Ipsum Generator',    slug: 'lorem-ipsum-generator', category: 'utility',    icon: '<i class="fa-solid fa-paragraph"></i>', desc: 'Generate placeholder Lorem Ipsum text' },
 ];
 
 const CATEGORY_META = {
@@ -150,6 +186,9 @@ const CATEGORY_META = {
   security:   { label: 'Security',           icon: '<i class="fa-solid fa-shield-halved"></i>' },
   social:     { label: 'Social Media',       icon: '<i class="fa-solid fa-share-nodes"></i>' },
   utility:    { label: 'Utility',            icon: '<i class="fa-solid fa-screwdriver-wrench"></i>' },
+  'css-gen':  { label: 'CSS Generators',     icon: '<i class="fa-solid fa-fill-drip"></i>' },
+  testing:    { label: 'Input Testing',      icon: '<i class="fa-solid fa-vial"></i>' },
+  design:     { label: 'Design Tools',       icon: '<i class="fa-solid fa-pen-ruler"></i>' },
 };
 
 function getToolPath(slug) {

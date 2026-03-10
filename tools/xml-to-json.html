@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XML to JSON Converter — Free Online Tool | ToolNook</title>
+  <meta name="description" content="Free XML to JSON converter. Paste XML and instantly get clean JSON output. Handles attributes, nested elements, and CDATA sections." />
+  <meta name="keywords" content="xml to json, xml to json converter, convert xml to json, xml json online, xml to json tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/xml-to-json.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .conv-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .conv-col label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+    .conv-col textarea{width:100%;height:360px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:.84rem;resize:vertical;background:var(--surface);}
+    .conv-actions{display:flex;gap:8px;justify-content:center;margin:16px 0;}
+    .conv-btn{padding:10px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .conv-btn.primary{background:var(--primary);color:#fff;}
+    .conv-btn.primary:hover{opacity:.9;}
+    .conv-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .conv-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    .conv-error{color:#ef4444;font-size:.82rem;font-weight:600;margin-top:8px;min-height:1.2em;}
+    @media(max-width:700px){.conv-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converters</a> › XML to JSON</div>
+      <h1><i class="fa-solid fa-code"></i> XML to JSON Converter</h1>
+      <p class="tool-desc">Paste your XML below and convert it to clean, valid JSON instantly.</p>
+    </div>
+
+    <div class="conv-grid">
+      <div class="conv-col">
+        <label><i class="fa-solid fa-code"></i> XML Input</label>
+        <textarea id="xmlInput" placeholder='<root>&#10;  <name>ToolNook</name>&#10;  <tools count="93">&#10;    <tool>JSON Formatter</tool>&#10;  </tools>&#10;</root>' spellcheck="false"></textarea>
+      </div>
+      <div class="conv-col">
+        <label><i class="fa-solid fa-brackets-curly"></i> JSON Output</label>
+        <textarea id="jsonOutput" readonly placeholder="JSON will appear here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+    <div class="conv-error" id="errorMsg"></div>
+    <div class="conv-actions">
+      <button class="conv-btn primary" onclick="convert()"><i class="fa-solid fa-arrow-right"></i> Convert</button>
+      <button class="conv-btn secondary" onclick="copyOutput()"><i class="fa-regular fa-copy"></i> Copy JSON</button>
+      <button class="conv-btn secondary" onclick="clearAll()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About XML to JSON Converter</h2>
+      <p>This tool parses XML using the browser's built-in DOMParser and converts it to a clean JSON representation. Attributes are prefixed with <code>@</code> and text content uses <code>#text</code>.</p>
+      <h3>How It Works</h3>
+      <p>Paste your XML in the left panel and click Convert. The tool handles nested elements, attributes, text nodes, and repeated element names (converted to arrays). Everything runs locally in your browser.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function convert(){
+  const xml=document.getElementById('xmlInput').value.trim();
+  const err=document.getElementById('errorMsg');
+  err.textContent='';
+  if(!xml){err.textContent='Please paste some XML first.';return;}
+  try{
+    const parser=new DOMParser();
+    const doc=parser.parseFromString(xml,'text/xml');
+    const parseErr=doc.querySelector('parsererror');
+    if(parseErr){err.textContent='XML Parse Error: '+parseErr.textContent.slice(0,120);return;}
+    const json=xmlNodeToObj(doc.documentElement);
+    document.getElementById('jsonOutput').value=JSON.stringify(json,null,2);
+  }catch(e){err.textContent='Error: '+e.message;}
+}
+
+function xmlNodeToObj(node){
+  const obj={};
+  // attributes
+  if(node.attributes&&node.attributes.length){
+    for(let i=0;i<node.attributes.length;i++){
+      obj['@'+node.attributes[i].name]=node.attributes[i].value;
+    }
+  }
+  // children
+  if(node.childNodes&&node.childNodes.length){
+    const children=Array.from(node.childNodes);
+    const textOnly=children.every(c=>c.nodeType===3||c.nodeType===4);
+    if(textOnly){
+      const txt=children.map(c=>c.textContent).join('').trim();
+      if(Object.keys(obj).length===0) return txt||'';
+      if(txt) obj['#text']=txt;
+    } else {
+      children.forEach(c=>{
+        if(c.nodeType===3||c.nodeType===4){
+          const t=c.textContent.trim();
+          if(t) obj['#text']=(obj['#text']||'')+t;
+          return;
+        }
+        if(c.nodeType!==1) return;
+        const val=xmlNodeToObj(c);
+        if(obj[c.nodeName]!==undefined){
+          if(!Array.isArray(obj[c.nodeName]))obj[c.nodeName]=[obj[c.nodeName]];
+          obj[c.nodeName].push(val);
+        } else {
+          obj[c.nodeName]=val;
+        }
+      });
+    }
+  }
+  return Object.keys(obj).length?obj:'';
+}
+
+function copyOutput(){
+  const out=document.getElementById('jsonOutput').value;
+  if(!out)return;
+  navigator.clipboard.writeText(out).then(()=>{
+    document.getElementById('errorMsg').textContent='';
+    const btn=event.currentTarget;
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy JSON',1500);
+  });
+}
+
+function clearAll(){
+  document.getElementById('xmlInput').value='';
+  document.getElementById('jsonOutput').value='';
+  document.getElementById('errorMsg').textContent='';
+}
+</script>
+</body>
+</html>

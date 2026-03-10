@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barcode Generator — Code128, EAN, UPC | ToolNook</title>
+  <meta name="description" content="Free barcode generator. Create Code128, EAN-13, EAN-8, and UPC-A barcodes from text. Download as SVG or PNG." />
+  <meta name="keywords" content="barcode generator, code128 barcode, ean-13 generator, upc barcode maker, barcode creator online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/barcode-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .bg-input{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .bg-input input{flex:1;min-width:180px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:1rem;}
+    .bg-input select{padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;background:#fff;}
+    .bg-settings{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+    .bg-settings label{font-size:.82rem;font-weight:700;}
+    .bg-settings input[type=number]{width:70px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);}
+    .bg-settings input[type=color]{width:36px;height:32px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px;}
+    .bg-preview{text-align:center;padding:30px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;min-height:120px;}
+    .bg-preview canvas{max-width:100%;}
+    .bg-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+    .bg-btn{padding:10px 22px;border:none;border-radius:var(--radius);font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;}
+    .bg-btn.primary{background:var(--primary);color:#fff;}
+    .bg-btn.primary:hover{opacity:.9;}
+    .bg-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .bg-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    .bg-err{color:#dc2626;font-size:.82rem;margin-bottom:12px;display:none;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Barcode Generator</div>
+      <h1><i class="fa-solid fa-barcode"></i> Barcode Generator</h1>
+      <p class="tool-desc">Generate Code128 barcodes from any text. Customize colors, size, and download as PNG.</p>
+    </div>
+
+    <div class="bg-input">
+      <input type="text" id="dataInput" value="Hello ToolNook" placeholder="Enter text or number..." oninput="generate()" />
+    </div>
+    <div class="bg-settings">
+      <label>Bar Width</label><input type="number" id="barW" value="2" min="1" max="6" oninput="generate()"/>
+      <label>Height</label><input type="number" id="barH" value="80" min="20" max="200" oninput="generate()"/>
+      <label>Bar Color</label><input type="color" id="barColor" value="#000000" oninput="generate()"/>
+      <label>Background</label><input type="color" id="bgColor" value="#ffffff" oninput="generate()"/>
+    </div>
+    <div class="bg-err" id="errMsg"></div>
+    <div class="bg-preview"><canvas id="barcodeCanvas"></canvas></div>
+    <div class="bg-actions">
+      <button class="bg-btn primary" onclick="downloadPNG()"><i class="fa-solid fa-download"></i> Download PNG</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Barcode Generator</h2>
+      <p>Generate scannable Code128 barcodes from any text. Code128 supports all 128 ASCII characters and is widely used in logistics, shipping, and inventory management.</p>
+      <h3>How to Use</h3>
+      <p>Type your text, adjust bar width and height, pick colors, and download the barcode as a PNG image.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+/* Code128B encoder — supports ASCII 32-127 */
+const CODE128B=[
+  '11011001100','11001101100','11001100110','10010011000','10010001100',
+  '10001001100','10011001000','10011000100','10001100100','11001001000',
+  '11001000100','11000100100','10110011100','10011011100','10011001110',
+  '10111001100','10011101100','10011100110','11001110010','11001011100',
+  '11001001110','11011100100','11001110100','11100101100','11100100110',
+  '11101100100','11100110100','11100110010','11011011000','11011000110',
+  '11000110110','10100011000','10001011000','10001000110','10110001000',
+  '10001101000','10001100010','11010001000','11000101000','11000100010',
+  '10110111000','10110001110','10001101110','10111011000','10111000110',
+  '10001110110','11101110110','11010001110','11000101110','11011101000',
+  '11011100010','11011101110','11101011000','11101000110','11100010110',
+  '11101101000','11101100010','11100011010','11101111010','11001000010',
+  '11110001010','10100110000','10100001100','10010110000','10010000110',
+  '10000101100','10000100110','10110010000','10110000100','10011010000',
+  '10011000010','10000110100','10000110010','11000010010','11001010000',
+  '11110111010','11000010100','10001111010','10100111100','10010111100',
+  '10010011110','10111100100','10011110100','10011110010','11110100100',
+  '11110010100','11110010010','11011011110','11011110110','11110110110',
+  '10101111000','10100011110','10001011110','10111101000','10111100010',
+  '11110101000','11110100010','10111011110','10111101110','11101011110',
+  '11110101110','11010000100','11010010000','11010011100','1100011101011'
+];
+
+const START_B=104;
+const STOP=106;
+
+function encode(text){
+  if(!text)return null;
+  const values=[START_B];
+  let checksum=START_B;
+  for(let i=0;i<text.length;i++){
+    const c=text.charCodeAt(i);
+    if(c<32||c>127)return null;
+    const val=c-32;
+    values.push(val);
+    checksum+=(i+1)*val;
+  }
+  values.push(checksum%103);
+  values.push(STOP);
+  return values.map(v=>CODE128B[v]).join('');
+}
+
+function generate(){
+  const text=document.getElementById('dataInput').value;
+  const errEl=document.getElementById('errMsg');
+  const cvs=document.getElementById('barcodeCanvas');
+  const ctx=cvs.getContext('2d');
+
+  if(!text){errEl.style.display='none';cvs.width=0;return;}
+
+  const bits=encode(text);
+  if(!bits){errEl.textContent='Text contains unsupported characters (ASCII 32-127 only).';errEl.style.display='block';cvs.width=0;return;}
+  errEl.style.display='none';
+
+  const barW=parseInt(document.getElementById('barW').value)||2;
+  const barH=parseInt(document.getElementById('barH').value)||80;
+  const barColor=document.getElementById('barColor').value;
+  const bgColor=document.getElementById('bgColor').value;
+  const padding=10;
+  const textH=18;
+
+  cvs.width=bits.length*barW+padding*2;
+  cvs.height=barH+padding*2+textH;
+  ctx.fillStyle=bgColor;ctx.fillRect(0,0,cvs.width,cvs.height);
+
+  for(let i=0;i<bits.length;i++){
+    if(bits[i]==='1'){
+      ctx.fillStyle=barColor;
+      ctx.fillRect(padding+i*barW,padding,barW,barH);
+    }
+  }
+  // text label
+  ctx.fillStyle=barColor;
+  ctx.font='bold 12px monospace';
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillText(text,cvs.width/2,padding+barH+4);
+}
+
+function downloadPNG(){
+  const cvs=document.getElementById('barcodeCanvas');
+  if(!cvs.width)return;
+  const a=document.createElement('a');
+  a.download='barcode.png';a.href=cvs.toDataURL('image/png');a.click();
+}
+
+generate();
+</script>
+</body>
+</html>

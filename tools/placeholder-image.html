@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Placeholder Image Generator — Custom Dimensions & Colors | ToolNook</title>
+  <meta name="description" content="Free placeholder image generator. Create custom placeholder images with any dimensions, colors, and text. Download as PNG." />
+  <meta name="keywords" content="placeholder image generator, placeholder image maker, dummy image, placeholder graphic, custom placeholder" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/placeholder-image.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .ph-grid{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start;}
+    .ph-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+    .ph-field{margin-bottom:14px;}
+    .ph-field label{display:block;font-size:.78rem;font-weight:700;margin-bottom:4px;color:var(--muted);}
+    .ph-field input,.ph-field select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;box-sizing:border-box;}
+    .ph-field input[type=color]{height:36px;cursor:pointer;padding:2px;}
+    .ph-row{display:flex;gap:8px;}
+    .ph-row .ph-field{flex:1;}
+    .ph-presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .ph-preset{padding:5px 10px;font-size:.75rem;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;font-weight:600;}
+    .ph-preset:hover{border-color:var(--primary);color:var(--primary);}
+    .ph-preview{text-align:center;}
+    .ph-preview canvas{max-width:100%;border:1px solid var(--border);border-radius:var(--radius);}
+    .ph-btn{width:100%;padding:10px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;background:var(--primary);color:#fff;margin-top:14px;transition:.15s;}
+    .ph-btn:hover{opacity:.9;}
+    @media(max-width:700px){.ph-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Placeholder Image</div>
+      <h1><i class="fa-solid fa-image"></i> Placeholder Image Generator</h1>
+      <p class="tool-desc">Generate custom placeholder images with any dimensions, colors, and text. Download instantly as PNG.</p>
+    </div>
+
+    <div class="ph-presets">
+      <button class="ph-preset" onclick="setSize(150,150)">150x150</button>
+      <button class="ph-preset" onclick="setSize(300,200)">300x200</button>
+      <button class="ph-preset" onclick="setSize(400,300)">400x300</button>
+      <button class="ph-preset" onclick="setSize(640,480)">640x480</button>
+      <button class="ph-preset" onclick="setSize(800,600)">800x600</button>
+      <button class="ph-preset" onclick="setSize(1280,720)">1280x720</button>
+      <button class="ph-preset" onclick="setSize(1920,1080)">1920x1080</button>
+      <button class="ph-preset" onclick="setSize(1080,1080)">1080x1080</button>
+      <button class="ph-preset" onclick="setSize(1080,1920)">1080x1920</button>
+    </div>
+
+    <div class="ph-grid">
+      <div class="ph-panel">
+        <div class="ph-row">
+          <div class="ph-field"><label>Width (px)</label><input type="number" id="phW" value="640" min="1" max="4000" oninput="render()"/></div>
+          <div class="ph-field"><label>Height (px)</label><input type="number" id="phH" value="480" min="1" max="4000" oninput="render()"/></div>
+        </div>
+        <div class="ph-row">
+          <div class="ph-field"><label>Background</label><input type="color" id="phBg" value="#cccccc" oninput="render()"/></div>
+          <div class="ph-field"><label>Text Color</label><input type="color" id="phFg" value="#666666" oninput="render()"/></div>
+        </div>
+        <div class="ph-field"><label>Custom Text (leave blank for dimensions)</label><input type="text" id="phText" value="" placeholder="640x480" oninput="render()"/></div>
+        <div class="ph-field"><label>Font Size (auto if 0)</label><input type="number" id="phFontSize" value="0" min="0" max="200" oninput="render()"/></div>
+        <div class="ph-field"><label>Format</label>
+          <select id="phFmt" onchange="render()">
+            <option value="image/png">PNG</option>
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+        <button class="ph-btn" onclick="download()"><i class="fa-solid fa-download"></i> Download</button>
+      </div>
+      <div class="ph-preview">
+        <canvas id="phCanvas"></canvas>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Placeholder Image Generator</h2>
+      <p>Placeholder images are used in web design mockups and prototypes to represent where real images will go. This tool generates them client-side with custom dimensions, colors, and text.</p>
+      <h3>How to Use</h3>
+      <p>Select a preset size or enter custom dimensions. Choose background and text colors, add optional custom text, then download the image in PNG, JPEG, or WebP format.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function setSize(w,h){
+  document.getElementById('phW').value=w;
+  document.getElementById('phH').value=h;
+  render();
+}
+
+function render(){
+  const w=Math.min(4000,Math.max(1,parseInt(document.getElementById('phW').value)||1));
+  const h=Math.min(4000,Math.max(1,parseInt(document.getElementById('phH').value)||1));
+  const bg=document.getElementById('phBg').value;
+  const fg=document.getElementById('phFg').value;
+  const customText=document.getElementById('phText').value;
+  const customSize=parseInt(document.getElementById('phFontSize').value)||0;
+  const text=customText||w+'x'+h;
+  const cvs=document.getElementById('phCanvas');
+  cvs.width=w;cvs.height=h;
+  // Limit display size
+  const maxDisplay=500;
+  const scale=Math.min(1,maxDisplay/Math.max(w,h));
+  cvs.style.width=(w*scale)+'px';cvs.style.height=(h*scale)+'px';
+  const ctx=cvs.getContext('2d');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+  // cross lines
+  ctx.strokeStyle=fg;ctx.globalAlpha=0.15;ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,h);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(w,0);ctx.lineTo(0,h);ctx.stroke();
+  ctx.globalAlpha=1;
+  // text
+  const fontSize=customSize||Math.max(12,Math.min(w,h)/8);
+  ctx.fillStyle=fg;
+  ctx.font='bold '+fontSize+'px Arial, sans-serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(text,w/2,h/2);
+}
+
+function download(){
+  const cvs=document.getElementById('phCanvas');
+  const fmt=document.getElementById('phFmt').value;
+  const ext=fmt.split('/')[1];
+  const w=document.getElementById('phW').value;
+  const h=document.getElementById('phH').value;
+  const a=document.createElement('a');
+  a.download='placeholder-'+w+'x'+h+'.'+ext;
+  a.href=cvs.toDataURL(fmt,0.92);a.click();
+}
+
+render();
+</script>
+</body>
+</html>

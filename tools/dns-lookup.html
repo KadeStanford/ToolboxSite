@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DNS Lookup Tool — Find DNS Records Online | ToolNook</title>
+  <meta name="description" content="Free online DNS lookup tool. Query A, AAAA, MX, TXT, NS, CNAME, and SOA records for any domain using public DNS resolvers." />
+  <meta name="keywords" content="dns lookup, dns checker, dns records, domain lookup, mx lookup, ns lookup, dns query tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/dns-lookup.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .dns-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:640px;margin:0 auto;}
+    .dns-form{display:flex;gap:8px;flex-wrap:wrap;}
+    .dns-form input{flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;}
+    .dns-form select{padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-weight:600;}
+    .dns-form button{padding:10px 22px;border:none;border-radius:var(--radius);background:var(--primary);color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .dns-form button:hover{opacity:.9;}
+    .dns-results{margin-top:20px;display:none;}
+    .dns-results h3{font-size:.88rem;margin:0 0 8px;}
+    .dns-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+    .dns-table th{text-align:left;padding:8px 10px;background:#f1f5f9;font-weight:700;border-bottom:2px solid var(--border);}
+    .dns-table td{padding:8px 10px;border-bottom:1px solid var(--border);word-break:break-all;font-family:monospace;font-size:.8rem;}
+    .dns-table tr:hover td{background:#f8fafc;}
+    .dns-loading{text-align:center;padding:20px;color:var(--muted);font-weight:600;display:none;}
+    .dns-error{color:#ef4444;font-size:.82rem;font-weight:600;margin-top:10px;}
+    .dns-time{font-size:.78rem;color:var(--muted);margin-top:8px;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › DNS Lookup</div>
+      <h1><i class="fa-solid fa-globe"></i> DNS Lookup Tool</h1>
+      <p class="tool-desc">Look up DNS records for any domain. Query A, AAAA, MX, TXT, NS, CNAME, and SOA records using public DNS resolvers.</p>
+    </div>
+
+    <div class="dns-card">
+      <div class="dns-form">
+        <input type="text" id="domainInput" placeholder="example.com" autocomplete="off" spellcheck="false">
+        <select id="recordType">
+          <option value="A">A</option>
+          <option value="AAAA">AAAA</option>
+          <option value="MX">MX</option>
+          <option value="TXT">TXT</option>
+          <option value="NS">NS</option>
+          <option value="CNAME">CNAME</option>
+          <option value="SOA">SOA</option>
+        </select>
+        <button onclick="lookup()"><i class="fa-solid fa-magnifying-glass"></i> Lookup</button>
+      </div>
+      <div class="dns-loading" id="loading"><i class="fa-solid fa-spinner fa-spin"></i> Querying DNS...</div>
+      <div class="dns-error" id="errorMsg"></div>
+      <div class="dns-results" id="results">
+        <h3 id="resultTitle"></h3>
+        <table class="dns-table">
+          <thead><tr id="tableHead"></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="dns-time" id="queryTime"></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About DNS Lookup Tool</h2>
+      <p>DNS (Domain Name System) translates domain names into IP addresses. This tool queries public DNS resolvers to retrieve various record types for any domain.</p>
+      <h3>Record Types</h3>
+      <p><strong>A</strong> — IPv4 address. <strong>AAAA</strong> — IPv6 address. <strong>MX</strong> — Mail server. <strong>TXT</strong> — Text records (SPF, DKIM). <strong>NS</strong> — Name servers. <strong>CNAME</strong> — Canonical name alias. <strong>SOA</strong> — Start of authority.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+document.getElementById('domainInput').addEventListener('keydown',e=>{if(e.key==='Enter')lookup();});
+
+async function lookup(){
+  const domain=document.getElementById('domainInput').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+  const type=document.getElementById('recordType').value;
+  const err=document.getElementById('errorMsg');
+  const results=document.getElementById('results');
+  const loading=document.getElementById('loading');
+  err.textContent='';results.style.display='none';
+  if(!domain){err.textContent='Please enter a domain name.';return;}
+  loading.style.display='';
+  const start=performance.now();
+  try{
+    const resp=await fetch('https://dns.google/resolve?name='+encodeURIComponent(domain)+'&type='+type);
+    if(!resp.ok) throw new Error('DNS query failed (HTTP '+resp.status+')');
+    const data=await resp.json();
+    const elapsed=Math.round(performance.now()-start);
+    loading.style.display='none';
+    if(data.Status!==0){
+      const codes={1:'Format Error',2:'Server Failure',3:'NXDOMAIN (not found)',4:'Not Implemented',5:'Refused'};
+      err.textContent='DNS Error: '+(codes[data.Status]||'Status '+data.Status);
+      return;
+    }
+    if(!data.Answer||!data.Answer.length){
+      err.textContent='No '+type+' records found for '+sanitize(domain);
+      return;
+    }
+    renderResults(domain,type,data.Answer,elapsed);
+  }catch(e){
+    loading.style.display='none';
+    err.textContent='Error: '+e.message;
+  }
+}
+
+function renderResults(domain,type,answers,ms){
+  const results=document.getElementById('results');
+  document.getElementById('resultTitle').textContent=type+' records for '+domain;
+  const head=document.getElementById('tableHead');
+  const body=document.getElementById('tableBody');
+  head.innerHTML='';body.innerHTML='';
+
+  if(type==='MX'){
+    head.innerHTML='<th>Priority</th><th>Mail Server</th><th>TTL</th>';
+    answers.sort((a,b)=>{
+      const pa=parseInt(a.data);const pb=parseInt(b.data);return pa-pb;
+    }).forEach(r=>{
+      const parts=r.data.split(/\s+/);
+      body.innerHTML+=`<tr><td>${sanitize(parts[0]||'')}</td><td>${sanitize(parts[1]||r.data)}</td><td>${r.TTL}s</td></tr>`;
+    });
+  } else if(type==='SOA'){
+    head.innerHTML='<th>Field</th><th>Value</th>';
+    const fields=['Primary NS','Admin Email','Serial','Refresh','Retry','Expire','Min TTL'];
+    answers.forEach(r=>{
+      const parts=r.data.split(/\s+/);
+      parts.forEach((p,i)=>{
+        body.innerHTML+=`<tr><td>${fields[i]||'Field '+(i+1)}</td><td>${sanitize(p)}</td></tr>`;
+      });
+    });
+  } else {
+    head.innerHTML='<th>Name</th><th>Value</th><th>TTL</th>';
+    answers.forEach(r=>{
+      body.innerHTML+=`<tr><td>${sanitize(r.name)}</td><td>${sanitize(r.data)}</td><td>${r.TTL}s</td></tr>`;
+    });
+  }
+  document.getElementById('queryTime').textContent='Query time: '+ms+'ms (via Google Public DNS)';
+  results.style.display='';
+}
+
+function sanitize(s){const d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+</script>
+</body>
+</html>

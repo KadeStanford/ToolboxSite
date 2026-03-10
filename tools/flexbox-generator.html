@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Flexbox Generator — Visual Layout Builder | ToolNook</title>
+  <meta name="description" content="Free CSS Flexbox generator and playground. Visually build flex layouts with direction, wrap, justify, align controls and copy the CSS code." />
+  <meta name="keywords" content="css flexbox generator, flexbox playground, flex layout builder, css flex tool, flexbox css code generator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/flexbox-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .flex-wrap{display:grid;grid-template-columns:260px 1fr;gap:24px;}
+    .flex-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px;display:flex;flex-direction:column;gap:14px;max-height:700px;overflow-y:auto;}
+    .flex-panel h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0;}
+    .ctrl-row{display:flex;flex-direction:column;gap:4px;}
+    .ctrl-row label{font-size:.78rem;font-weight:600;}
+    .ctrl-row select,.ctrl-row input{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.82rem;}
+    .btn-row{display:flex;gap:6px;flex-wrap:wrap;}
+    .opt-btn{padding:4px 10px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.75rem;font-weight:600;transition:.15s;}
+    .opt-btn:hover,.opt-btn.active{border-color:var(--primary);color:var(--primary);background:#eef2ff;}
+    .flex-preview-area{background:repeating-conic-gradient(#f1f5f9 0%25%,#fff 0%50%) 0/20px 20px;border:2px solid var(--border);border-radius:var(--radius-lg);min-height:400px;padding:16px;position:relative;}
+    .flex-container{min-height:360px;border:2px dashed var(--primary);border-radius:var(--radius);padding:8px;gap:8px;transition:.2s;}
+    .flex-item{padding:14px 18px;border-radius:var(--radius);font-weight:700;font-size:.9rem;color:#fff;min-width:50px;text-align:center;user-select:none;}
+    .flex-item:nth-child(1){background:#6366f1;}
+    .flex-item:nth-child(2){background:#06b6d4;}
+    .flex-item:nth-child(3){background:#f59e0b;}
+    .flex-item:nth-child(4){background:#10b981;}
+    .flex-item:nth-child(5){background:#ef4444;}
+    .flex-item:nth-child(6){background:#8b5cf6;}
+    .items-ctrl{display:flex;align-items:center;gap:8px;}
+    .items-ctrl button{width:28px;height:28px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+    .items-ctrl button:hover{border-color:var(--primary);color:var(--primary);}
+    .code-block{background:#1e293b;color:#e2e8f0;border-radius:var(--radius-lg);padding:16px 20px;font-family:monospace;font-size:.85rem;white-space:pre-wrap;position:relative;margin-top:16px;}
+    .code-block .copy-btn{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.1);border:none;color:#94a3b8;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:.75rem;}
+    .code-block .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+    @media(max-width:700px){.flex-wrap{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#css-generator-tools">CSS Generators</a> › Flexbox</div>
+      <h1><i class="fa-solid fa-table-columns"></i> CSS Flexbox Generator</h1>
+      <p class="tool-desc">Visually build Flexbox layouts by adjusting container and item properties. Preview changes live and copy the CSS.</p>
+    </div>
+
+    <div class="flex-wrap">
+      <div class="flex-panel">
+        <h3>Container</h3>
+        <div class="ctrl-row"><label>flex-direction</label>
+          <div class="btn-row" data-prop="flexDirection">
+            <button class="opt-btn active" data-val="row">row</button>
+            <button class="opt-btn" data-val="row-reverse">row-rev</button>
+            <button class="opt-btn" data-val="column">column</button>
+            <button class="opt-btn" data-val="column-reverse">col-rev</button>
+          </div>
+        </div>
+        <div class="ctrl-row"><label>flex-wrap</label>
+          <div class="btn-row" data-prop="flexWrap">
+            <button class="opt-btn active" data-val="nowrap">nowrap</button>
+            <button class="opt-btn" data-val="wrap">wrap</button>
+            <button class="opt-btn" data-val="wrap-reverse">wrap-rev</button>
+          </div>
+        </div>
+        <div class="ctrl-row"><label>justify-content</label>
+          <div class="btn-row" data-prop="justifyContent">
+            <button class="opt-btn active" data-val="flex-start">start</button>
+            <button class="opt-btn" data-val="center">center</button>
+            <button class="opt-btn" data-val="flex-end">end</button>
+            <button class="opt-btn" data-val="space-between">between</button>
+            <button class="opt-btn" data-val="space-around">around</button>
+            <button class="opt-btn" data-val="space-evenly">evenly</button>
+          </div>
+        </div>
+        <div class="ctrl-row"><label>align-items</label>
+          <div class="btn-row" data-prop="alignItems">
+            <button class="opt-btn" data-val="flex-start">start</button>
+            <button class="opt-btn active" data-val="stretch">stretch</button>
+            <button class="opt-btn" data-val="center">center</button>
+            <button class="opt-btn" data-val="flex-end">end</button>
+            <button class="opt-btn" data-val="baseline">baseline</button>
+          </div>
+        </div>
+        <div class="ctrl-row"><label>align-content</label>
+          <div class="btn-row" data-prop="alignContent">
+            <button class="opt-btn active" data-val="stretch">stretch</button>
+            <button class="opt-btn" data-val="flex-start">start</button>
+            <button class="opt-btn" data-val="center">center</button>
+            <button class="opt-btn" data-val="flex-end">end</button>
+            <button class="opt-btn" data-val="space-between">between</button>
+            <button class="opt-btn" data-val="space-around">around</button>
+          </div>
+        </div>
+        <div class="ctrl-row"><label>gap</label>
+          <div style="display:flex;align-items:center;gap:8px;"><input type="range" id="gapSlider" min="0" max="40" value="8" oninput="setGap(+this.value)" style="flex:1;"><span id="gapVal" style="font-size:.82rem;font-weight:600;min-width:35px;">8px</span></div>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);">
+        <h3>Items</h3>
+        <div class="items-ctrl">
+          <button onclick="removeItem()">-</button>
+          <span id="itemCount" style="font-weight:600;font-size:.85rem;">4 items</span>
+          <button onclick="addItem()">+</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex-preview-area">
+          <div class="flex-container" id="flexContainer" style="display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;align-items:stretch;align-content:stretch;gap:8px;"></div>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCSS()"><i class="fa-regular fa-copy"></i> Copy</button>
+          <code id="css-output"></code>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About CSS Flexbox Generator</h2>
+      <p>CSS Flexbox is a layout model that makes it easy to align and distribute space among items in a container. This tool lets you visually experiment with all major Flexbox properties.</p>
+      <h3>How to Use</h3>
+      <p>Click the property buttons on the left panel to change the flex container settings. Add or remove items to test different layouts. The CSS code updates in real time for you to copy and paste into your projects.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const flexC=document.getElementById('flexContainer');
+const codeOut=document.getElementById('css-output');
+let itemCount=4;
+const state={flexDirection:'row',flexWrap:'nowrap',justifyContent:'flex-start',alignItems:'stretch',alignContent:'stretch',gap:'8px'};
+
+function renderItems(){
+  flexC.innerHTML='';
+  for(let i=1;i<=itemCount;i++){
+    const d=document.createElement('div');
+    d.className='flex-item';
+    d.textContent=i;
+    flexC.appendChild(d);
+  }
+  document.getElementById('itemCount').textContent=itemCount+' item'+(itemCount===1?'':'s');
+}
+
+function addItem(){if(itemCount<12){itemCount++;renderItems();}}
+function removeItem(){if(itemCount>1){itemCount--;renderItems();}}
+
+document.querySelectorAll('.btn-row').forEach(row=>{
+  const prop=row.dataset.prop;
+  row.querySelectorAll('.opt-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      row.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      state[prop]=btn.dataset.val;
+      applyState();
+    });
+  });
+});
+
+function setGap(v){state.gap=v+'px';document.getElementById('gapVal').textContent=v+'px';applyState();}
+
+function applyState(){
+  Object.assign(flexC.style,state);
+  updateCode();
+}
+
+function updateCode(){
+  const toCss=s=>s.replace(/([A-Z])/g,'-$1').toLowerCase();
+  const lines=['.container {','  display: flex;'];
+  for(const[k,v]of Object.entries(state)){
+    const defaults={flexDirection:'row',flexWrap:'nowrap',justifyContent:'flex-start',alignItems:'stretch',alignContent:'stretch',gap:'0px'};
+    if(v!==defaults[k]) lines.push('  '+toCss(k)+': '+v+';');
+  }
+  lines.push('}');
+  codeOut.textContent=lines.join('\n');
+}
+
+function copyCSS(){
+  navigator.clipboard.writeText(codeOut.textContent).then(()=>{
+    const btn=document.querySelector('.copy-btn');
+    btn.innerHTML='<i class="fa-solid fa-check"></i> Copied!';
+    setTimeout(()=>btn.innerHTML='<i class="fa-regular fa-copy"></i> Copy',1500);
+  });
+}
+
+renderItems();
+applyState();
+</script>
+</body>
+</html>

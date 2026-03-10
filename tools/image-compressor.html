@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Compressor — Reduce Image File Size Online | ToolNook</title>
+  <meta name="description" content="Free online image compressor. Reduce JPEG, PNG, and WebP file sizes in your browser. Adjustable quality with before/after comparison." />
+  <meta name="keywords" content="image compressor, reduce image size, compress image online, jpeg compressor, png compressor, webp compressor" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/image-compressor.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .ic-drop{border:2px dashed var(--border);border-radius:var(--radius);padding:40px 20px;text-align:center;cursor:pointer;transition:.15s;color:var(--muted);margin-bottom:20px;}
+    .ic-drop:hover{border-color:var(--primary);color:var(--primary);}
+    .ic-controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+    .ic-controls label{font-size:.82rem;font-weight:700;}
+    .ic-controls input[type=range]{flex:1;min-width:120px;}
+    .ic-controls select{padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;}
+    .ic-qval{font-weight:800;color:var(--primary);min-width:36px;text-align:center;}
+    .ic-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+    .ic-pane{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#f8fafc;}
+    .ic-pane .head{padding:10px 14px;font-size:.82rem;font-weight:700;background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;}
+    .ic-pane img{width:100%;display:block;}
+    .ic-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+    .ic-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;}
+    .ic-stat .val{font-size:1.3rem;font-weight:800;color:var(--primary);}
+    .ic-stat .lbl{font-size:.72rem;color:var(--muted);margin-top:2px;}
+    .ic-btn{padding:10px 24px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;background:var(--primary);color:#fff;transition:.15s;}
+    .ic-btn:hover{opacity:.9;}
+    .ic-btn:disabled{opacity:.4;cursor:default;}
+    .savings-good{color:#16a34a;}
+    .savings-bad{color:#dc2626;}
+    @media(max-width:700px){.ic-compare{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#design-tools">Design Tools</a> › Image Compressor</div>
+      <h1><i class="fa-solid fa-compress"></i> Image Compressor</h1>
+      <p class="tool-desc">Compress images in your browser. Adjust quality, compare before/after, and download the optimized file — no server upload needed.</p>
+    </div>
+
+    <div class="ic-drop" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem;display:block;margin-bottom:8px;"></i>
+      Click or drag an image here (JPEG, PNG, WebP)
+    </div>
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="loadImage(this.files[0])"/>
+
+    <div class="ic-controls" id="controls" style="display:none;">
+      <label>Quality</label>
+      <input type="range" id="qualitySlider" min="1" max="100" value="75" oninput="updateQuality()"/>
+      <span class="ic-qval" id="qVal">75%</span>
+      <label>Format</label>
+      <select id="formatSelect" onchange="compress()">
+        <option value="image/jpeg">JPEG</option>
+        <option value="image/webp">WebP</option>
+        <option value="image/png">PNG</option>
+      </select>
+    </div>
+
+    <div class="ic-stats" id="stats" style="display:none;"></div>
+
+    <div class="ic-compare" id="compare" style="display:none;">
+      <div class="ic-pane">
+        <div class="head"><span>Original</span><span id="origSize"></span></div>
+        <img id="origImg"/>
+      </div>
+      <div class="ic-pane">
+        <div class="head"><span>Compressed</span><span id="compSize"></span></div>
+        <img id="compImg"/>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:20px;">
+      <button class="ic-btn" id="dlBtn" style="display:none;" onclick="download()"><i class="fa-solid fa-download"></i> Download Compressed</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Image Compressor</h2>
+      <p>Large images slow down websites and use bandwidth. This tool compresses images entirely in your browser using the Canvas API — your files never leave your device. Adjust the quality slider to balance size and visual quality.</p>
+      <h3>How to Use</h3>
+      <p>Upload an image, choose the output format and quality level, and compare the original with the compressed version. Download when satisfied with the result.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let origFile=null,origImg=null,compBlob=null;
+
+const drop=document.getElementById('dropZone');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.style.borderColor='var(--primary)';});
+drop.addEventListener('dragleave',()=>drop.style.borderColor='');
+drop.addEventListener('drop',e=>{e.preventDefault();drop.style.borderColor='';if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0]);});
+
+function loadImage(file){
+  if(!file||!file.type.startsWith('image/'))return;
+  origFile=file;
+  const img=new Image();
+  img.onload=()=>{origImg=img;compress();};
+  img.src=URL.createObjectURL(file);
+  document.getElementById('origImg').src=img.src;
+}
+
+function updateQuality(){
+  document.getElementById('qVal').textContent=document.getElementById('qualitySlider').value+'%';
+  compress();
+}
+
+function compress(){
+  if(!origImg)return;
+  const quality=parseInt(document.getElementById('qualitySlider').value)/100;
+  const format=document.getElementById('formatSelect').value;
+  const cvs=document.createElement('canvas');
+  cvs.width=origImg.naturalWidth;cvs.height=origImg.naturalHeight;
+  const ctx=cvs.getContext('2d');
+  if(format==='image/jpeg'){ctx.fillStyle='#fff';ctx.fillRect(0,0,cvs.width,cvs.height);}
+  ctx.drawImage(origImg,0,0);
+  cvs.toBlob(blob=>{
+    compBlob=blob;
+    const url=URL.createObjectURL(blob);
+    document.getElementById('compImg').src=url;
+    show();
+    updateStats(blob.size);
+  },format,format==='image/png'?undefined:quality);
+}
+
+function show(){
+  document.getElementById('controls').style.display='';
+  document.getElementById('compare').style.display='';
+  document.getElementById('stats').style.display='';
+  document.getElementById('dlBtn').style.display='';
+}
+
+function fmtSize(b){
+  if(b<1024)return b+' B';
+  if(b<1048576)return(b/1024).toFixed(1)+' KB';
+  return(b/1048576).toFixed(2)+' MB';
+}
+
+function updateStats(compSize){
+  const origSize=origFile.size;
+  const saved=origSize-compSize;
+  const pct=((saved/origSize)*100).toFixed(1);
+  document.getElementById('origSize').textContent=fmtSize(origSize);
+  document.getElementById('compSize').textContent=fmtSize(compSize);
+  const cls=saved>=0?'savings-good':'savings-bad';
+  document.getElementById('stats').innerHTML=
+    stat(fmtSize(origSize),'Original Size')+
+    stat(fmtSize(compSize),'Compressed Size')+
+    stat('<span class="'+cls+'">'+pct+'%</span>','Reduction')+
+    stat(origImg.naturalWidth+'x'+origImg.naturalHeight,'Dimensions');
+}
+
+function stat(v,l){return '<div class="ic-stat"><div class="val">'+v+'</div><div class="lbl">'+l+'</div></div>';}
+
+function download(){
+  if(!compBlob)return;
+  const ext=document.getElementById('formatSelect').value.split('/')[1];
+  const name=origFile.name.replace(/\.\w+$/,'')+'-compressed.'+ext;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(compBlob);a.download=name;a.click();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorem Ipsum Generator — Placeholder Text | ToolNook</title>
+  <meta name="description" content="Free Lorem Ipsum generator. Generate placeholder text by paragraphs, sentences, or words. Copy to clipboard with one click." />
+  <meta name="keywords" content="lorem ipsum generator, placeholder text, dummy text generator, lipsum, filler text" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/lorem-ipsum-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .li-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+    .li-controls input{width:80px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.95rem;text-align:center;}
+    .li-controls select{padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;background:#fff;}
+    .li-btn{padding:10px 22px;border:none;border-radius:var(--radius);font-weight:700;font-size:.85rem;cursor:pointer;transition:.15s;}
+    .li-btn.primary{background:var(--primary);color:#fff;}
+    .li-btn.primary:hover{opacity:.9;}
+    .li-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .li-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    .li-opts{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;align-items:center;font-size:.85rem;}
+    .li-opts label{display:flex;align-items:center;gap:4px;cursor:pointer;}
+    .li-output{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:.92rem;line-height:1.7;min-height:120px;max-height:500px;overflow-y:auto;white-space:pre-wrap;}
+    .li-stats{display:flex;gap:16px;margin-top:12px;font-size:.78rem;color:var(--muted);}
+    .li-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Lorem Ipsum Generator</div>
+      <h1><i class="fa-solid fa-paragraph"></i> Lorem Ipsum Generator</h1>
+      <p class="tool-desc">Generate placeholder text by paragraphs, sentences, or words. Customize quantity and format, then copy with one click.</p>
+    </div>
+
+    <div class="li-controls">
+      <span style="font-weight:700;font-size:.88rem;">Generate</span>
+      <input type="number" id="amount" value="5" min="1" max="100"/>
+      <select id="unitType">
+        <option value="paragraphs">Paragraphs</option>
+        <option value="sentences">Sentences</option>
+        <option value="words">Words</option>
+      </select>
+      <button class="li-btn primary" onclick="generate()"><i class="fa-solid fa-play"></i> Generate</button>
+    </div>
+    <div class="li-opts">
+      <label><input type="checkbox" id="startLorem" checked /> Start with "Lorem ipsum..."</label>
+      <label><input type="checkbox" id="addHtml" /> Wrap in &lt;p&gt; tags</label>
+    </div>
+
+    <div class="li-output" id="output"></div>
+    <div class="li-stats" id="stats"></div>
+    <div class="li-actions">
+      <button class="li-btn secondary" onclick="copyOutput()"><i class="fa-regular fa-copy"></i> Copy Text</button>
+      <button class="li-btn secondary" onclick="selectOutput()"><i class="fa-solid fa-i-cursor"></i> Select All</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Lorem Ipsum Generator</h2>
+      <p>Lorem Ipsum is dummy text used in the printing and typesetting industry since the 1500s. It provides a natural distribution of letters and word lengths, making it ideal for filling design mockups without drawing attention to the text itself.</p>
+      <h3>How to Use</h3>
+      <p>Choose a quantity and unit (paragraphs, sentences, or words), then click Generate. Enable "Start with Lorem ipsum" for the classic opening, or wrap output in HTML paragraph tags for direct use in code.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const WORDS='lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est'.split(' ');
+
+const FIRST_SENTENCE='Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+
+function randWord(){return WORDS[Math.floor(Math.random()*WORDS.length)];}
+
+function capitalize(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function genSentence(){
+  const len=6+Math.floor(Math.random()*12);
+  const words=[];
+  for(let i=0;i<len;i++)words.push(randWord());
+  // Add comma sometimes
+  if(len>8){
+    const ci=3+Math.floor(Math.random()*(len-5));
+    words[ci]+=',';
+  }
+  return capitalize(words.join(' '))+'.';
+}
+
+function genParagraph(){
+  const count=3+Math.floor(Math.random()*5);
+  const sents=[];
+  for(let i=0;i<count;i++)sents.push(genSentence());
+  return sents.join(' ');
+}
+
+function generate(){
+  const amount=Math.max(1,Math.min(100,parseInt(document.getElementById('amount').value)||1));
+  const unit=document.getElementById('unitType').value;
+  const startLorem=document.getElementById('startLorem').checked;
+  const addHtml=document.getElementById('addHtml').checked;
+  let result='';
+
+  if(unit==='paragraphs'){
+    const paras=[];
+    for(let i=0;i<amount;i++)paras.push(genParagraph());
+    if(startLorem&&paras.length)paras[0]=FIRST_SENTENCE+' '+paras[0];
+    result=addHtml?paras.map(p=>'<p>'+p+'</p>').join('\n\n'):paras.join('\n\n');
+  } else if(unit==='sentences'){
+    const sents=[];
+    for(let i=0;i<amount;i++)sents.push(genSentence());
+    if(startLorem&&sents.length)sents[0]=FIRST_SENTENCE;
+    result=sents.join(' ');
+    if(addHtml)result='<p>'+result+'</p>';
+  } else {
+    const words=[];
+    for(let i=0;i<amount;i++)words.push(randWord());
+    if(startLorem&&words.length>=2){words[0]='Lorem';words[1]='ipsum';}
+    result=capitalize(words.join(' '))+'.';
+    if(addHtml)result='<p>'+result+'</p>';
+  }
+
+  document.getElementById('output').textContent=result;
+  const wc=result.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
+  const cc=result.replace(/<[^>]*>/g,'').length;
+  document.getElementById('stats').textContent=wc+' words, '+cc+' characters';
+}
+
+function copyOutput(){
+  navigator.clipboard.writeText(document.getElementById('output').textContent);
+}
+function selectOutput(){
+  const range=document.createRange();
+  range.selectNodeContents(document.getElementById('output'));
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+}
+
+generate();
+</script>
+</body>
+</html>

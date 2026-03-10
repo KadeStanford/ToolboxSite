@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Format Converter — PNG, JPG, WebP, BMP | ToolNook</title>
+  <meta name="description" content="Free online image format converter. Convert images between PNG, JPG, WebP, BMP, and GIF formats instantly in your browser. No upload required." />
+  <meta name="keywords" content="image format converter, convert png to jpg, webp converter, image converter online, jpg to png, convert image format" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/image-format-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .ifc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;max-width:600px;margin:0 auto;}
+    .drop-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:40px 20px;text-align:center;cursor:pointer;transition:.2s;background:#fafbfc;}
+    .drop-zone:hover,.drop-zone.over{border-color:var(--primary);background:#eef2ff;}
+    .drop-zone i{font-size:2.5rem;color:var(--primary);margin-bottom:8px;display:block;}
+    .drop-zone p{font-size:.88rem;color:var(--muted);margin:4px 0 0;}
+    .preview-area{margin-top:16px;text-align:center;display:none;}
+    .preview-area img{max-width:100%;max-height:260px;border-radius:var(--radius);border:1px solid var(--border);}
+    .file-info{font-size:.78rem;color:var(--muted);margin-top:6px;}
+    .format-row{display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+    .fmt-btn{padding:8px 18px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.82rem;font-weight:700;transition:.15s;}
+    .fmt-btn:hover,.fmt-btn.active{border-color:var(--primary);color:var(--primary);background:#eef2ff;}
+    .quality-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:12px;display:none;}
+    .quality-row label{font-size:.82rem;font-weight:600;}
+    .quality-row input{width:160px;}
+    .quality-row span{font-size:.82rem;font-weight:600;min-width:35px;}
+    .dl-btn{padding:12px 28px;border:none;border-radius:var(--radius);background:var(--primary);color:#fff;font-weight:700;font-size:.92rem;cursor:pointer;margin-top:16px;transition:.15s;}
+    .dl-btn:hover{opacity:.9;}
+    .dl-btn:disabled{opacity:.5;cursor:not-allowed;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converters</a> › Image Format Converter</div>
+      <h1><i class="fa-solid fa-image"></i> Image Format Converter</h1>
+      <p class="tool-desc">Convert images between PNG, JPG, WebP, BMP, and GIF formats. Everything happens locally in your browser — no files are uploaded.</p>
+    </div>
+
+    <div class="ifc-card">
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <strong>Drop an image here or click to browse</strong>
+        <p>Supports PNG, JPG, WebP, BMP, GIF</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+      <div class="preview-area" id="previewArea">
+        <img id="previewImg">
+        <div class="file-info" id="fileInfo"></div>
+      </div>
+      <div class="format-row">
+        <button class="fmt-btn active" data-fmt="image/png" data-ext="png">PNG</button>
+        <button class="fmt-btn" data-fmt="image/jpeg" data-ext="jpg">JPG</button>
+        <button class="fmt-btn" data-fmt="image/webp" data-ext="webp">WebP</button>
+        <button class="fmt-btn" data-fmt="image/bmp" data-ext="bmp">BMP</button>
+      </div>
+      <div class="quality-row" id="qualityRow">
+        <label>Quality:</label>
+        <input type="range" id="qualSlider" min="1" max="100" value="92" oninput="document.getElementById('qualVal').textContent=this.value+'%'">
+        <span id="qualVal">92%</span>
+      </div>
+      <div style="text-align:center;">
+        <button class="dl-btn" id="dlBtn" onclick="download()" disabled><i class="fa-solid fa-download"></i> Convert & Download</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Image Format Converter</h2>
+      <p>This tool uses the HTML5 Canvas API to convert images between different formats. Your images are processed entirely in the browser and are never uploaded to any server.</p>
+      <h3>Supported Formats</h3>
+      <p><strong>PNG</strong> — lossless, supports transparency. <strong>JPG</strong> — lossy, smaller files, no transparency. <strong>WebP</strong> — modern format, excellent compression. <strong>BMP</strong> — uncompressed bitmap.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let loadedImg=null,origName='image';
+let fmt='image/png',ext='png';
+
+const dropZone=document.getElementById('dropZone');
+const fileInput=document.getElementById('fileInput');
+
+['dragover','dragenter'].forEach(e=>dropZone.addEventListener(e,ev=>{ev.preventDefault();dropZone.classList.add('over');}));
+['dragleave','drop'].forEach(e=>dropZone.addEventListener(e,()=>dropZone.classList.remove('over')));
+dropZone.addEventListener('drop',e=>{e.preventDefault();handleFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])handleFile(fileInput.files[0]);});
+
+function handleFile(file){
+  if(!file||!file.type.startsWith('image/'))return;
+  origName=file.name.replace(/\.[^.]+$/,'');
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      loadedImg=img;
+      document.getElementById('previewImg').src=e.target.result;
+      document.getElementById('previewArea').style.display='';
+      document.getElementById('fileInfo').textContent=
+        `${file.name} — ${img.naturalWidth}x${img.naturalHeight} — ${(file.size/1024).toFixed(1)} KB`;
+      document.getElementById('dlBtn').disabled=false;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+document.querySelectorAll('.fmt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    fmt=btn.dataset.fmt;ext=btn.dataset.ext;
+    document.getElementById('qualityRow').style.display=
+      (fmt==='image/jpeg'||fmt==='image/webp')?'flex':'none';
+  });
+});
+
+function download(){
+  if(!loadedImg)return;
+  const canvas=document.createElement('canvas');
+  canvas.width=loadedImg.naturalWidth;
+  canvas.height=loadedImg.naturalHeight;
+  const ctx=canvas.getContext('2d');
+  if(fmt==='image/jpeg'){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+  ctx.drawImage(loadedImg,0,0);
+  const quality=(fmt==='image/jpeg'||fmt==='image/webp')?(+document.getElementById('qualSlider').value/100):undefined;
+  canvas.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=origName+'.'+ext;a.click();
+    URL.revokeObjectURL(url);
+  },fmt,quality);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morse Code Translator — Encode & Decode | ToolNook</title>
+  <meta name="description" content="Free Morse code translator. Convert text to Morse code and Morse code back to text. Listen to Morse audio and copy results." />
+  <meta name="keywords" content="morse code translator, morse code converter, text to morse, morse to text, morse code decoder, morse code encoder" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/morse-code.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .morse-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .morse-col label{display:block;font-size:.82rem;font-weight:700;margin-bottom:6px;}
+    .morse-col textarea{width:100%;height:200px;border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:.9rem;resize:vertical;background:var(--surface);}
+    .morse-actions{display:flex;gap:8px;justify-content:center;margin:16px 0;flex-wrap:wrap;}
+    .m-btn{padding:10px 22px;border:none;border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;transition:.15s;}
+    .m-btn.primary{background:var(--primary);color:#fff;}
+    .m-btn.primary:hover{opacity:.9;}
+    .m-btn.secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+    .m-btn.secondary:hover{border-color:var(--primary);color:var(--primary);}
+    .m-btn.stop{background:#ef4444;color:#fff;}
+    .ref-table{margin-top:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:4px;font-size:.78rem;}
+    .ref-cell{background:#f8fafc;border:1px solid var(--border);border-radius:4px;padding:6px;text-align:center;}
+    .ref-cell strong{display:block;font-size:.9rem;color:var(--primary);}
+    @media(max-width:700px){.morse-grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Morse Code</div>
+      <h1><i class="fa-solid fa-tower-broadcast"></i> Morse Code Translator</h1>
+      <p class="tool-desc">Convert text to Morse code and back. Listen to the Morse audio signal with adjustable speed.</p>
+    </div>
+
+    <div class="morse-grid">
+      <div class="morse-col">
+        <label><i class="fa-solid fa-font"></i> Text</label>
+        <textarea id="textInput" placeholder="Type text here..." oninput="textToMorse()"></textarea>
+      </div>
+      <div class="morse-col">
+        <label><i class="fa-solid fa-tower-broadcast"></i> Morse Code</label>
+        <textarea id="morseInput" placeholder=".- / -... / -.-." oninput="morseToText()"></textarea>
+      </div>
+    </div>
+    <div class="morse-actions">
+      <button class="m-btn primary" id="playBtn" onclick="playMorse()"><i class="fa-solid fa-play"></i> Play Audio</button>
+      <button class="m-btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('morseInput').value)"><i class="fa-regular fa-copy"></i> Copy Morse</button>
+      <button class="m-btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('textInput').value)"><i class="fa-regular fa-copy"></i> Copy Text</button>
+      <button class="m-btn secondary" onclick="clearAll()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+    </div>
+
+    <h3 style="font-size:.88rem;margin-top:24px;">Morse Code Reference</h3>
+    <div class="ref-table" id="refTable"></div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Morse Code Translator</h2>
+      <p>Morse code represents characters as sequences of dots (.) and dashes (-). It was invented in the 1830s and is still used in aviation, amateur radio, and emergency signaling.</p>
+      <h3>How It Works</h3>
+      <p>Type text in the left box to see its Morse code equivalent, or enter Morse code (dots and dashes separated by spaces, words by " / ") in the right box to decode it. Click Play to hear the signal.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const MORSE={'A':'.-','B':'-...','C':'-.-.','D':'-..','E':'.','F':'..-.','G':'--.','H':'....','I':'..','J':'.---','K':'-.-','L':'.-..','M':'--','N':'-.','O':'---','P':'.--.','Q':'--.-','R':'.-.','S':'...','T':'-','U':'..-','V':'...-','W':'.--','X':'-..-','Y':'-.--','Z':'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','.','.-.-.',',' :'--..--','?':'..--..','!':'-.-.--','/' :'-..-.','(':'-.--.',')':'-.--.-','&':'.-...','  ':'-...-','+':'.-.-.','=':'-...-','@':'.--.-.'};
+const REVERSE={};for(const[k,v]of Object.entries(MORSE))REVERSE[v]=k;
+
+function textToMorse(){
+  const text=document.getElementById('textInput').value.toUpperCase();
+  const morse=text.split('').map(c=>{
+    if(c===' ')return '/';
+    return MORSE[c]||'';
+  }).filter(Boolean).join(' ');
+  document.getElementById('morseInput').value=morse;
+}
+
+function morseToText(){
+  const morse=document.getElementById('morseInput').value.trim();
+  const words=morse.split(/\s*\/\s*/);
+  const text=words.map(w=>w.split(/\s+/).map(c=>REVERSE[c]||'').join('')).join(' ');
+  document.getElementById('textInput').value=text;
+}
+
+let audioCtx=null,playing=false,stopFlag=false;
+
+async function playMorse(){
+  if(playing){stopFlag=true;return;}
+  const morse=document.getElementById('morseInput').value.trim();
+  if(!morse)return;
+  if(!audioCtx)audioCtx=new AudioContext();
+  playing=true;stopFlag=false;
+  const btn=document.getElementById('playBtn');
+  btn.innerHTML='<i class="fa-solid fa-stop"></i> Stop';
+  btn.className='m-btn stop';
+  const dot=0.08,dash=dot*3,gap=dot,letterGap=dot*3,wordGap=dot*7;
+  const freq=600;
+  for(const ch of morse){
+    if(stopFlag)break;
+    if(ch==='.'||ch==='-'){
+      const dur=ch==='.'?dot:dash;
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      gain.gain.value=0.3;
+      osc.frequency.value=freq;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();osc.stop(audioCtx.currentTime+dur);
+      await sleep(dur*1000+gap*1000);
+    } else if(ch===' '){
+      await sleep(letterGap*1000);
+    } else if(ch==='/'){
+      await sleep(wordGap*1000);
+    }
+  }
+  playing=false;stopFlag=false;
+  btn.innerHTML='<i class="fa-solid fa-play"></i> Play Audio';
+  btn.className='m-btn primary';
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+function clearAll(){
+  document.getElementById('textInput').value='';
+  document.getElementById('morseInput').value='';
+}
+
+// Build reference table
+const ref=document.getElementById('refTable');
+for(const[ch,code]of Object.entries(MORSE)){
+  if(ch===' '||ch==='  ')continue;
+  const d=document.createElement('div');
+  d.className='ref-cell';
+  d.innerHTML='<strong>'+ch+'</strong>'+code;
+  ref.appendChild(d);
+}
+</script>
+</body>
+</html>

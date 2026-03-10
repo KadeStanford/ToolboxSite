@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Keyboard Tester — Test Every Key | ToolNook</title>
+  <meta name="description" content="Free online keyboard tester. Press any key to see if it registers. Test every key on your keyboard with a visual layout and key event details." />
+  <meta name="keywords" content="keyboard tester, keyboard test online, test keyboard keys, key tester, check keyboard, keyboard checker" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/keyboard-tester.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .kb-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center;max-width:700px;margin:0 auto;}
+    .kb-prompt{font-size:1.1rem;font-weight:600;margin-bottom:16px;color:var(--muted);}
+    .last-key{font-size:2.8rem;font-weight:800;color:var(--primary);margin:8px 0;min-height:3.4rem;}
+    .key-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:16px;text-align:left;}
+    .detail-chip{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;}
+    .detail-chip dt{font-weight:700;font-size:.7rem;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;}
+    .detail-chip dd{margin:2px 0 0;font-weight:600;font-size:.88rem;word-break:break-all;}
+    .kb-visual{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:20px;}
+    .kb-key{min-width:36px;height:36px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;background:#fff;transition:.15s;flex-shrink:0;}
+    .kb-key.pressed{border-color:var(--primary);background:#eef2ff;color:var(--primary);}
+    .kb-key.active{border-color:#10b981;background:#d1fae5;color:#059669;transform:scale(1.08);}
+    .kb-stats{display:flex;justify-content:center;gap:24px;margin-top:16px;font-size:.82rem;font-weight:600;}
+    .kb-stats span{color:var(--muted);}
+    .kb-stats strong{color:var(--text);}
+    .reset-btn{margin-top:12px;padding:6px 18px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.8rem;font-weight:600;transition:.15s;}
+    .reset-btn:hover{border-color:var(--primary);color:var(--primary);}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#testing-tools">Input Testing</a> › Keyboard Tester</div>
+      <h1><i class="fa-solid fa-keyboard"></i> Online Keyboard Tester</h1>
+      <p class="tool-desc">Press any key to check if it registers. See key code, key name, and track which keys you have tested.</p>
+    </div>
+
+    <div class="kb-area" tabindex="0" id="kbArea">
+      <div class="kb-prompt">Press any key on your keyboard</div>
+      <div class="last-key" id="lastKey">—</div>
+      <div class="key-details" id="keyDetails">
+        <div class="detail-chip"><dl style="margin:0"><dt>Key</dt><dd id="dKey">—</dd></dl></div>
+        <div class="detail-chip"><dl style="margin:0"><dt>Code</dt><dd id="dCode">—</dd></dl></div>
+        <div class="detail-chip"><dl style="margin:0"><dt>KeyCode</dt><dd id="dKeyCode">—</dd></dl></div>
+        <div class="detail-chip"><dl style="margin:0"><dt>Location</dt><dd id="dLoc">—</dd></dl></div>
+        <div class="detail-chip"><dl style="margin:0"><dt>Type</dt><dd id="dType">—</dd></dl></div>
+        <div class="detail-chip"><dl style="margin:0"><dt>Modifiers</dt><dd id="dMod">—</dd></dl></div>
+      </div>
+      <div class="kb-visual" id="kbVisual"></div>
+      <div class="kb-stats">
+        <span>Keys Pressed: <strong id="pressCount">0</strong></span>
+        <span>Unique: <strong id="uniqueCount">0</strong></span>
+      </div>
+      <button class="reset-btn" onclick="resetAll()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Online Keyboard Tester</h2>
+      <p>Use this tool to test every key on your keyboard. It captures key events and shows detailed info including the key name, code, location, and active modifiers.</p>
+      <h3>How It Works</h3>
+      <p>Simply press keys and the tool registers each one. Previously pressed keys are highlighted. Use this to check for stuck or unresponsive keys, or verify a new keyboard works correctly.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+const KEYS=['Esc','F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12',
+  '`','1','2','3','4','5','6','7','8','9','0','-','=','Back',
+  'Tab','Q','W','E','R','T','Y','U','I','O','P','[',']','\\',
+  'Caps','A','S','D','F','G','H','J','K','L',';','\\'','Enter',
+  'Shift','Z','X','C','V','B','N','M',',','.','/','Shift',
+  'Ctrl','Win','Alt','Space','Alt','Fn','Menu','Ctrl'];
+
+const codeMap={'Escape':'Esc','Backspace':'Back','CapsLock':'Caps','ShiftLeft':'Shift','ShiftRight':'Shift',
+  'ControlLeft':'Ctrl','ControlRight':'Ctrl','AltLeft':'Alt','AltRight':'Alt','MetaLeft':'Win','MetaRight':'Win',
+  'ContextMenu':'Menu','Space':'Space','Backquote':'`','Minus':'-','Equal':'=','BracketLeft':'[','BracketRight':']',
+  'Backslash':'\\','Semicolon':';','Quote':'\'','Comma':',','Period':'.','Slash':'/',
+  'Enter':'Enter','Tab':'Tab'};
+
+let pressCount=0,pressed=new Set();
+const vis=document.getElementById('kbVisual');
+const keyEls={};
+
+KEYS.forEach(k=>{
+  const el=document.createElement('div');
+  el.className='kb-key';
+  el.textContent=k;
+  if(k==='Space')el.style.minWidth='160px';
+  if(k==='Back'||k==='Enter'||k==='Shift')el.style.minWidth='56px';
+  if(k==='Tab'||k==='Caps'||k==='Ctrl'||k==='Alt')el.style.minWidth='48px';
+  vis.appendChild(el);
+  if(!keyEls[k])keyEls[k]=[];
+  keyEls[k].push(el);
+});
+
+const locations=['Standard','Left','Right','Numpad'];
+
+document.addEventListener('keydown',e=>{
+  e.preventDefault();
+  pressCount++;
+  const key=e.key.length===1?e.key.toUpperCase():e.key;
+  const label=codeMap[e.code]||(e.code.startsWith('Key')?e.code[3]:
+    e.code.startsWith('Digit')?e.code[5]:
+    e.code.startsWith('Numpad')?'Num'+e.code.slice(6):e.key);
+
+  document.getElementById('lastKey').textContent=key;
+  document.getElementById('dKey').textContent=e.key;
+  document.getElementById('dCode').textContent=e.code;
+  document.getElementById('dKeyCode').textContent=e.keyCode;
+  document.getElementById('dLoc').textContent=locations[e.location]||e.location;
+  document.getElementById('dType').textContent=e.repeat?'Repeat':'Press';
+  const mods=[];
+  if(e.ctrlKey)mods.push('Ctrl');if(e.shiftKey)mods.push('Shift');
+  if(e.altKey)mods.push('Alt');if(e.metaKey)mods.push('Meta');
+  document.getElementById('dMod').textContent=mods.join(' + ')||'None';
+
+  pressed.add(e.code);
+  document.getElementById('pressCount').textContent=pressCount;
+  document.getElementById('uniqueCount').textContent=pressed.size;
+
+  // highlight on visual keyboard
+  const vk=codeMap[e.code]||(e.code.startsWith('Key')?e.code[3]:null);
+  if(vk&&keyEls[vk]){keyEls[vk].forEach(el=>{el.classList.add('pressed');el.classList.add('active');});}
+
+  // Remove active animation after brief delay
+  setTimeout(()=>{
+    if(vk&&keyEls[vk])keyEls[vk].forEach(el=>el.classList.remove('active'));
+  },200);
+});
+
+function resetAll(){
+  pressCount=0;pressed.clear();
+  document.getElementById('pressCount').textContent='0';
+  document.getElementById('uniqueCount').textContent='0';
+  document.getElementById('lastKey').textContent='—';
+  ['dKey','dCode','dKeyCode','dLoc','dType','dMod'].forEach(id=>document.getElementById(id).textContent='—');
+  document.querySelectorAll('.kb-key').forEach(el=>el.classList.remove('pressed','active'));
+}
+
+document.getElementById('kbArea').focus();
+</script>
+</body>
+</html>

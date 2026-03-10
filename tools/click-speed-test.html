@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Click Speed Test (CPS Test) — How Fast Can You Click? | ToolNook</title>
+  <meta name="description" content="Free click speed test. Measure your clicks per second (CPS) over various time intervals. Compare your results and improve your clicking speed." />
+  <meta name="keywords" content="click speed test, cps test, clicks per second, click counter, mouse click test, click speed challenge" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/click-speed-test.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .cps-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;text-align:center;max-width:520px;margin:0 auto;}
+    .time-btns{display:flex;justify-content:center;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .time-btn{padding:6px 16px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-size:.82rem;font-weight:600;transition:.15s;}
+    .time-btn:hover,.time-btn.active{border-color:var(--primary);color:var(--primary);background:#eef2ff;}
+    .click-zone{width:280px;height:280px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#06b6d4);margin:0 auto;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;user-select:none;transition:transform .08s,box-shadow .15s;color:#fff;position:relative;}
+    .click-zone:active{transform:scale(.96);}
+    .click-zone .cz-icon{font-size:2.2rem;margin-bottom:6px;}
+    .click-zone .cz-label{font-size:1rem;font-weight:700;}
+    .click-zone .cz-sub{font-size:.78rem;opacity:.85;margin-top:2px;}
+    .click-zone.running{box-shadow:0 0 0 6px rgba(99,102,241,.2);}
+    .click-zone.done{background:linear-gradient(135deg,#10b981,#06b6d4);cursor:default;}
+    .result-area{margin-top:24px;display:none;}
+    .result-big{font-size:3rem;font-weight:800;color:var(--primary);}
+    .result-label{font-size:.9rem;font-weight:600;color:var(--muted);margin-bottom:12px;}
+    .result-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+    .rs-chip{background:#f8fafc;border:1px solid var(--border);border-radius:var(--radius);padding:10px 8px;}
+    .rs-chip dt{font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted);}
+    .rs-chip dd{margin:2px 0 0;font-size:1.1rem;font-weight:800;}
+    .timer-bar{height:6px;background:#e2e8f0;border-radius:3px;margin-top:16px;overflow:hidden;}
+    .timer-fill{height:100%;background:var(--primary);transition:width 100ms linear;width:0;}
+    .restart-btn{margin-top:16px;padding:8px 22px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;cursor:pointer;font-weight:600;font-size:.85rem;transition:.15s;}
+    .restart-btn:hover{border-color:var(--primary);color:var(--primary);}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#testing-tools">Input Testing</a> › Click Speed Test</div>
+      <h1><i class="fa-solid fa-computer-mouse"></i> Click Speed Test (CPS)</h1>
+      <p class="tool-desc">Measure your clicks per second. Choose a time interval, click as fast as you can, and see your CPS score.</p>
+    </div>
+
+    <div class="cps-card">
+      <div class="time-btns">
+        <button class="time-btn" data-t="1">1 sec</button>
+        <button class="time-btn" data-t="3">3 sec</button>
+        <button class="time-btn active" data-t="5">5 sec</button>
+        <button class="time-btn" data-t="10">10 sec</button>
+        <button class="time-btn" data-t="30">30 sec</button>
+      </div>
+      <div class="click-zone" id="clickZone">
+        <div class="cz-icon"><i class="fa-solid fa-hand-pointer"></i></div>
+        <div class="cz-label" id="czLabel">Click to Start</div>
+        <div class="cz-sub" id="czSub">Then keep clicking!</div>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      <div class="result-area" id="resultArea">
+        <div class="result-big" id="cpsResult">0.0</div>
+        <div class="result-label">Clicks Per Second</div>
+        <div class="result-stats">
+          <div class="rs-chip"><dl style="margin:0"><dt>Clicks</dt><dd id="rClicks">0</dd></dl></div>
+          <div class="rs-chip"><dl style="margin:0"><dt>Duration</dt><dd id="rTime">0s</dd></dl></div>
+          <div class="rs-chip"><dl style="margin:0"><dt>Rank</dt><dd id="rRank">—</dd></dl></div>
+        </div>
+        <button class="restart-btn" onclick="resetGame()"><i class="fa-solid fa-rotate-left"></i> Try Again</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About Click Speed Test</h2>
+      <p>The CPS (clicks per second) test measures how fast you can click your mouse button. The average person clicks about 6-7 times per second. Pro gamers can reach 10-14 CPS.</p>
+      <h3>CPS Rankings</h3>
+      <p><strong>Turtle</strong> (0-4 CPS) — <strong>Average</strong> (4-7 CPS) — <strong>Fast</strong> (7-9 CPS) — <strong>Pro</strong> (9-12 CPS) — <strong>Insane</strong> (12+ CPS)</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+let duration=5,clicks=0,running=false,done=false,timer=null,startTime=0,tickId=null;
+const zone=document.getElementById('clickZone');
+
+document.querySelectorAll('.time-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(running)return;
+    document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    duration=+btn.dataset.t;
+    resetGame();
+  });
+});
+
+zone.addEventListener('click',()=>{
+  if(done)return;
+  if(!running){
+    running=true;
+    clicks=0;
+    startTime=Date.now();
+    zone.classList.add('running');
+    document.getElementById('czLabel').textContent='Keep Clicking!';
+    document.getElementById('czSub').textContent='0 clicks';
+    document.getElementById('resultArea').style.display='none';
+    tickId=setInterval(tick,50);
+    timer=setTimeout(finish,duration*1000);
+  }
+  clicks++;
+  document.getElementById('czSub').textContent=clicks+' click'+(clicks===1?'':'s');
+});
+
+function tick(){
+  const elapsed=(Date.now()-startTime)/1000;
+  const pct=Math.min(100,(elapsed/duration)*100);
+  document.getElementById('timerFill').style.width=pct+'%';
+  const remaining=Math.max(0,duration-elapsed);
+  document.getElementById('czLabel').textContent=remaining.toFixed(1)+'s';
+}
+
+function finish(){
+  running=false;done=true;
+  clearInterval(tickId);
+  zone.classList.remove('running');
+  zone.classList.add('done');
+  document.getElementById('timerFill').style.width='100%';
+  document.getElementById('czLabel').textContent='Done!';
+  document.getElementById('czSub').textContent='';
+  const cps=(clicks/duration).toFixed(1);
+  document.getElementById('cpsResult').textContent=cps;
+  document.getElementById('rClicks').textContent=clicks;
+  document.getElementById('rTime').textContent=duration+'s';
+  let rank='Turtle';
+  if(cps>=12)rank='Insane';else if(cps>=9)rank='Pro';else if(cps>=7)rank='Fast';else if(cps>=4)rank='Average';
+  document.getElementById('rRank').textContent=rank;
+  document.getElementById('resultArea').style.display='';
+}
+
+function resetGame(){
+  clearTimeout(timer);clearInterval(tickId);
+  running=false;done=false;clicks=0;
+  zone.classList.remove('running','done');
+  document.getElementById('czLabel').textContent='Click to Start';
+  document.getElementById('czSub').textContent='Then keep clicking!';
+  document.getElementById('timerFill').style.width='0';
+  document.getElementById('resultArea').style.display='none';
+}
+</script>
+</body>
+</html>

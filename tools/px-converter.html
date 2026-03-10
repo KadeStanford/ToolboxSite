@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PX/REM/EM/PT Converter — CSS Unit Calculator | ToolNook</title>
+  <meta name="description" content="Free CSS unit converter. Convert between px, rem, em, pt, %, vh, and vw units. Set custom base font size and viewport dimensions." />
+  <meta name="keywords" content="px to rem, rem to px, em to px, css unit converter, pt to px, pixel converter, css units" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/px-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <style>
+    .pu-settings{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+    .pu-settings .sf{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;gap:8px;align-items:center;font-size:.82rem;}
+    .pu-settings .sf input{width:64px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;text-align:center;}
+    .pu-input{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+    .pu-input input{flex:1;min-width:120px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:1.1rem;font-weight:600;}
+    .pu-input select{padding:12px 16px;border:1px solid var(--border);border-radius:var(--radius);font-size:1rem;font-weight:600;background:#fff;}
+    .pu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+    .pu-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:.15s;}
+    .pu-card:hover{border-color:var(--primary);background:#eff6ff;}
+    .pu-card .val{font-size:1.5rem;font-weight:800;color:var(--primary);word-break:break-all;}
+    .pu-card .unit{font-size:.85rem;font-weight:700;color:var(--muted);margin-top:2px;}
+    .pu-card .sub{font-size:.72rem;color:var(--muted);margin-top:4px;}
+    .copied{position:fixed;top:20px;right:20px;background:#16a34a;color:#fff;padding:8px 18px;border-radius:var(--radius);font-size:.85rem;font-weight:600;z-index:9999;opacity:0;transition:.3s;}
+    .copied.show{opacity:1;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#design-tools">Design Tools</a> › PX Converter</div>
+      <h1><i class="fa-solid fa-ruler-combined"></i> PX / REM / EM / PT Converter</h1>
+      <p class="tool-desc">Convert between CSS units: px, rem, em, pt, %, vh, and vw. Customize your base font size and viewport dimensions.</p>
+    </div>
+
+    <div class="pu-settings">
+      <div class="sf"><strong>Base font:</strong> <input type="number" id="baseFontSize" value="16" min="1" oninput="convert()" /> px</div>
+      <div class="sf"><strong>Viewport W:</strong> <input type="number" id="vpW" value="1920" min="1" oninput="convert()" /> px</div>
+      <div class="sf"><strong>Viewport H:</strong> <input type="number" id="vpH" value="1080" min="1" oninput="convert()" /> px</div>
+    </div>
+
+    <div class="pu-input">
+      <input type="number" id="valInput" value="16" step="any" oninput="convert()" />
+      <select id="unitSelect" onchange="convert()">
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="pt">pt</option>
+        <option value="%">%</option>
+        <option value="vh">vh</option>
+        <option value="vw">vw</option>
+      </select>
+    </div>
+
+    <div class="pu-grid" id="results"></div>
+    <div class="copied" id="copied">Copied!</div>
+
+    <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
+
+    <section class="tool-info">
+      <h2>About PX/REM/EM/PT Converter</h2>
+      <p>CSS uses many different units for sizing. Pixel (px) is absolute, while rem and em are relative to font size. This tool converts between all common units so you can quickly switch between them in your designs.</p>
+      <h3>Unit Reference</h3>
+      <p><strong>px</strong> — absolute pixel. <strong>rem</strong> — relative to root font size. <strong>em</strong> — relative to parent font size. <strong>pt</strong> — typographic point (1pt = 1.333px). <strong>%</strong> — percentage of parent. <strong>vh/vw</strong> — viewport height/width percent.</p>
+    </section>
+  </main>
+  <aside id="site-sidebar"></aside>
+</div>
+<div id="site-footer"></div>
+<script src="/js/components.js"></script>
+<script>
+function toPx(val,unit,base,vpW,vpH){
+  switch(unit){
+    case 'px':return val;
+    case 'rem':case 'em':return val*base;
+    case 'pt':return val*(4/3);
+    case '%':return val*base/100;
+    case 'vh':return val*vpH/100;
+    case 'vw':return val*vpW/100;
+  }return val;
+}
+
+function fromPx(px,unit,base,vpW,vpH){
+  switch(unit){
+    case 'px':return px;
+    case 'rem':case 'em':return px/base;
+    case 'pt':return px*(3/4);
+    case '%':return px*100/base;
+    case 'vh':return px*100/vpH;
+    case 'vw':return px*100/vpW;
+  }return px;
+}
+
+function fmt(n){return parseFloat(n.toFixed(6)).toString();}
+
+function convert(){
+  const val=parseFloat(document.getElementById('valInput').value)||0;
+  const unit=document.getElementById('unitSelect').value;
+  const base=parseFloat(document.getElementById('baseFontSize').value)||16;
+  const vpW=parseFloat(document.getElementById('vpW').value)||1920;
+  const vpH=parseFloat(document.getElementById('vpH').value)||1080;
+  const px=toPx(val,unit,base,vpW,vpH);
+  const units=['px','rem','em','pt','%','vh','vw'];
+  const info={px:'Absolute pixel',rem:'Root font relative',em:'Parent font relative',pt:'1pt = 1.333px','%':'Percent of parent',vh:'Viewport height %',vw:'Viewport width %'};
+  const grid=document.getElementById('results');
+  grid.innerHTML='';
+  units.forEach(u=>{
+    const r=fromPx(px,u,base,vpW,vpH);
+    const d=document.createElement('div');
+    d.className='pu-card';
+    d.innerHTML='<div class="val">'+fmt(r)+'</div><div class="unit">'+u+'</div><div class="sub">'+info[u]+'</div>';
+    d.onclick=()=>{
+      navigator.clipboard.writeText(fmt(r)+u);
+      const c=document.getElementById('copied');c.classList.add('show');setTimeout(()=>c.classList.remove('show'),1200);
+    };
+    grid.appendChild(d);
+  });
+}
+
+convert();
+</script>
+</body>
+</html>
