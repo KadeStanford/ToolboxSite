@@ -34,3 +34,9 @@ customHeaders:
     headers:
       - key: 'Cache-Control'
         value: 'public, max-age=86400'
+  - pattern: 'ads.txt'
+    headers:
+      - key: 'Content-Type'
+        value: 'text/plain'
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'

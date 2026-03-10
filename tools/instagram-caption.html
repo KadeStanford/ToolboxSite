@@ -62,10 +62,10 @@
           <div class="break-btns">
             <button class="btn btn-secondary btn-sm" onclick="insertBreaks(1)" title="Insert an invisible line break">+ Line Break</button>
             <button class="btn btn-secondary btn-sm" onclick="insertBreaks(5)" title="Hide hashtags below the fold">+ Spacer (5 lines)</button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-camera"></i>')"><i class="fa-solid fa-camera"></i></button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-wand-magic-sparkles"></i>')"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-fire"></i>')"><i class="fa-solid fa-fire"></i></button>
-            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('<i class="fa-solid fa-lightbulb"></i>')"><i class="fa-solid fa-lightbulb"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('\ud83d\udcf7')" title="Camera"><i class="fa-solid fa-camera"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('\u2728')" title="Sparkles"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('\ud83d\udd25')" title="Fire"><i class="fa-solid fa-fire"></i></button>
+            <button class="btn btn-secondary btn-sm" onclick="insertEmoji('\ud83d\udca1')" title="Lightbulb"><i class="fa-solid fa-lightbulb"></i></button>
           </div>
           <input class="hash-input" id="hashInput" placeholder="#hashtag1 #hashtag2 #hashtag3 ..." oninput="updatePreview()">
           <div class="stat-row">
@@ -176,10 +176,10 @@ function clearAll(){
   updatePreview();
 }
 const templates={
-  engage:"Double tap if you agree! <i class="fa-solid fa-arrow-down"></i>\n\nWhat do you think? Let me know in the comments below! <i class="fa-solid fa-comment"></i>\n\nSave this for later <i class="fa-solid fa-arrow-right"></i>",
-  promo:"<i class="fa-solid fa-fire"></i> LIMITED TIME OFFER <i class="fa-solid fa-fire"></i>\n\nDon't miss out on this amazing deal!\n\n<i class="fa-solid fa-arrow-right"></i> Link in bio\n\n<i class="fa-solid fa-clock"></i> Offer ends soon!",
-  story:"Here's the thing nobody tells you about...\n\nI used to think [old belief]. But then I realized something that changed everything.\n\n[Share your story]\n\nHas this happened to you? <i class="fa-solid fa-arrow-down"></i>",
-  quote:'"Your inspiring quote goes here."\n\n— Author Name <i class="fa-solid fa-wand-magic-sparkles"></i>\n\nDo you agree? Tag someone who needs to hear this! <i class="fa-solid fa-comment-dots"></i>'
+  engage:"Double tap if you agree! \ud83d\udc47\n\nWhat do you think? Let me know in the comments below! \ud83d\udcac\n\nSave this for later \u27a1\ufe0f",
+  promo:"\ud83d\udd25 LIMITED TIME OFFER \ud83d\udd25\n\nDon't miss out on this amazing deal!\n\n\u27a1\ufe0f Link in bio\n\n\u23f0 Offer ends soon!",
+  story:"Here's the thing nobody tells you about...\n\nI used to think [old belief]. But then I realized something that changed everything.\n\n[Share your story]\n\nHas this happened to you? \ud83d\udc47",
+  quote:'"Your inspiring quote goes here."\n\n\u2014 Author Name \u2728\n\nDo you agree? Tag someone who needs to hear this! \ud83d\udcac'
 };
 function applyTemplate(key){
   document.getElementById('capInput').value=templates[key];
