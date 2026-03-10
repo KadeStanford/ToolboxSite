@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base64 Encoder & Decoder — Free Online Tool | ToolNook</title>
+  <meta name="description" content="Free online Base64 encoder and decoder. Encode plain text or decode Base64 strings instantly in your browser. No signup required." />
+  <meta name="keywords" content="base64 encoder, base64 decoder, base64 online, encode base64, decode base64, base64 converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/base64.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Base64 Encoder/Decoder</div>
+      <h1>Base64 Encoder / Decoder</h1>
+      <p>Encode plain text to Base64 or decode Base64 strings back to readable text.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="two-col">
+        <div>
+          <div class="form-group">
+            <label for="b64-input">Input Text / Base64</label>
+            <textarea class="tool-input" id="b64-input" rows="8" placeholder="Type or paste text here..."></textarea>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="encode()">&#8594; Encode to Base64</button>
+            <button class="btn btn-secondary" onclick="decode()">&#8592; Decode from Base64</button>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm" onclick="swapFields()">&#8645; Swap</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearFields()">Clear</button>
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label for="b64-output">Output</label>
+            <div style="position:relative;">
+              <textarea class="tool-input" id="b64-output" rows="8" placeholder="Output appears here..." readonly></textarea>
+              <button class="copy-btn" onclick="copyOutput('b64-output')" style="position:absolute;top:8px;right:8px;">Copy</button>
+            </div>
+          </div>
+          <div id="b64-stats" style="font-size:0.82rem;color:var(--text-muted);"></div>
+        </div>
+      </div>
+
+      <div class="info-card" style="margin-top:16px;">
+        <strong>Tip:</strong> Base64 encoding uses only A–Z, a–z, 0–9, +, / and = characters. Encoded output is approximately 33% larger than the original.
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About Base64 Encoding</h2>
+      <p>Base64 is a binary-to-text encoding scheme that converts binary data into an ASCII string format. It's commonly used when binary data needs to be stored or transferred over media designed for text, such as embedding images in HTML/CSS, encoding API credentials, or transmitting data over email.</p>
+      <h3>When to Use Base64?</h3>
+      <ul>
+        <li>Embedding images directly in HTML or CSS as data URIs</li>
+        <li>Encoding API keys and tokens for HTTP Basic Authentication</li>
+        <li>Storing binary data in JSON or XML formats</li>
+        <li>Encoding email attachments (MIME encoding)</li>
+      </ul>
+      <h3>How It Works</h3>
+      <p>Base64 works by taking every three bytes of binary data and converting them into four printable ASCII characters. The output uses 64 printable characters: A–Z (26), a–z (26), 0–9 (10), + and /. The = character is used as padding.</p>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('base64');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('base64', 'developer');
+  });
+
+  function encode() {
+    const input = document.getElementById('b64-input').value;
+    if (!input) { showToast('Please enter some text first'); return; }
+    try {
+      const encoded = btoa(unescape(encodeURIComponent(input)));
+      document.getElementById('b64-output').value = encoded;
+      document.getElementById('b64-stats').textContent = `Input: ${input.length} chars → Output: ${encoded.length} chars`;
+      showToast('Encoded!', 'success');
+    } catch(e) { showToast('Encoding failed: ' + e.message); }
+  }
+
+  function decode() {
+    const input = document.getElementById('b64-input').value.trim();
+    if (!input) { showToast('Please enter a Base64 string first'); return; }
+    try {
+      const decoded = decodeURIComponent(escape(atob(input)));
+      document.getElementById('b64-output').value = decoded;
+      document.getElementById('b64-stats').textContent = `Input: ${input.length} chars → Output: ${decoded.length} chars`;
+      showToast('Decoded!', 'success');
+    } catch(e) { showToast('Invalid Base64 string'); }
+  }
+
+  function swapFields() {
+    const a = document.getElementById('b64-input');
+    const b = document.getElementById('b64-output');
+    const tmp = a.value;
+    a.value = b.value;
+    b.value = tmp;
+  }
+
+  function clearFields() {
+    document.getElementById('b64-input').value = '';
+    document.getElementById('b64-output').value = '';
+    document.getElementById('b64-stats').textContent = '';
+  }
+</script>
+</body>
+</html>

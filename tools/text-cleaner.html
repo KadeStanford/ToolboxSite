@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Cleaner — Remove Extra Spaces & Fix Text Online | ToolNook</title>
+  <meta name="description" content="Free online text cleaner. Remove extra spaces, blank lines, special characters, and fix messy text. Multiple cleaning options. No signup required." />
+  <meta name="keywords" content="text cleaner, remove extra spaces, remove blank lines, clean text online, whitespace remover, text formatter, strip whitespace" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/text-cleaner.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Text Cleaner</div>
+      <h1>Text Cleaner</h1>
+      <p>Remove extra spaces, blank lines, and other unwanted characters from your text.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="two-col">
+        <div class="form-group">
+          <label for="tc-input">Input Text</label>
+          <textarea class="tool-input" id="tc-input" rows="12" placeholder="Paste messy text here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="tc-output">Cleaned Text</label>
+          <div style="position:relative;">
+            <textarea class="tool-input" id="tc-output" rows="12" placeholder="Cleaned text appears here..." readonly></textarea>
+            <button class="copy-btn" onclick="copyOutput('tc-output')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+        <div style="font-size:0.88rem;font-weight:700;margin-bottom:12px;color:var(--text);">Cleaning Options</div>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="opt-spaces" checked /> Remove extra spaces</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-blank" checked /> Remove blank lines</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-trim" checked /> Trim each line</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-tabs" /> Convert tabs to spaces</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-newlines" /> Remove all line breaks</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-special" /> Remove special characters</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-numbers" /> Remove numbers</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-html" /> Strip HTML tags</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-emoji" /> Remove emojis</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-duplicate" /> Remove duplicate lines</label>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="cleanText()">&#129529; Clean Text</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('tc-input').value='';document.getElementById('tc-output').value=''">Clear</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput('tc-output')">Copy Output</button>
+      </div>
+
+      <div id="tc-stats" style="margin-top:12px;font-size:0.82rem;color:var(--text-muted);"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Text Cleaner</h2>
+      <p>The ToolNook Text Cleaner helps you quickly clean up messy text from various sources — copied web pages, PDFs, Word documents, emails, and more. Select specific cleaning operations to run, or run them all at once.</p>
+      <h3>Common Uses</h3>
+      <ul>
+        <li>Cleaning up text copied from PDFs that have extra line breaks</li>
+        <li>Removing HTML tags from scraped web content</li>
+        <li>Stripping extra whitespace from database exports</li>
+        <li>Removing duplicate lines from lists</li>
+        <li>Formatting text for use in code or configuration files</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('text-cleaner');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('text-cleaner', 'text');
+  });
+
+  function cleanText() {
+    let text = document.getElementById('tc-input').value;
+    if(!text) { showToast('Please enter some text first'); return; }
+    const before = text.length;
+
+    if(document.getElementById('opt-html').checked)    text = text.replace(/<[^>]*>/g, '');
+    if(document.getElementById('opt-emoji').checked)   text = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+    if(document.getElementById('opt-special').checked) text = text.replace(/[^\w\s.,!?;:'"()\-\n]/g, '');
+    if(document.getElementById('opt-numbers').checked) text = text.replace(/\d/g, '');
+    if(document.getElementById('opt-tabs').checked)    text = text.replace(/\t/g, '    ');
+    if(document.getElementById('opt-trim').checked)    text = text.split('\n').map(l=>l.trim()).join('\n');
+    if(document.getElementById('opt-spaces').checked)  text = text.replace(/[ \t]{2,}/g, ' ');
+    if(document.getElementById('opt-blank').checked)   text = text.replace(/\n{3,}/g, '\n\n').replace(/^\n+|\n+$/g, '');
+    if(document.getElementById('opt-newlines').checked) text = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    if(document.getElementById('opt-duplicate').checked) {
+      const lines = text.split('\n');
+      text = [...new Set(lines)].join('\n');
+    }
+
+    document.getElementById('tc-output').value = text;
+    const after = text.length;
+    document.getElementById('tc-stats').textContent = `Reduced from ${before.toLocaleString()} to ${after.toLocaleString()} characters (saved ${(before-after).toLocaleString()} chars, ${Math.round((before-after)/before*100)||0}%)`;
+    showToast('Text cleaned!', 'success');
+  }
+</script>
+</body>
+</html>

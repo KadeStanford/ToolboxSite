@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regex Tester — Free Online Regular Expression Tool | ToolNook</title>
+  <meta name="description" content="Test and debug regular expressions online with live match highlighting. Supports JavaScript regex flags. Free, no signup, runs in your browser." />
+  <meta name="keywords" content="regex tester, regular expression tester, regex online, regex debugger, regex checker, test regex" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/regex-tester.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Regex Tester</div>
+      <h1>Regex Tester</h1>
+      <p>Write a regular expression and test it against any text with live match highlighting.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="regex-pattern">Regular Expression</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:1.2rem;color:var(--text-muted);font-family:monospace;">/</span>
+          <input type="text" class="tool-input" id="regex-pattern" placeholder="e.g. \b\w+@\w+\.\w+\b" oninput="runRegex()" />
+          <span style="font-size:1.2rem;color:var(--text-muted);font-family:monospace;">/</span>
+          <input type="text" class="tool-input" id="regex-flags" value="gi" placeholder="flags" style="max-width:80px;" oninput="runRegex()" />
+        </div>
+        <div id="regex-error" style="color:var(--error);font-size:0.82rem;margin-top:6px;"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="test-string">Test String</label>
+        <textarea class="tool-input" id="test-string" rows="8" placeholder="Paste your test text here..." oninput="runRegex()"></textarea>
+      </div>
+
+      <div id="match-result" style="margin-bottom:12px;"></div>
+
+      <div class="form-group">
+        <label>Highlighted Matches</label>
+        <div id="highlight-output" class="output-box" style="background:white;min-height:100px;font-family:inherit;white-space:pre-wrap;word-break:break-word;"></div>
+      </div>
+
+      <div id="match-list" style="margin-top:16px;"></div>
+
+      <div style="margin-top:16px;">
+        <label style="font-size:0.88rem;font-weight:600;display:block;margin-bottom:10px;">Quick Patterns</label>
+        <div class="btn-group" style="flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('\\b[\\w._%+-]+@[\\w.-]+\\.[a-zA-Z]{2,}\\b','gi')">Email</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('https?:\\/\\/[^\\s]+','gi')">URL</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b','g')">IP Address</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b','g')">Credit Card</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('\\b\\d{5}(?:-\\d{4})?\\b','g')">ZIP Code</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('#[0-9a-fA-F]{3,6}\\b','gi')">Hex Color</button>
+          <button class="btn btn-secondary btn-sm" onclick="insertPattern('\\b(?:0x)?[0-9a-fA-F]+\\b','gi')">Hex Number</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Regex Tester</h2>
+      <p>Regular expressions (regex) are powerful patterns used to search, match, and manipulate text. The ToolNook Regex Tester lets you write and test JavaScript-compatible regular expressions in real time, with live match highlighting and match details.</p>
+      <h3>Regex Flags</h3>
+      <ul>
+        <li><strong>g</strong> — Global: find all matches (not just the first)</li>
+        <li><strong>i</strong> — Case-insensitive: match regardless of letter case</li>
+        <li><strong>m</strong> — Multiline: ^ and $ match line boundaries</li>
+        <li><strong>s</strong> — Dotall: dot (.) matches newline characters too</li>
+      </ul>
+      <h3>Common Use Cases</h3>
+      <p>Regex testers are used for data validation (emails, phone numbers, URLs), search and replace operations in code editors, parsing log files, extracting data from text, and writing cleaner code.</p>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('regex-tester');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('regex-tester', 'developer');
+  });
+
+  function runRegex() {
+    const pattern = document.getElementById('regex-pattern').value;
+    const flags   = document.getElementById('regex-flags').value;
+    const text    = document.getElementById('test-string').value;
+    const errEl   = document.getElementById('regex-error');
+    const resEl   = document.getElementById('match-result');
+    const hlEl    = document.getElementById('highlight-output');
+    const listEl  = document.getElementById('match-list');
+
+    if (!pattern) {
+      errEl.textContent = '';
+      hlEl.textContent = text;
+      resEl.innerHTML = '';
+      listEl.innerHTML = '';
+      return;
+    }
+
+    let regex;
+    try {
+      regex = new RegExp(pattern, flags.includes('g') ? flags : flags + 'g');
+      errEl.textContent = '';
+    } catch(e) {
+      errEl.textContent = 'Invalid pattern: ' + e.message;
+      hlEl.textContent = text;
+      resEl.innerHTML = '';
+      return;
+    }
+
+    const matches = [...text.matchAll(regex)];
+    resEl.innerHTML = matches.length
+      ? `<div class="info-card"><strong>${matches.length} match${matches.length !== 1 ? 'es' : ''} found</strong></div>`
+      : (pattern ? '<div class="warn-card info-card"><strong>No matches found</strong></div>' : '');
+
+    // Highlighted output
+    let highlighted = '';
+    let lastIndex = 0;
+    for (const m of matches) {
+      highlighted += escapeHtml(text.slice(lastIndex, m.index));
+      highlighted += `<mark style="background:#fef08a;border-radius:3px;padding:1px 0;">${escapeHtml(m[0])}</mark>`;
+      lastIndex = m.index + m[0].length;
+    }
+    highlighted += escapeHtml(text.slice(lastIndex));
+    hlEl.innerHTML = highlighted;
+
+    // Match list
+    if (matches.length > 0) {
+      listEl.innerHTML = `<div class="sidebar-widget" style="margin-top:0;"><h3 style="margin-bottom:10px;">Matches</h3>
+        <div style="max-height:220px;overflow-y:auto;">
+        ${matches.slice(0,100).map((m,i) => `<div style="padding:5px 0;border-bottom:1px solid var(--border);font-family:monospace;font-size:0.82rem;"><code style="background:var(--primary-light);padding:2px 6px;border-radius:4px;">${escapeHtml(m[0])}</code> <span style="color:var(--text-muted);">index ${m.index}</span>${m.length > 1 ? ' · Groups: ' + m.slice(1).map(g=>`<code>${escapeHtml(g||'')}</code>`).join(', ') : ''}</div>`).join('')}
+        </div></div>`;
+    } else {
+      listEl.innerHTML = '';
+    }
+  }
+
+  function insertPattern(p, f) {
+    document.getElementById('regex-pattern').value = p;
+    document.getElementById('regex-flags').value = f;
+    runRegex();
+  }
+</script>
+</body>
+</html>

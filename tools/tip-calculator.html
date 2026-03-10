@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tip Calculator — Split Bill & Calculate Tip | ToolNook</title>
+  <meta name="description" content="Free online tip calculator. Calculate tip amount, total bill, and split between multiple people. Choose your tip percentage or enter a custom amount." />
+  <meta name="keywords" content="tip calculator, bill splitter, calculate tip, restaurant tip calculator, how much to tip, split bill calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/tip-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .tip-pct-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+    .tip-pct-btn { padding:8px 16px; border:2px solid var(--border); border-radius:var(--radius); background:#fff; cursor:pointer; font-size:.9rem; font-weight:600; transition:all .15s; }
+    .tip-pct-btn:hover,.tip-pct-btn.active { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .result-card { background:var(--primary); color:#fff; border-radius:var(--radius); padding:20px 24px; margin-top:16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:16px; }
+    .result-card .rc-item .rc-label { font-size:.78rem; opacity:.8; text-transform:uppercase; letter-spacing:.05em; }
+    .result-card .rc-item .rc-value { font-size:1.9rem; font-weight:800; margin-top:2px; }
+    .split-table { width:100%; border-collapse:collapse; margin-top:12px; }
+    .split-table th,.split-table td { padding:9px 12px; border:1px solid var(--border); text-align:center; font-size:.9rem; }
+    .split-table th { background:var(--surface); font-weight:600; }
+    .split-table tr:nth-child(even) { background:#fafafa; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#calculator-tools">Calculators</a> › Tip Calculator</div>
+      <h1>Tip Calculator</h1>
+      <p>Calculate tip amount, total bill, and how much each person pays when splitting.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="tip-grid">
+        <div class="form-group" style="margin:0;">
+          <label for="bill">Bill Amount ($)</label>
+          <input type="number" class="tool-input" id="bill" placeholder="0.00" min="0" step="0.01" oninput="calcTip()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="people">Number of People</label>
+          <input type="number" class="tool-input" id="people" value="1" min="1" max="100" oninput="calcTip()" />
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:16px;">
+        <label>Tip Percentage</label>
+        <div class="tip-pct-btns">
+          <button class="tip-pct-btn" onclick="setTip(10,this)">10%</button>
+          <button class="tip-pct-btn" onclick="setTip(15,this)">15%</button>
+          <button class="tip-pct-btn active" onclick="setTip(18,this)">18%</button>
+          <button class="tip-pct-btn" onclick="setTip(20,this)">20%</button>
+          <button class="tip-pct-btn" onclick="setTip(25,this)">25%</button>
+          <button class="tip-pct-btn" onclick="setTip(0,this)">Custom</button>
+        </div>
+        <input type="number" class="tool-input" id="tip-pct" value="18" min="0" max="100" step="0.5" placeholder="Tip %" oninput="calcTip()" style="margin-top:8px;max-width:160px;" />
+      </div>
+
+      <div class="result-card" id="tip-result">
+        <div class="rc-item"><div class="rc-label">Tip Amount</div><div class="rc-value" id="r-tip">$0.00</div></div>
+        <div class="rc-item"><div class="rc-label">Total Bill</div><div class="rc-value" id="r-total">$0.00</div></div>
+        <div class="rc-item"><div class="rc-label">Per Person</div><div class="rc-value" id="r-per">$0.00</div></div>
+      </div>
+
+      <div id="split-section" style="display:none;">
+        <h3 style="margin:20px 0 8px;font-size:1rem;">Split Breakdown</h3>
+        <table class="split-table">
+          <thead><tr><th>Person</th><th>Bill Share</th><th>Tip Share</th><th>Total</th></tr></thead>
+          <tbody id="split-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>How Much to Tip?</h2>
+      <p>Tipping norms vary by country and service type. In the United States, a 15–20% tip is standard for restaurant service. Here are common guidelines:</p>
+      <ul>
+        <li><strong>Restaurants</strong>: 15–20% of pre-tax bill</li>
+        <li><strong>Bars</strong>: $1–2 per drink, or 15–20% for tab</li>
+        <li><strong>Taxis / Rideshare</strong>: 10–15%</li>
+        <li><strong>Hotel housekeeping</strong>: $2–5 per night</li>
+        <li><strong>Hair salon / spa</strong>: 15–20%</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<style>.tip-grid{grid-template-columns:1fr 1fr;}@media(max-width:480px){.tip-grid{grid-template-columns:1fr;}}</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('tip-calculator');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('tip-calculator', 'calculator');
+    calcTip();
+  });
+
+  function setTip(pct, btn) {
+    document.querySelectorAll('.tip-pct-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if(pct > 0) document.getElementById('tip-pct').value = pct;
+    calcTip();
+  }
+
+  function calcTip() {
+    const bill   = parseFloat(document.getElementById('bill').value) || 0;
+    const tipPct = parseFloat(document.getElementById('tip-pct').value) || 0;
+    const people = Math.max(1, parseInt(document.getElementById('people').value) || 1);
+
+    const tipAmt = bill * tipPct / 100;
+    const total  = bill + tipAmt;
+    const perPer = total / people;
+
+    document.getElementById('r-tip').textContent   = '$' + tipAmt.toFixed(2);
+    document.getElementById('r-total').textContent = '$' + total.toFixed(2);
+    document.getElementById('r-per').textContent   = '$' + perPer.toFixed(2);
+
+    const splitSec = document.getElementById('split-section');
+    if(people > 1) {
+      const tbody = document.getElementById('split-tbody');
+      tbody.innerHTML = '';
+      const billShare = bill / people;
+      const tipShare  = tipAmt / people;
+      for(let i=1; i<=people; i++) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>Person ${i}</td><td>$${billShare.toFixed(2)}</td><td>$${tipShare.toFixed(2)}</td><td><strong>$${perPer.toFixed(2)}</strong></td>`;
+        tbody.appendChild(tr);
+      }
+      splitSec.style.display = '';
+    } else {
+      splitSec.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>

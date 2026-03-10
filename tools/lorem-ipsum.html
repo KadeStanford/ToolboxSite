@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorem Ipsum Generator — Free Placeholder Text | ToolNook</title>
+  <meta name="description" content="Free lorem ipsum generator. Generate placeholder text by paragraphs, sentences, or words. Classic lorem ipsum and random variations. No signup." />
+  <meta name="keywords" content="lorem ipsum generator, placeholder text, dummy text, lorem ipsum online, generate lorem ipsum, filler text" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/lorem-ipsum.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Lorem Ipsum Generator</div>
+      <h1>Lorem Ipsum Generator</h1>
+      <p>Generate lorem ipsum placeholder text by paragraphs, sentences, or words for your designs and layouts.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;">
+        <div class="form-group" style="margin:0;flex:1;min-width:100px;">
+          <label for="li-count">Amount</label>
+          <input type="number" class="tool-input" id="li-count" value="3" min="1" max="50" />
+        </div>
+        <div class="form-group" style="margin:0;flex:2;min-width:130px;">
+          <label for="li-type">Type</label>
+          <select class="tool-input" id="li-type">
+            <option value="paragraphs">Paragraphs</option>
+            <option value="sentences">Sentences</option>
+            <option value="words">Words</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding-bottom:4px;">
+            <input type="checkbox" id="li-classic" checked style="accent-color:var(--primary);" />
+            Start with classic "Lorem ipsum..."
+          </label>
+        </div>
+        <button class="btn btn-primary" onclick="generate()">Generate</button>
+      </div>
+
+      <div class="form-group">
+        <label for="li-output">Generated Text</label>
+        <div style="position:relative;">
+          <textarea class="tool-input" id="li-output" rows="14" readonly placeholder="Click Generate to create placeholder text..."></textarea>
+          <button class="copy-btn" onclick="copyOutput('li-output')">Copy</button>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput('li-output')">&#128203; Copy</button>
+        <button class="btn btn-secondary btn-sm" onclick="generate()">&#8635; Regenerate</button>
+        <button class="btn btn-secondary btn-sm" onclick="downloadText('lorem-ipsum.txt', document.getElementById('li-output').value)">&#11015; Download</button>
+      </div>
+      <div id="li-stats" style="font-size:0.82rem;color:var(--text-muted);margin-top:8px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About Lorem Ipsum</h2>
+      <p>Lorem ipsum is standard placeholder text used in the design, printing, and publishing industries. It originated from a piece of classical Latin literature written by Cicero in 45 BC, altered to make it look like typical Latin.</p>
+      <h3>Why Use Placeholder Text?</h3>
+      <ul>
+        <li>Show how a design will look with realistic text without distracting from the layout</li>
+        <li>Fill in content areas while waiting for final copy</li>
+        <li>Test typography, font sizes, and line heights in mockups and wireframes</li>
+        <li>Demonstrate website layouts and design systems to clients</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('lorem-ipsum');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('lorem-ipsum', 'text');
+    generate();
+  });
+
+  const CLASSIC = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+  const WORDS = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas vestibulum tortor quam feugiat vitae ultricies eget tempor sit amet ante vivamus sapien arcu congue diam sit amet fermentum et duis vitae risus in hac habitasse platea dictumst vivamus rhoncus nisi'.split(' ');
+
+  function rw() { return WORDS[Math.floor(Math.random()*WORDS.length)]; }
+
+  function genSentence(wordCount) {
+    const count = wordCount || (Math.floor(Math.random()*12)+8);
+    const words = Array.from({length:count}, rw);
+    words[0] = words[0][0].toUpperCase() + words[0].slice(1);
+    const puncts = ['.','.','.','.','.','!','?'];
+    return words.join(' ') + puncts[Math.floor(Math.random()*puncts.length)];
+  }
+
+  function genParagraph() {
+    const sentenceCount = Math.floor(Math.random()*4)+3;
+    return Array.from({length:sentenceCount}, genSentence).join(' ');
+  }
+
+  function generate() {
+    const count   = Math.min(50, Math.max(1, parseInt(document.getElementById('li-count').value)||3));
+    const type    = document.getElementById('li-type').value;
+    const classic = document.getElementById('li-classic').checked;
+    let text = '';
+
+    if(type === 'paragraphs') {
+      const paras = Array.from({length:count}, (_, i) => i===0&&classic ? CLASSIC+' '+genParagraph() : genParagraph());
+      text = paras.join('\n\n');
+    } else if(type === 'sentences') {
+      const sents = Array.from({length:count}, (_, i) => i===0&&classic ? CLASSIC : genSentence());
+      text = sents.join(' ');
+    } else {
+      const words = classic ? ['Lorem','ipsum','dolor','sit','amet,...'] : [];
+      while(words.length < count) words.push(rw());
+      text = words.slice(0, count).join(' ') + '.';
+    }
+
+    document.getElementById('li-output').value = text;
+    const wc = text.trim().split(/\s+/).length;
+    document.getElementById('li-stats').textContent = `${wc.toLocaleString()} words · ${text.length.toLocaleString()} characters`;
+  }
+</script>
+</body>
+</html>

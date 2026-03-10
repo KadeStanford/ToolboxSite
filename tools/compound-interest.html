@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compound Interest Calculator — Investment Growth Calculator | ToolNook</title>
+  <meta name="description" content="Free compound interest calculator. Calculate how your investment grows over time with compound interest. See yearly breakdown, total interest earned, and growth chart." />
+  <meta name="keywords" content="compound interest calculator, investment calculator, interest calculator, savings calculator, compound interest formula, annual interest calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/compound-interest.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .ci-result { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:16px; }
+    .ci-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; text-align:center; }
+    .ci-card .ci-val { font-size:1.6rem; font-weight:800; color:var(--primary); }
+    .ci-card .ci-lbl { font-size:.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-top:2px; }
+    .ci-card.highlight { background:var(--primary); border-color:var(--primary); }
+    .ci-card.highlight .ci-val,.ci-card.highlight .ci-lbl { color:#fff; }
+    .year-table { width:100%; border-collapse:collapse; margin-top:16px; font-size:.85rem; }
+    .year-table th,.year-table td { padding:7px 10px; border:1px solid var(--border); text-align:right; }
+    .year-table th { background:var(--surface); font-weight:600; text-align:center; }
+    .year-table td:first-child { text-align:center; font-weight:600; }
+    .year-table tbody tr:nth-child(even){ background:#fafafa; }
+    .bar-row { height:12px; background:#e8e8e8; border-radius:6px; overflow:hidden; margin-top:4px; }
+    .bar-fill { height:100%; background:var(--primary); border-radius:6px; transition:width .3s; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#calculator-tools">Calculators</a> › Compound Interest Calculator</div>
+      <h1>Compound Interest Calculator</h1>
+      <p>See how your money grows over time with the power of compound interest.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="ci-form-grid">
+        <div class="form-group" style="margin:0;">
+          <label for="ci-principal">Principal Amount ($)</label>
+          <input type="number" class="tool-input" id="ci-principal" value="10000" min="0" step="100" oninput="calcCI()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="ci-monthly">Monthly Contribution ($)</label>
+          <input type="number" class="tool-input" id="ci-monthly" value="100" min="0" step="10" oninput="calcCI()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="ci-rate">Annual Interest Rate (%)</label>
+          <input type="number" class="tool-input" id="ci-rate" value="7" min="0" max="100" step="0.1" oninput="calcCI()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="ci-years">Time Period (Years)</label>
+          <input type="number" class="tool-input" id="ci-years" value="10" min="1" max="100" oninput="calcCI()" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="ci-freq">Compound Frequency</label>
+          <select class="tool-input" id="ci-freq" onchange="calcCI()">
+            <option value="1">Annually (1×/yr)</option>
+            <option value="2">Semi-annually (2×/yr)</option>
+            <option value="4">Quarterly (4×/yr)</option>
+            <option value="12" selected>Monthly (12×/yr)</option>
+            <option value="365">Daily (365×/yr)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ci-result" id="ci-result" style="display:none;">
+        <div class="ci-card highlight">
+          <div class="ci-val" id="ci-final">$0</div>
+          <div class="ci-lbl">Final Balance</div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-val" id="ci-principal-disp">$0</div>
+          <div class="ci-lbl">Total Deposited</div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-val" id="ci-interest">$0</div>
+          <div class="ci-lbl">Interest Earned</div>
+        </div>
+        <div class="ci-card">
+          <div class="ci-val" id="ci-growth">0%</div>
+          <div class="ci-lbl">Total Growth</div>
+        </div>
+      </div>
+
+      <div id="ci-table-section" style="display:none;">
+        <h3 style="margin:20px 0 6px;font-size:1rem;">Yearly Breakdown</h3>
+        <div style="overflow-x:auto;">
+          <table class="year-table">
+            <thead>
+              <tr>
+                <th>Year</th><th>Deposits</th><th>Interest</th><th>Balance</th>
+                <th style="text-align:left;min-width:120px;">Progress</th>
+              </tr>
+            </thead>
+            <tbody id="ci-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>Compound Interest Formula</h2>
+      <p>Compound interest is calculated as <strong>A = P(1 + r/n)<sup>nt</sup></strong>, where:</p>
+      <ul>
+        <li><strong>A</strong> = final amount</li>
+        <li><strong>P</strong> = principal (starting amount)</li>
+        <li><strong>r</strong> = annual interest rate (as a decimal)</li>
+        <li><strong>n</strong> = compounding frequency per year</li>
+        <li><strong>t</strong> = time in years</li>
+      </ul>
+      <p>Monthly contributions are added each period at the effective rate, giving you a more realistic savings or investment projection.</p>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<style>.ci-form-grid{grid-template-columns:1fr 1fr;}@media(max-width:480px){.ci-form-grid{grid-template-columns:1fr;}}</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('compound-interest');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('compound-interest', 'calculator');
+    calcCI();
+  });
+
+  function fmt(n) {
+    return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function calcCI() {
+    const P       = parseFloat(document.getElementById('ci-principal').value) || 0;
+    const monthly = parseFloat(document.getElementById('ci-monthly').value) || 0;
+    const rate    = parseFloat(document.getElementById('ci-rate').value) / 100 || 0;
+    const years   = parseInt(document.getElementById('ci-years').value) || 0;
+    const n       = parseInt(document.getElementById('ci-freq').value);
+
+    if(years <= 0) return;
+
+    const r = rate / n;   // rate per period
+    const rows = [];
+    let balance = P;
+    let totalDeposited = P;
+
+    for(let yr = 1; yr <= years; yr++) {
+      const prevBalance = balance;
+      for(let p = 0; p < n; p++) {
+        balance = balance * (1 + r) + monthly * (12/n);
+      }
+      totalDeposited += monthly * 12;
+      const yearInterest = balance - prevBalance - monthly*12;
+      rows.push({ yr, totalDeposited, interest: balance - totalDeposited, balance });
+    }
+
+    const finalBalance = balance;
+    const totalDep = totalDeposited;
+    const totalInt = finalBalance - totalDep;
+    const growth = totalDep > 0 ? totalInt / totalDep * 100 : 0;
+
+    document.getElementById('ci-final').textContent         = fmt(finalBalance);
+    document.getElementById('ci-principal-disp').textContent = fmt(totalDep);
+    document.getElementById('ci-interest').textContent      = fmt(totalInt);
+    document.getElementById('ci-growth').textContent        = parseFloat(growth.toFixed(1)) + '%';
+
+    document.getElementById('ci-result').style.display = '';
+    document.getElementById('ci-table-section').style.display = '';
+
+    const maxBalance = rows[rows.length-1].balance;
+    const tbody = document.getElementById('ci-tbody');
+    tbody.innerHTML = rows.map(r => {
+      const pct = (r.balance / maxBalance * 100).toFixed(1);
+      return `<tr>
+        <td>${r.yr}</td>
+        <td>${fmt(r.totalDeposited)}</td>
+        <td>${fmt(r.interest)}</td>
+        <td>${fmt(r.balance)}</td>
+        <td style="text-align:left;">
+          <div class="bar-row"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:.75rem;color:var(--text-muted);">${pct}%</span>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+</script>
+</body>
+</html>

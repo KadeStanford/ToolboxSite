@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Converter — UPPER, lower, Title, camelCase Online | ToolNook</title>
+  <meta name="description" content="Free online case converter. Convert text to UPPERCASE, lowercase, Title Case, camelCase, PascalCase, snake_case, kebab-case instantly. No signup." />
+  <meta name="keywords" content="case converter, uppercase converter, lowercase converter, title case, camelcase, snake_case, kebab-case, text case changer" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/case-converter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Case Converter</div>
+      <h1>Case Converter</h1>
+      <p>Convert text to any case: UPPER, lower, Title, camelCase, PascalCase, snake_case, and more.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="cc-input">Input Text</label>
+        <textarea class="tool-input" id="cc-input" rows="7" placeholder="Type or paste your text here..."></textarea>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+        <button class="btn btn-secondary" onclick="convert('upper')">UPPERCASE</button>
+        <button class="btn btn-secondary" onclick="convert('lower')">lowercase</button>
+        <button class="btn btn-secondary" onclick="convert('title')">Title Case</button>
+        <button class="btn btn-secondary" onclick="convert('sentence')">Sentence case</button>
+        <button class="btn btn-secondary" onclick="convert('camel')">camelCase</button>
+        <button class="btn btn-secondary" onclick="convert('pascal')">PascalCase</button>
+        <button class="btn btn-secondary" onclick="convert('snake')">snake_case</button>
+        <button class="btn btn-secondary" onclick="convert('kebab')">kebab-case</button>
+        <button class="btn btn-secondary" onclick="convert('constant')">CONSTANT_CASE</button>
+        <button class="btn btn-secondary" onclick="convert('dot')">dot.case</button>
+        <button class="btn btn-secondary" onclick="convert('alternate')">aLtErNaTiNg</button>
+        <button class="btn btn-secondary" onclick="convert('reverse')">esreveR</button>
+      </div>
+
+      <div class="form-group">
+        <label for="cc-output">Output <span id="cc-mode-label" style="color:var(--primary);font-weight:700;"></span></label>
+        <div style="position:relative;">
+          <textarea class="tool-input" id="cc-output" rows="7" placeholder="Converted text appears here..." readonly></textarea>
+          <button class="copy-btn" onclick="copyOutput('cc-output')">Copy</button>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput('cc-output')">&#128203; Copy Output</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('cc-input').value=document.getElementById('cc-output').value;document.getElementById('cc-output').value=''">&#8645; Use as Input</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('cc-input').value='';document.getElementById('cc-output').value=''">Clear</button>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Case Converter</h2>
+      <p>The ToolNook Case Converter supports 12 different text case transformations for developers, writers, and anyone who needs to quickly reformat text without manually retyping.</p>
+      <h3>Available Case Formats</h3>
+      <ul>
+        <li><strong>UPPERCASE</strong> — Convert all characters to capitals</li>
+        <li><strong>lowercase</strong> — Convert all characters to lowercase</li>
+        <li><strong>Title Case</strong> — Capitalize the first letter of each word</li>
+        <li><strong>Sentence case</strong> — Capitalize only the first letter of each sentence</li>
+        <li><strong>camelCase</strong> — Used in JavaScript variable names</li>
+        <li><strong>PascalCase</strong> — Used in class names and React components</li>
+        <li><strong>snake_case</strong> — Used in Python and database column names</li>
+        <li><strong>kebab-case</strong> — Used in CSS class names and URL slugs</li>
+        <li><strong>CONSTANT_CASE</strong> — Used for constants and environment variables</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('case-converter');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('case-converter', 'text');
+  });
+
+  const LABELS = {upper:'UPPERCASE',lower:'lowercase',title:'Title Case',sentence:'Sentence case',camel:'camelCase',pascal:'PascalCase',snake:'snake_case',kebab:'kebab-case',constant:'CONSTANT_CASE',dot:'dot.case',alternate:'aLtErNaTiNg',reverse:'Reverse'};
+
+  function words(str) { return str.trim().split(/[\s\-_./]+/).filter(Boolean); }
+
+  function convert(type) {
+    const input = document.getElementById('cc-input').value;
+    if(!input) { showToast('Please enter some text first'); return; }
+    let out = '';
+    switch(type) {
+      case 'upper':    out = input.toUpperCase(); break;
+      case 'lower':    out = input.toLowerCase(); break;
+      case 'title':    out = input.toLowerCase().replace(/\b\w/g, c=>c.toUpperCase()); break;
+      case 'sentence': out = input.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c=>c.toUpperCase()); break;
+      case 'camel':    out = words(input).map((w,i)=>i===0?w.toLowerCase():w[0].toUpperCase()+w.slice(1).toLowerCase()).join(''); break;
+      case 'pascal':   out = words(input).map(w=>w[0].toUpperCase()+w.slice(1).toLowerCase()).join(''); break;
+      case 'snake':    out = words(input).map(w=>w.toLowerCase()).join('_'); break;
+      case 'kebab':    out = words(input).map(w=>w.toLowerCase()).join('-'); break;
+      case 'constant': out = words(input).map(w=>w.toUpperCase()).join('_'); break;
+      case 'dot':      out = words(input).map(w=>w.toLowerCase()).join('.'); break;
+      case 'alternate':out = input.split('').map((c,i)=>i%2===0?c.toLowerCase():c.toUpperCase()).join(''); break;
+      case 'reverse':  out = input.split('').reverse().join(''); break;
+    }
+    document.getElementById('cc-output').value = out;
+    document.getElementById('cc-mode-label').textContent = '— ' + LABELS[type];
+    showToast('Converted to ' + LABELS[type] + '!', 'success');
+  }
+</script>
+</body>
+</html>

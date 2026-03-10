@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Counter — Free Online Word & Character Count Tool | ToolNook</title>
+  <meta name="description" content="Free online word counter. Count words, characters, sentences, paragraphs, and estimate reading time. Instant results as you type. No signup required." />
+  <meta name="keywords" content="word counter, character counter, word count online, count words, reading time calculator, text statistics, letter counter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/word-counter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Word Counter</div>
+      <h1>Word Counter</h1>
+      <p>Count words, characters, sentences, and estimate reading time as you type.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="wc-input">Your Text</label>
+        <textarea class="tool-input" id="wc-input" rows="12" placeholder="Start typing or paste your text here..." oninput="countText()"></textarea>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('wc-input').value='';countText()">Clear</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('wc-input').value)">Copy Text</button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-item"><div class="stat-value" id="s-words">0</div><div class="stat-label">Words</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-chars">0</div><div class="stat-label">Characters</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-nospace">0</div><div class="stat-label">No Spaces</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-sents">0</div><div class="stat-label">Sentences</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-paras">0</div><div class="stat-label">Paragraphs</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-lines">0</div><div class="stat-label">Lines</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-read">0 min</div><div class="stat-label">Read Time</div></div>
+        <div class="stat-item"><div class="stat-value" id="s-speak">0 min</div><div class="stat-label">Speak Time</div></div>
+      </div>
+
+      <div id="freq-section" style="margin-top:20px;display:none;">
+        <label style="font-size:0.88rem;font-weight:700;display:block;margin-bottom:10px;">Top 10 Most Frequent Words</label>
+        <div id="freq-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Word Counter</h2>
+      <p>The ToolNook Word Counter is an instant text analysis tool that counts words, characters, sentences, paragraphs, and lines, and estimates reading time and speaking time. It updates in real time as you type or paste text.</p>
+      <h3>Reading Time Estimates</h3>
+      <ul>
+        <li><strong>Reading time</strong> — Based on 238 words per minute (average adult reading speed)</li>
+        <li><strong>Speaking time</strong> — Based on 130 words per minute (average speaking pace)</li>
+      </ul>
+      <h3>Common Uses</h3>
+      <p>This tool is helpful for writers, students, bloggers, and professionals who need to meet word count requirements for essays, articles, reports, social media posts, or SEO content guidelines.</p>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('word-counter');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('word-counter', 'text');
+  });
+
+  const STOP_WORDS = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','is','are','was','were','be','been','being','it','this','that','these','those','i','you','he','she','we','they','my','your','his','her','our','their','as','by','from','up','not','have','has','had','do','does','did','will','would','could','should','may','might','can','so','if','about','after','before','than','then','when','where','which','who','how','what','there','here']);
+
+  function countText() {
+    const text = document.getElementById('wc-input').value;
+    const words = text.trim() ? text.trim().split(/\s+/).filter(w=>w.length>0) : [];
+    const sents = text.trim() ? text.split(/[.!?]+/).filter(s=>s.trim().length>0).length : 0;
+    const paras = text.trim() ? text.split(/\n\s*\n/).filter(p=>p.trim().length>0).length : 0;
+    const lines = text.split('\n').length;
+    const readMin = Math.ceil(words.length / 238);
+    const speakMin = Math.ceil(words.length / 130);
+
+    document.getElementById('s-words').textContent = words.length.toLocaleString();
+    document.getElementById('s-chars').textContent = text.length.toLocaleString();
+    document.getElementById('s-nospace').textContent = text.replace(/\s/g,'').length.toLocaleString();
+    document.getElementById('s-sents').textContent = sents.toLocaleString();
+    document.getElementById('s-paras').textContent = paras.toLocaleString();
+    document.getElementById('s-lines').textContent = lines.toLocaleString();
+    document.getElementById('s-read').textContent = words.length < 238 ? '< 1 min' : readMin + ' min';
+    document.getElementById('s-speak').textContent = words.length < 130 ? '< 1 min' : speakMin + ' min';
+
+    if(words.length > 5) {
+      const freq = {};
+      words.forEach(w => { const lw = w.toLowerCase().replace(/[^a-z0-9]/g,''); if(lw && !STOP_WORDS.has(lw) && lw.length > 1) freq[lw] = (freq[lw]||0)+1; });
+      const top = Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10);
+      document.getElementById('freq-list').innerHTML = top.map(([w,c])=>
+        `<span style="background:var(--primary-light);color:var(--primary);padding:4px 10px;border-radius:50px;font-size:0.82rem;font-weight:600;">${escapeHtml(w)} <span style="opacity:0.7;">${c}</span></span>`
+      ).join('');
+      document.getElementById('freq-section').style.display = 'block';
+    } else {
+      document.getElementById('freq-section').style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>

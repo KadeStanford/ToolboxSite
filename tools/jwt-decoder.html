@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JWT Decoder — Decode JSON Web Tokens Online | ToolNook</title>
+  <meta name="description" content="Free online JWT decoder. Paste a JSON Web Token to instantly decode and inspect the header, payload, and signature. No login required." />
+  <meta name="keywords" content="JWT decoder, JSON web token decoder, decode JWT online, JWT inspector, JWT parser, JWT claims" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/jwt-decoder.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › JWT Decoder</div>
+      <h1>JWT Decoder</h1>
+      <p>Paste a JSON Web Token to decode and inspect its header and payload claims.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="warn-card info-card">
+        <strong>&#9888; Privacy Notice:</strong> Decoding happens entirely in your browser. Your token is never sent to any server.
+      </div>
+
+      <div class="form-group" style="margin-top:16px;">
+        <label for="jwt-input">JWT Token</label>
+        <textarea class="tool-input" id="jwt-input" rows="5" placeholder="Paste your JWT token here... (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)" oninput="decodeJWT()"></textarea>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="decodeJWT()">&#128274; Decode Token</button>
+        <button class="btn btn-secondary" onclick="loadSample()">Load Sample</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('jwt-input').value=''; clearOutput()">Clear</button>
+      </div>
+
+      <div id="jwt-output" style="margin-top:20px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About JWT Tokens</h2>
+      <p>JSON Web Tokens (JWT) are an open standard (RFC 7519) for securely transmitting information between parties as a JSON object. They are commonly used for authentication and authorization in web applications.</p>
+      <h3>JWT Structure</h3>
+      <ul>
+        <li><strong>Header</strong> — Contains the token type and the signing algorithm (e.g., HS256, RS256)</li>
+        <li><strong>Payload</strong> — Contains the claims (user data, expiration, issuer, etc.)</li>
+        <li><strong>Signature</strong> — Used to verify the token hasn't been tampered with (requires the secret key)</li>
+      </ul>
+      <h3>Common JWT Claims</h3>
+      <ul>
+        <li><code>iss</code> — Issuer: who created the token</li>
+        <li><code>sub</code> — Subject: who the token is about</li>
+        <li><code>exp</code> — Expiration time (Unix timestamp)</li>
+        <li><code>iat</code> — Issued at time</li>
+        <li><code>aud</code> — Audience: intended recipient</li>
+      </ul>
+      <p><strong>Note:</strong> This tool only decodes the header and payload. It does not verify the signature, as that requires the secret key.</p>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('jwt-decoder');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('jwt-decoder', 'developer');
+  });
+
+  function b64DecodeUnicode(str) {
+    str = str.replace(/-/g,'+').replace(/_/g,'/');
+    while(str.length % 4) str += '=';
+    return decodeURIComponent(atob(str).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  }
+
+  function decodeJWT() {
+    const token = document.getElementById('jwt-input').value.trim();
+    const out = document.getElementById('jwt-output');
+    if(!token) { out.innerHTML = ''; return; }
+    const parts = token.split('.');
+    if(parts.length !== 3) { out.innerHTML = '<div class="warn-card info-card"><strong>Invalid JWT</strong> — A JWT must have exactly 3 parts separated by dots.</div>'; return; }
+    let header, payload;
+    try { header  = JSON.parse(b64DecodeUnicode(parts[0])); } catch(e) { out.innerHTML = '<div class="warn-card info-card"><strong>Error:</strong> Could not decode header.</div>'; return; }
+    try { payload = JSON.parse(b64DecodeUnicode(parts[1])); } catch(e) { out.innerHTML = '<div class="warn-card info-card"><strong>Error:</strong> Could not decode payload.</div>'; return; }
+
+    // Check expiry
+    let expBadge = '';
+    if(payload.exp) {
+      const exp = new Date(payload.exp * 1000);
+      const expired = Date.now() > payload.exp * 1000;
+      expBadge = `<span style="margin-left:8px;padding:3px 10px;border-radius:50px;font-size:0.75rem;font-weight:700;background:${expired?'#fee2e2':'#dcfce7'};color:${expired?'#991b1b':'#166534'};">${expired?'EXPIRED':'VALID'}</span>`;
+    }
+
+    out.innerHTML = `
+      <div style="margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div style="background:var(--primary-light);color:var(--primary);padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:700;">ALG: ${escapeHtml(header.alg||'?')}</div>
+        <div style="background:var(--primary-light);color:var(--primary);padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:700;">TYPE: ${escapeHtml(header.typ||'?')}</div>
+        ${expBadge}
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label style="font-size:0.88rem;font-weight:700;color:#dc2626;">HEADER</label>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(JSON.stringify(${escapeHtml(JSON.stringify(header))},null,2))">Copy</button>
+        </div>
+        <pre class="output-box" style="background:#fff5f5;">${escapeHtml(JSON.stringify(header,null,2))}</pre>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <label style="font-size:0.88rem;font-weight:700;color:#7c3aed;">PAYLOAD</label>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(JSON.stringify(${escapeHtml(JSON.stringify(payload))},null,2))">Copy</button>
+        </div>
+        <pre class="output-box" style="background:#faf5ff;">${escapeHtml(JSON.stringify(payload,null,2))}</pre>
+        ${payload.exp ? `<div class="info-card" style="margin-top:8px;">&#8987; Expiry: <strong>${new Date(payload.exp*1000).toLocaleString()}</strong></div>` : ''}
+        ${payload.iat ? `<div class="info-card" style="margin-top:8px;">&#128336; Issued: <strong>${new Date(payload.iat*1000).toLocaleString()}</strong></div>` : ''}
+      </div>
+
+      <div>
+        <label style="font-size:0.88rem;font-weight:700;color:#059669;display:block;margin-bottom:8px;">SIGNATURE</label>
+        <div class="output-box" style="background:#f0fdf4;word-break:break-all;">${escapeHtml(parts[2])}</div>
+        <div class="info-card" style="margin-top:8px;">&#128274; Signature verification requires the secret key and is not performed here.</div>
+      </div>`;
+  }
+
+  function clearOutput() { document.getElementById('jwt-output').innerHTML = ''; }
+
+  function loadSample() {
+    // Sample JWT (header.payload.signature) - non-sensitive demo token
+    document.getElementById('jwt-input').value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.SxnDFB4d-cVFMIV3G_5e2xS_jAPM19_H3xyiMXvamGo';
+    decodeJWT();
+  }
+</script>
+</body>
+</html>

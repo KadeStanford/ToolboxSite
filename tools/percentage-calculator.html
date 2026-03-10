@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Percentage Calculator — Calculate Percentages Online | ToolNook</title>
+  <meta name="description" content="Free online percentage calculator. Calculate what percent of a number is, find the percent change between two values, or find a value from a percentage. Three calculation modes." />
+  <meta name="keywords" content="percentage calculator, percent of a number, percent change calculator, percentage difference, calculate percentage online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/percentage-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .pct-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:22px; margin-bottom:16px; }
+    .pct-card h3 { margin:0 0 12px; font-size:1rem; color:var(--primary); }
+    .pct-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+    .pct-row input { width:90px; }
+    .pct-row .pct-sign { font-size:1.2rem; font-weight:700; color:var(--text-muted); }
+    .pct-answer { background:var(--primary); color:#fff; padding:10px 18px; border-radius:6px; font-size:1.2rem; font-weight:700; margin-top:8px; display:inline-block; min-width:100px; text-align:center; }
+    .pct-answer.negative { background:#e53935; }
+    .pct-answer.neutral  { background:#757575; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#calculator-tools">Calculators</a> › Percentage Calculator</div>
+      <h1>Percentage Calculator</h1>
+      <p>Three different percentage calculations — find a percentage, find what percentage, and calculate percentage change.</p>
+    </div>
+
+    <div class="tool-container">
+
+      <!-- Calculator 1 -->
+      <div class="pct-card">
+        <h3>&#9312; What is X% of Y?</h3>
+        <div class="pct-row">
+          <input type="number" class="tool-input" id="c1-x" placeholder="20" oninput="calc1()" />
+          <span class="pct-sign">%</span>
+          <span style="font-size:.95rem;font-weight:500;">of</span>
+          <input type="number" class="tool-input" id="c1-y" placeholder="500" oninput="calc1()" />
+          <span style="font-size:.95rem;font-weight:500;">=</span>
+          <div class="pct-answer" id="c1-ans">–</div>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('c1-ans').dataset.val||'')">Copy</button>
+        </div>
+      </div>
+
+      <!-- Calculator 2 -->
+      <div class="pct-card">
+        <h3>&#9313; X is what % of Y?</h3>
+        <div class="pct-row">
+          <input type="number" class="tool-input" id="c2-x" placeholder="100" oninput="calc2()" />
+          <span style="font-size:.95rem;font-weight:500;">is what % of</span>
+          <input type="number" class="tool-input" id="c2-y" placeholder="500" oninput="calc2()" />
+          <span style="font-size:.95rem;font-weight:500;">=</span>
+          <div class="pct-answer" id="c2-ans">–</div>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('c2-ans').dataset.val||'')">Copy</button>
+        </div>
+      </div>
+
+      <!-- Calculator 3 -->
+      <div class="pct-card">
+        <h3>&#9314; Percentage Change</h3>
+        <div class="pct-row">
+          <span style="font-weight:500;font-size:.9rem;">From</span>
+          <input type="number" class="tool-input" id="c3-from" placeholder="200" oninput="calc3()" />
+          <span style="font-weight:500;font-size:.9rem;">to</span>
+          <input type="number" class="tool-input" id="c3-to" placeholder="250" oninput="calc3()" />
+          <span style="font-size:.95rem;font-weight:500;">=</span>
+          <div class="pct-answer" id="c3-ans">–</div>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('c3-ans').dataset.val||'')">Copy</button>
+        </div>
+        <div id="c3-label" style="font-size:.85rem;color:var(--text-muted);margin-top:4px;"></div>
+      </div>
+
+      <!-- Calculator 4 -->
+      <div class="pct-card">
+        <h3>&#9315; Find original value (value after percentage change)</h3>
+        <div class="pct-row">
+          <span style="font-weight:500;font-size:.9rem;">New value</span>
+          <input type="number" class="tool-input" id="c4-new" placeholder="120" oninput="calc4()" />
+          <span style="font-weight:500;font-size:.9rem;">after</span>
+          <input type="number" class="tool-input" style="width:80px;" id="c4-pct" placeholder="20" oninput="calc4()" />
+          <span class="pct-sign">%</span>
+          <select class="tool-input" id="c4-dir" onchange="calc4()" style="width:auto;padding:8px 12px;">
+            <option value="increase">increase</option>
+            <option value="decrease">decrease</option>
+          </select>
+          <span style="font-size:.95rem;font-weight:500;">=</span>
+          <div class="pct-answer" id="c4-ans">–</div>
+          <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('c4-ans').dataset.val||'')">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>Percentage Formula Guide</h2>
+      <ul>
+        <li><strong>X% of Y</strong> = (X / 100) × Y</li>
+        <li><strong>X is what % of Y</strong> = (X / Y) × 100</li>
+        <li><strong>% change</strong> = ((New − Old) / |Old|) × 100</li>
+        <li><strong>Original value</strong> = New Value / (1 ± change/100)</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('percentage-calculator');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('percentage-calculator', 'calculator');
+  });
+
+  function setAns(id, val, forceNeg=null) {
+    const el = document.getElementById(id);
+    if(val === null || isNaN(val) || !isFinite(val)) {
+      el.textContent = '–'; el.dataset.val=''; el.className='pct-answer'; return;
+    }
+    const str = Number.isInteger(val) ? val.toLocaleString() : parseFloat(val.toFixed(6)).toLocaleString();
+    el.textContent = str;
+    el.dataset.val = str;
+    if(forceNeg===true) el.className='pct-answer negative';
+    else if(forceNeg===null) el.className='pct-answer';
+    else el.className='pct-answer';
+  }
+
+  function calc1() {
+    const x = parseFloat(document.getElementById('c1-x').value);
+    const y = parseFloat(document.getElementById('c1-y').value);
+    setAns('c1-ans', isNaN(x)||isNaN(y) ? null : x/100*y);
+  }
+  function calc2() {
+    const x = parseFloat(document.getElementById('c2-x').value);
+    const y = parseFloat(document.getElementById('c2-y').value);
+    const ans = y===0?null:x/y*100;
+    const el = document.getElementById('c2-ans');
+    if(ans===null||isNaN(ans)){el.textContent='–';el.dataset.val='';return;}
+    const str = parseFloat(ans.toFixed(4)) + '%';
+    el.textContent=str; el.dataset.val=str; el.className='pct-answer';
+  }
+  function calc3() {
+    const from = parseFloat(document.getElementById('c3-from').value);
+    const to   = parseFloat(document.getElementById('c3-to').value);
+    const el   = document.getElementById('c3-ans');
+    const lbl  = document.getElementById('c3-label');
+    if(isNaN(from)||isNaN(to)||from===0){el.textContent='–';el.dataset.val='';lbl.textContent='';el.className='pct-answer';return;}
+    const pct  = (to - from) / Math.abs(from) * 100;
+    const str  = (pct>=0?'+':'') + parseFloat(pct.toFixed(4)) + '%';
+    el.textContent = str; el.dataset.val=str;
+    el.className = 'pct-answer' + (pct<0?' negative':pct===0?' neutral':'');
+    lbl.textContent = pct>0 ? `Increase of ${parseFloat(pct.toFixed(4))}%` : pct<0 ? `Decrease of ${parseFloat(Math.abs(pct).toFixed(4))}%` : 'No change';
+  }
+  function calc4() {
+    const newVal = parseFloat(document.getElementById('c4-new').value);
+    const pct    = parseFloat(document.getElementById('c4-pct').value);
+    const dir    = document.getElementById('c4-dir').value;
+    if(isNaN(newVal)||isNaN(pct)){setAns('c4-ans',null);return;}
+    const factor = dir==='increase' ? 1 + pct/100 : 1 - pct/100;
+    setAns('c4-ans', factor===0?null:newVal/factor);
+  }
+</script>
+</body>
+</html>

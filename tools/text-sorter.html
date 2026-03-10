@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Sorter — Sort Lines Alphabetically Online | ToolNook</title>
+  <meta name="description" content="Free online text sorter. Sort lines of text alphabetically, by length, numerically, or in reverse order. Remove duplicates too. No signup required." />
+  <meta name="keywords" content="text sorter, sort lines online, alphabetical sorter, sort text, sort list online, line sorter, reverse sort" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/text-sorter.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Text Sorter</div>
+      <h1>Text Sorter</h1>
+      <p>Sort lines of text alphabetically, by length, numerically, or randomly. Remove duplicates with one click.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="two-col">
+        <div class="form-group">
+          <label for="ts-input">Input — one item per line</label>
+          <textarea class="tool-input" id="ts-input" rows="14" placeholder="Apple&#10;Banana&#10;Cherry&#10;Apple&#10;Date"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="ts-output">Output</label>
+          <div style="position:relative;">
+            <textarea class="tool-input" id="ts-output" rows="14" readonly placeholder="Sorted text appears here..."></textarea>
+            <button class="copy-btn" onclick="copyOutput('ts-output')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+          <button class="btn btn-primary" onclick="sort('alpha-asc')">A → Z</button>
+          <button class="btn btn-primary" onclick="sort('alpha-desc')">Z → A</button>
+          <button class="btn btn-secondary" onclick="sort('len-asc')">Shortest first</button>
+          <button class="btn btn-secondary" onclick="sort('len-desc')">Longest first</button>
+          <button class="btn btn-secondary" onclick="sort('num-asc')">Numeric ↑</button>
+          <button class="btn btn-secondary" onclick="sort('num-desc')">Numeric ↓</button>
+          <button class="btn btn-secondary" onclick="sort('random')">&#127922; Shuffle</button>
+          <button class="btn btn-secondary" onclick="sort('reverse')">&#8645; Reverse</button>
+        </div>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="opt-nocase" checked /> Case-insensitive sort</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-dedup" /> Remove duplicate lines</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-noBlank" checked /> Remove blank lines</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-trim2" checked /> Trim whitespace</label>
+          <label class="checkbox-label"><input type="checkbox" id="opt-numbering" /> Add line numbers</label>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary btn-sm" onclick="copyOutput('ts-output')">&#128203; Copy Output</button>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('ts-input').value='';document.getElementById('ts-output').value=''">Clear</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadSample()">Load Sample</button>
+      </div>
+      <div id="ts-stats" style="font-size:0.82rem;color:var(--text-muted);margin-top:8px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Text Sorter</h2>
+      <p>The ToolNook Text Sorter lets you quickly sort any list of items in various ways. Whether you need to alphabetize a list of names, sort a CSV column, or shuffle items randomly, this tool handles it instantly in your browser.</p>
+      <h3>Sorting Options</h3>
+      <ul>
+        <li><strong>A → Z</strong> — Alphabetical ascending (case-insensitive by default)</li>
+        <li><strong>Z → A</strong> — Alphabetical descending</li>
+        <li><strong>Shortest/Longest first</strong> — Sort by character length</li>
+        <li><strong>Numeric</strong> — Sort numbers in ascending or descending order</li>
+        <li><strong>Shuffle</strong> — Randomize the order of lines</li>
+        <li><strong>Reverse</strong> — Flip the current order of lines</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('text-sorter');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('text-sorter', 'text');
+  });
+
+  function sort(method) {
+    let lines = document.getElementById('ts-input').value.split('\n');
+    const nocase  = document.getElementById('opt-nocase').checked;
+    const dedup   = document.getElementById('opt-dedup').checked;
+    const noBlank = document.getElementById('opt-noBlank').checked;
+    const trim2   = document.getElementById('opt-trim2').checked;
+    const numbering = document.getElementById('opt-numbering').checked;
+
+    if(trim2)   lines = lines.map(l=>l.trim());
+    if(noBlank) lines = lines.filter(l=>l.length>0);
+    if(dedup)   lines = [...new Set(nocase ? lines.map(l=>l) : lines)].filter((v,i,a)=>nocase ? a.findIndex(x=>x.toLowerCase()===v.toLowerCase())===i : true);
+
+    switch(method) {
+      case 'alpha-asc':  lines.sort((a,b)=>(nocase?a.toLowerCase():a).localeCompare(nocase?b.toLowerCase():b)); break;
+      case 'alpha-desc': lines.sort((a,b)=>(nocase?b.toLowerCase():b).localeCompare(nocase?a.toLowerCase():a)); break;
+      case 'len-asc':    lines.sort((a,b)=>a.length-b.length); break;
+      case 'len-desc':   lines.sort((a,b)=>b.length-a.length); break;
+      case 'num-asc':    lines.sort((a,b)=>parseFloat(a)-parseFloat(b)); break;
+      case 'num-desc':   lines.sort((a,b)=>parseFloat(b)-parseFloat(a)); break;
+      case 'random':     for(let i=lines.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[lines[i],lines[j]]=[lines[j],lines[i]];} break;
+      case 'reverse':    lines.reverse(); break;
+    }
+
+    const result = numbering ? lines.map((l,i)=>`${i+1}. ${l}`) : lines;
+    document.getElementById('ts-output').value = result.join('\n');
+    document.getElementById('ts-stats').textContent = `${lines.length} lines in output`;
+    showToast('Sorted!', 'success');
+  }
+
+  function loadSample() {
+    document.getElementById('ts-input').value = `Banana\nApple\nCherry\nDate\nApple\nElderberry\nFig\nGrape\nApricot\nBlueberry`;
+  }
+</script>
+</body>
+</html>

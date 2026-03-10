@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Encoder & Decoder — Free Online Tool | ToolNook</title>
+  <meta name="description" content="Free online URL encoder and decoder. Encode special characters for use in URLs or decode percent-encoded strings. Fast and free, no signup needed." />
+  <meta name="keywords" content="URL encoder, URL decoder, percent encoding, URL encode online, urlencode, URL decode, encode URL" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/url-encoder.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › URL Encoder/Decoder</div>
+      <h1>URL Encoder / Decoder</h1>
+      <p>Encode special characters for safe URL transmission or decode percent-encoded URL strings.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('encode')">Encode</button>
+        <button class="tab-btn" onclick="switchTab('decode')">Decode</button>
+        <button class="tab-btn" onclick="switchTab('parse')">Parse URL</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-encode">
+        <div class="form-group">
+          <label for="url-encode-input">Text to Encode</label>
+          <textarea class="tool-input" id="url-encode-input" rows="6" placeholder="e.g. Hello World! https://example.com/path?q=foo bar" oninput="encodeURL()"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="full-encode" onchange="encodeURL()" style="accent-color:var(--primary);" />
+            Full encode (encode slashes and colons too)
+          </label>
+        </div>
+        <div class="form-group">
+          <label>Encoded Output</label>
+          <div style="position:relative;">
+            <textarea class="tool-input" id="url-encode-output" rows="6" readonly placeholder="Encoded URL appears here..."></textarea>
+            <button class="copy-btn" onclick="copyOutput('url-encode-output')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-decode">
+        <div class="form-group">
+          <label for="url-decode-input">Encoded URL / String</label>
+          <textarea class="tool-input" id="url-decode-input" rows="6" placeholder="e.g. Hello%20World%21%20https%3A%2F%2Fexample.com" oninput="decodeURL()"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Decoded Output</label>
+          <div style="position:relative;">
+            <textarea class="tool-input" id="url-decode-output" rows="6" readonly placeholder="Decoded URL appears here..."></textarea>
+            <button class="copy-btn" onclick="copyOutput('url-decode-output')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-parse">
+        <div class="form-group">
+          <label for="url-parse-input">Full URL to Parse</label>
+          <input type="text" class="tool-input" id="url-parse-input" placeholder="https://example.com/path?q=hello&lang=en#section" oninput="parseURL()" />
+        </div>
+        <div id="parse-output" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About URL Encoding</h2>
+      <p>URL encoding (also known as percent-encoding) converts characters that are not allowed in URLs into a format that can be transmitted safely over the internet. Special characters like spaces, &, =, and # are replaced with a % sign followed by their hexadecimal code.</p>
+      <h3>Common Encoded Characters</h3>
+      <ul>
+        <li>Space → <code>%20</code></li>
+        <li>& → <code>%26</code></li>
+        <li>= → <code>%3D</code></li>
+        <li># → <code>%23</code></li>
+        <li>+ → <code>%2B</code></li>
+        <li>/ → <code>%2F</code></li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('url-encoder');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('url-encoder', 'developer');
+  });
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['encode','decode','parse'][i] === name));
+    document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', ['tab-encode','tab-decode','tab-parse'][i] === 'tab-'+name));
+  }
+
+  function encodeURL() {
+    const input = document.getElementById('url-encode-input').value;
+    const full  = document.getElementById('full-encode').checked;
+    try {
+      document.getElementById('url-encode-output').value = full ? encodeURIComponent(input) : encodeURI(input);
+    } catch(e) { document.getElementById('url-encode-output').value = 'Error: ' + e.message; }
+  }
+
+  function decodeURL() {
+    const input = document.getElementById('url-decode-input').value;
+    try {
+      document.getElementById('url-decode-output').value = decodeURIComponent(input.replace(/\+/g,' '));
+    } catch(e) {
+      try { document.getElementById('url-decode-output').value = decodeURI(input); }
+      catch(e2) { document.getElementById('url-decode-output').value = 'Error: Invalid encoded string'; }
+    }
+  }
+
+  function parseURL() {
+    const input = document.getElementById('url-parse-input').value.trim();
+    const out = document.getElementById('parse-output');
+    if(!input) { out.innerHTML=''; return; }
+    try {
+      const u = new URL(input.startsWith('http')?input:'https://'+input);
+      const params = [...u.searchParams.entries()];
+      out.innerHTML = `
+        <div style="display:grid;grid-template-columns:130px 1fr;gap:8px 12px;font-size:0.88rem;">
+          ${[['Protocol',u.protocol],['Host',u.hostname],['Port',u.port||'(default)'],['Path',u.pathname],['Hash',u.hash||'(none)']].map(([k,v])=>`
+            <div style="font-weight:600;color:var(--text-muted);">${k}</div>
+            <div style="font-family:monospace;background:var(--bg);padding:3px 8px;border-radius:4px;word-break:break-all;">${escapeHtml(v)}</div>`).join('')}
+        </div>
+        ${params.length ? `<div style="margin-top:12px;"><div style="font-weight:700;font-size:0.88rem;margin-bottom:8px;">Query Parameters (${params.length})</div>
+          ${params.map(([k,v])=>`<div style="display:flex;gap:8px;font-size:0.85rem;margin-bottom:6px;"><code style="background:var(--primary-light);padding:2px 8px;border-radius:4px;color:var(--primary);">${escapeHtml(k)}</code><span style="color:var(--text-muted);">=</span><code style="background:#f0fdf4;padding:2px 8px;border-radius:4px;color:#166534;">${escapeHtml(v)}</code></div>`).join('')}</div>` : ''}`;
+    } catch(e) { out.innerHTML = '<div class="warn-card info-card"><strong>Invalid URL</strong></div>'; }
+  }
+</script>
+</body>
+</html>

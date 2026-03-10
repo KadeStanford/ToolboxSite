@@ -1,0 +1,36 @@
+version: 1
+frontend:
+  phases:
+    build:
+      commands:
+        - echo "Static site - no build needed"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths: []
+
+customHeaders:
+  - pattern: '**/*'
+    headers:
+      - key: 'X-Content-Type-Options'
+        value: 'nosniff'
+      - key: 'X-Frame-Options'
+        value: 'SAMEORIGIN'
+      - key: 'X-XSS-Protection'
+        value: '1; mode=block'
+      - key: 'Referrer-Policy'
+        value: 'strict-origin-when-cross-origin'
+  - pattern: '**/*.html'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=3600'
+  - pattern: '**/*.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'
+  - pattern: '**/*.js'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=86400'

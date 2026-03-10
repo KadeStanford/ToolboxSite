@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Age Calculator — Calculate Exact Age Online | ToolNook</title>
+  <meta name="description" content="Free online age calculator. Find your exact age in years, months, days, hours, and minutes from your date of birth. Also calculate days until your next birthday." />
+  <meta name="keywords" content="age calculator, calculate age, how old am I, date of birth calculator, age from DOB, exact age calculator" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/age-calculator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .age-result { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-top:16px; }
+    .age-result-main { background:var(--primary); color:#fff; padding:24px; text-align:center; }
+    .age-result-main .big-num { font-size:3.5rem; font-weight:800; line-height:1; }
+    .age-result-main .big-label { font-size:1rem; opacity:.85; margin-top:4px; }
+    .age-result-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0; }
+    .age-result-cell { padding:16px; text-align:center; border-right:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .age-result-cell:last-child { border-right:none; }
+    .age-result-cell .val { font-size:1.6rem; font-weight:700; color:var(--primary); }
+    .age-result-cell .lbl { font-size:.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+    .next-birthday { background:var(--primary-light); border:1px solid #d1bfff; border-radius:var(--radius); padding:14px 18px; margin-top:12px; text-align:center; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#calculator-tools">Calculators</a> › Age Calculator</div>
+      <h1>Age Calculator</h1>
+      <p>Find your exact age in years, months, days, and more from your date of birth.</p>
+    </div>
+
+    <div class="tool-container">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;flex-wrap:wrap;" class="calc-grid">
+        <div class="form-group" style="margin:0;">
+          <label for="dob">Date of Birth</label>
+          <input type="date" class="tool-input" id="dob" />
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="ref-date">Age On Date</label>
+          <input type="date" class="tool-input" id="ref-date" />
+        </div>
+      </div>
+      <div class="btn-group" style="margin-top:16px;">
+        <button class="btn btn-primary" onclick="calculateAge()">Calculate Age</button>
+        <button class="btn btn-secondary" onclick="setToday()">Set to Today</button>
+      </div>
+      <div id="age-output" style="display:none;">
+        <div class="age-result">
+          <div class="age-result-main">
+            <div class="big-num" id="years-main">0</div>
+            <div class="big-label">Years Old</div>
+          </div>
+          <div class="age-result-grid">
+            <div class="age-result-cell"><div class="val" id="r-years"></div><div class="lbl">Years</div></div>
+            <div class="age-result-cell"><div class="val" id="r-months"></div><div class="lbl">Months</div></div>
+            <div class="age-result-cell"><div class="val" id="r-days"></div><div class="lbl">Days</div></div>
+            <div class="age-result-cell"><div class="val" id="r-total-months"></div><div class="lbl">Total Months</div></div>
+            <div class="age-result-cell"><div class="val" id="r-total-days"></div><div class="lbl">Total Days</div></div>
+            <div class="age-result-cell"><div class="val" id="r-total-hours"></div><div class="lbl">Total Hours</div></div>
+          </div>
+        </div>
+        <div class="next-birthday" id="next-birthday-box"></div>
+      </div>
+      <div id="age-error" class="error-box" style="display:none;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>How to Use the Age Calculator</h2>
+      <p>Enter your date of birth in the first field. The "Age On Date" field defaults to today but you can change it to calculate your age on any specific date — perfect for historical or future age calculations.</p>
+      <h3>What the Results Mean</h3>
+      <ul>
+        <li><strong>Years / Months / Days</strong> — your precise age broken into components (e.g., 25 years, 3 months, 12 days)</li>
+        <li><strong>Total Months / Total Days</strong> — your age expressed as a single total unit</li>
+        <li><strong>Total Hours</strong> — approximate hours you've been alive</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<style>.calc-grid { grid-template-columns:1fr 1fr; } @media(max-width:540px){.calc-grid{grid-template-columns:1fr;}}</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('age-calculator');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('age-calculator', 'calculator');
+    setToday();
+  });
+
+  function setToday() {
+    const today = new Date();
+    document.getElementById('ref-date').value = today.toISOString().split('T')[0];
+  }
+
+  function calculateAge() {
+    const dobVal = document.getElementById('dob').value;
+    const refVal = document.getElementById('ref-date').value;
+    const errBox = document.getElementById('age-error');
+    const out    = document.getElementById('age-output');
+    errBox.style.display = 'none';
+    out.style.display    = 'none';
+
+    if(!dobVal) { errBox.textContent='Please enter your date of birth.'; errBox.style.display='block'; return; }
+    if(!refVal) { errBox.textContent='Please enter a reference date.'; errBox.style.display='block'; return; }
+
+    const dob = new Date(dobVal);
+    const ref = new Date(refVal);
+    if(dob >= ref) { errBox.textContent='Date of birth must be before the reference date.'; errBox.style.display='block'; return; }
+
+    let years  = ref.getFullYear() - dob.getFullYear();
+    let months = ref.getMonth()     - dob.getMonth();
+    let days   = ref.getDate()      - dob.getDate();
+
+    if(days < 0) {
+      months--;
+      const prevMonth = new Date(ref.getFullYear(), ref.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
+    if(months < 0) { years--; months += 12; }
+
+    const totalDays   = Math.floor((ref - dob) / 86400000);
+    const totalMonths = years * 12 + months;
+    const totalHours  = totalDays * 24;
+
+    document.getElementById('years-main').textContent    = years.toLocaleString();
+    document.getElementById('r-years').textContent       = years.toLocaleString();
+    document.getElementById('r-months').textContent      = months.toLocaleString();
+    document.getElementById('r-days').textContent        = days.toLocaleString();
+    document.getElementById('r-total-months').textContent= totalMonths.toLocaleString();
+    document.getElementById('r-total-days').textContent  = totalDays.toLocaleString();
+    document.getElementById('r-total-hours').textContent = totalHours.toLocaleString();
+
+    // Next birthday
+    const refYear     = ref.getFullYear();
+    let   nextBday    = new Date(refYear, dob.getMonth(), dob.getDate());
+    if(nextBday <= ref) nextBday = new Date(refYear+1, dob.getMonth(), dob.getDate());
+    const daysUntil   = Math.ceil((nextBday - ref) / 86400000);
+    const bDateStr    = nextBday.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+    const box         = document.getElementById('next-birthday-box');
+    if(daysUntil === 0) {
+      box.innerHTML = '&#127881; <strong>Happy Birthday!</strong> Today is your birthday!';
+    } else {
+      const nextAge = years + 1;
+      box.innerHTML = `&#127874; Your <strong>${nextAge}${ordinal(nextAge)} birthday</strong> is on <strong>${bDateStr}</strong> — <strong>${daysUntil.toLocaleString()}</strong> day${daysUntil!==1?'s':''} away.`;
+    }
+
+    out.style.display = 'block';
+  }
+
+  function ordinal(n) {
+    const s = ['th','st','nd','rd'], v = n%100;
+    return (s[(v-20)%10]||s[v]||s[0]);
+  }
+</script>
+</body>
+</html>

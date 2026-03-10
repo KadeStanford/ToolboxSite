@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Slug Generator — URL Slug from Title Online | ToolNook</title>
+  <meta name="description" content="Free online slug generator. Convert blog post titles and phrases into SEO-friendly URL slugs. Supports multiple separator styles. No signup needed." />
+  <meta name="keywords" content="slug generator, URL slug, permalink generator, SEO slug, convert title to URL, URL friendly text, slug tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/slug-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Slug Generator</div>
+      <h1>Slug Generator</h1>
+      <p>Convert blog post titles, headlines, and phrases into clean, SEO-friendly URL slugs.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="form-group">
+        <label for="slug-input">Title / Phrase</label>
+        <input type="text" class="tool-input" id="slug-input" placeholder="e.g. How to Build a Free Passive Income Website in 2026" oninput="generateSlug()" />
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
+        <div style="display:flex;flex-wrap:wrap;gap:20px;">
+          <div>
+            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:8px;">Separator</label>
+            <div style="display:flex;gap:8px;">
+              <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:0.88rem;"><input type="radio" name="sep" value="-" checked onchange="generateSlug()" /> Hyphen (-)</label>
+              <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:0.88rem;"><input type="radio" name="sep" value="_" onchange="generateSlug()" /> Underscore (_)</label>
+              <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:0.88rem;"><input type="radio" name="sep" value="." onchange="generateSlug()" /> Dot (.)</label>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.85rem;font-weight:600;display:block;margin-bottom:8px;">Options</label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <label class="checkbox-label"><input type="checkbox" id="slug-lower" checked onchange="generateSlug()" /> Lowercase</label>
+              <label class="checkbox-label"><input type="checkbox" id="slug-stopwords" onchange="generateSlug()" /> Remove stop words</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="slug-results" style="margin-bottom:16px;"></div>
+
+      <div style="margin-top:20px;">
+        <label style="font-size:0.88rem;font-weight:600;display:block;margin-bottom:8px;">Bulk Converter — one title per line</label>
+        <textarea class="tool-input" id="bulk-input" rows="5" placeholder="Title One&#10;Title Two&#10;Another Blog Post" oninput="bulkConvert()"></textarea>
+        <div style="position:relative;margin-top:8px;">
+          <textarea class="tool-input" id="bulk-output" rows="5" readonly placeholder="Slugs appear here..."></textarea>
+          <button class="copy-btn" onclick="copyOutput('bulk-output')">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About URL Slugs</h2>
+      <p>A URL slug is the part of a URL that identifies a specific page in a human-readable format. For example, in the URL <code>toolnook.net/tools/slug-generator</code>, the slug is <code>slug-generator</code>.</p>
+      <h3>SEO Best Practices for Slugs</h3>
+      <ul>
+        <li>Use hyphens (-) to separate words — Google recommends hyphens over underscores</li>
+        <li>Keep slugs short and descriptive — ideally 3–5 words</li>
+        <li>Use lowercase letters only</li>
+        <li>Remove stop words (a, the, is, in, etc.) to keep slugs concise</li>
+        <li>Include your primary keyword in the slug</li>
+        <li>Avoid special characters, spaces, and numbers unless necessary</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('slug-generator');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('slug-generator', 'text');
+  });
+
+  const STOP = new Set(['a','an','the','and','or','but','in','on','at','to','for','of','with','is','are','was','were','be','it','as','by','this','that','from','up','not']);
+
+  function makeSlug(text) {
+    const sep = document.querySelector('input[name="sep"]:checked').value;
+    const lower = document.getElementById('slug-lower').checked;
+    const noStop = document.getElementById('slug-stopwords').checked;
+    let s = text.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(lower) s = s.toLowerCase();
+    s = s.replace(/[^a-zA-Z0-9\s\-]/g,'').trim();
+    let words = s.split(/\s+/).filter(Boolean);
+    if(noStop) words = words.filter(w => !STOP.has(w.toLowerCase()));
+    return words.join(sep);
+  }
+
+  function generateSlug() {
+    const input = document.getElementById('slug-input').value;
+    const slug  = makeSlug(input);
+    const el    = document.getElementById('slug-results');
+    if(!input) { el.innerHTML=''; return; }
+    el.innerHTML = `
+      <div style="background:var(--primary-light);border:1px solid #c7d2fe;border-radius:var(--radius);padding:16px;">
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:6px;">Generated Slug:</div>
+        <div style="font-size:1.3rem;font-weight:700;font-family:monospace;color:var(--primary);word-break:break-all;">${escapeHtml(slug)}</div>
+        <div style="margin-top:10px;font-size:0.82rem;color:var(--text-muted);">Character count: ${slug.length}</div>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="copyToClipboard('${slug.replace(/'/g,"\\'")}')">&#128203; Copy Slug</button>
+      </div>`;
+  }
+
+  function bulkConvert() {
+    const lines = document.getElementById('bulk-input').value.split('\n');
+    document.getElementById('bulk-output').value = lines.map(l => l.trim() ? makeSlug(l) : '').join('\n');
+  }
+</script>
+</body>
+</html>

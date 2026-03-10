@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Palette Generator — Create Beautiful Color Palettes | ToolNook</title>
+  <meta name="description" content="Free online color palette generator. Create complementary, analogous, triadic, tetradic, and monochromatic color palettes from any base color. Copy HEX, RGB, or HSL values." />
+  <meta name="keywords" content="color palette generator, color scheme generator, complementary colors, analogous colors, triadic colors, color palette tool, color wheel" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/color-palette.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .palette-type-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .palette-type-btn { padding:8px 14px; border:2px solid var(--border); border-radius:var(--radius); background:#fff; cursor:pointer; font-size:.85rem; transition:all .15s; }
+    .palette-type-btn.active { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .palette-row { display:flex; gap:0; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); margin-bottom:16px; }
+    .palette-swatch { flex:1; min-height:120px; cursor:pointer; position:relative; transition:flex .2s; display:flex; flex-direction:column; justify-content:flex-end; }
+    .palette-swatch:hover { flex:1.5; }
+    .swatch-label { padding:8px 6px; text-align:center; font-size:.72rem; font-weight:700; background:rgba(0,0,0,.18); color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+    .palette-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+    .palette-card { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .palette-card .pc-swatch { height:72px; }
+    .palette-card .pc-info { padding:10px; background:#fff; }
+    .palette-card .pc-hex { font-family:monospace; font-weight:700; font-size:.9rem; margin-bottom:4px; }
+    .palette-card .pc-copy-btns { display:flex; gap:4px; flex-wrap:wrap; }
+    .palette-card .pc-copy-btns button { padding:3px 8px; font-size:.72rem; }
+    .color-input-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+    .color-input-row input[type=color] { width:56px; height:40px; border:none; border-radius:6px; cursor:pointer; padding:0; background:none; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#generator-tools">Generators</a> › Color Palette Generator</div>
+      <h1>Color Palette Generator</h1>
+      <p>Generate beautiful color palettes based on color theory — complementary, analogous, triadic, and more.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="color-input-row">
+        <label for="base-color-picker" style="font-weight:600;">Base Color:</label>
+        <input type="color" id="base-color-picker" value="#6C3ADB" oninput="syncHex(this.value); generatePalette()" />
+        <input type="text" class="tool-input" id="base-hex-input" value="#6C3ADB" placeholder="#RRGGBB" maxlength="7" style="width:110px;" oninput="syncPicker(this.value)" />
+        <button class="btn btn-secondary btn-sm" onclick="randomBase()">&#127922; Random</button>
+      </div>
+
+      <div class="palette-type-btns">
+        <button class="palette-type-btn active" onclick="setPaletteType('complementary',this)">Complementary</button>
+        <button class="palette-type-btn" onclick="setPaletteType('analogous',this)">Analogous</button>
+        <button class="palette-type-btn" onclick="setPaletteType('triadic',this)">Triadic</button>
+        <button class="palette-type-btn" onclick="setPaletteType('tetradic',this)">Tetradic</button>
+        <button class="palette-type-btn" onclick="setPaletteType('split-complementary',this)">Split Comp.</button>
+        <button class="palette-type-btn" onclick="setPaletteType('monochromatic',this)">Monochromatic</button>
+      </div>
+
+      <div class="palette-row" id="palette-row"></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <h3 style="margin:0;font-size:1rem;">Palette Swatches</h3>
+        <button class="btn btn-secondary btn-sm" onclick="copyAllHex()">&#128203; Copy All HEX</button>
+      </div>
+      <div class="palette-cards" id="palette-cards"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>Color Harmony Explained</h2>
+      <ul>
+        <li><strong>Complementary</strong> — colors opposite on the color wheel. High contrast, vibrant look.</li>
+        <li><strong>Analogous</strong> — colors adjacent on the wheel. Harmonious, serene, comfortable.</li>
+        <li><strong>Triadic</strong> — three colors evenly spaced (120° apart). Colorful and balanced.</li>
+        <li><strong>Tetradic</strong> — four colors in two complementary pairs. Rich and varied.</li>
+        <li><strong>Split-Complementary</strong> — a variation of complementary with less tension.</li>
+        <li><strong>Monochromatic</strong> — different shades and tints of a single color. Clean and elegant.</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('color-palette');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('color-palette', 'generator');
+    generatePalette();
+  });
+
+  let paletteType = 'complementary';
+
+  function setPaletteType(type, btn) {
+    paletteType = type;
+    document.querySelectorAll('.palette-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    generatePalette();
+  }
+
+  function syncHex(val) { document.getElementById('base-hex-input').value = val.toUpperCase(); }
+  function syncPicker(val) {
+    if(/^#[0-9a-f]{6}$/i.test(val)) { document.getElementById('base-color-picker').value = val; generatePalette(); }
+  }
+  function randomBase() {
+    const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+    document.getElementById('base-color-picker').value = hex;
+    document.getElementById('base-hex-input').value    = hex.toUpperCase();
+    generatePalette();
+  }
+
+  // Color math helpers
+  function hexToHsl(hex) {
+    let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+    let h=0, s=0, l=(max+min)/2;
+    if(d!==0){
+      s=d/(1-Math.abs(2*l-1));
+      if(max===r) h=((g-b)/d+6)%6;
+      else if(max===g) h=(b-r)/d+2;
+      else h=(r-g)/d+4;
+      h=h/6;
+    }
+    return [h*360, s*100, l*100];
+  }
+  function hslToHex(h, s, l) {
+    s/=100; l/=100;
+    const a=s*Math.min(l,1-l);
+    const f=n=>{const k=(n+h/30)%12; return l-a*Math.max(Math.min(k-3,9-k,1),-1);};
+    const toHex=x=>Math.round(x*255).toString(16).padStart(2,'0');
+    return '#'+toHex(f(0))+toHex(f(8))+toHex(f(4));
+  }
+  function hslToRgb(h,s,l) {
+    const hex=hslToHex(h,s,l);
+    return `rgb(${parseInt(hex.slice(1,3),16)}, ${parseInt(hex.slice(3,5),16)}, ${parseInt(hex.slice(5,7),16)})`;
+  }
+  function textColor(hex) {
+    const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+    return (0.299*r+0.587*g+0.114*b)/255 > 0.55 ? '#111' : '#fff';
+  }
+
+  function getPalette(hex) {
+    const [h,s,l] = hexToHsl(hex);
+    switch(paletteType) {
+      case 'complementary': return [hex, hslToHex((h+180)%360,s,l)];
+      case 'analogous': return [
+        hslToHex((h-30+360)%360,s,l), hex, hslToHex((h+30)%360,s,l),
+        hslToHex((h-60+360)%360,s,l), hslToHex((h+60)%360,s,l)
+      ];
+      case 'triadic': return [hex, hslToHex((h+120)%360,s,l), hslToHex((h+240)%360,s,l)];
+      case 'tetradic': return [hex, hslToHex((h+90)%360,s,l), hslToHex((h+180)%360,s,l), hslToHex((h+270)%360,s,l)];
+      case 'split-complementary': return [hex, hslToHex((h+150)%360,s,l), hslToHex((h+210)%360,s,l)];
+      case 'monochromatic': return [
+        hslToHex(h,s,Math.max(10,l-30)), hslToHex(h,s,Math.max(10,l-15)),
+        hex, hslToHex(h,s,Math.min(90,l+15)), hslToHex(h,s,Math.min(90,l+30))
+      ];
+    }
+    return [hex];
+  }
+
+  function generatePalette() {
+    const hex = document.getElementById('base-color-picker').value;
+    const swatches = getPalette(hex);
+
+    // Banner row
+    const row = document.getElementById('palette-row');
+    row.innerHTML = swatches.map(c => `
+      <div class="palette-swatch" style="background:${c}" onclick="copyToClipboard('${c.toUpperCase()}')" title="Click to copy ${c.toUpperCase()}">
+        <div class="swatch-label">${c.toUpperCase()}</div>
+      </div>`).join('');
+
+    // Cards
+    const cards = document.getElementById('palette-cards');
+    cards.innerHTML = swatches.map(c => {
+      const tc = textColor(c);
+      const [ch,cs,cl] = hexToHsl(c);
+      const rgb = hslToRgb(ch,cs,cl);
+      return `<div class="palette-card">
+        <div class="pc-swatch" style="background:${c}"></div>
+        <div class="pc-info">
+          <div class="pc-hex">${c.toUpperCase()}</div>
+          <div class="pc-copy-btns">
+            <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('${c.toUpperCase()}')">HEX</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('${rgb}')">RGB</button>
+            <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('hsl(${Math.round(ch)}, ${Math.round(cs)}%, ${Math.round(cl)}%)')">HSL</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function copyAllHex() {
+    const hexes = [...document.querySelectorAll('.pc-hex')].map(e=>e.textContent).join(', ');
+    copyToClipboard(hexes);
+  }
+</script>
+</body>
+</html>

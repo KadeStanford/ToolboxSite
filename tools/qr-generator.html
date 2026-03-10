@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator — Free QR Code Maker | ToolNook</title>
+  <meta name="description" content="Free online QR code generator. Create QR codes for URLs, text, email, phone numbers, and WiFi. Download as PNG. No signup required." />
+  <meta name="keywords" content="QR code generator, free QR code maker, create QR code, QR code online, generate QR code, URL to QR code" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/qr-generator.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .qr-layout { display:grid; grid-template-columns:1fr auto; gap:24px; align-items:start; }
+    @media(max-width:600px){ .qr-layout { grid-template-columns:1fr; } }
+    #qr-canvas-wrap { text-align:center; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; min-width:220px; }
+    #qr-canvas-wrap canvas { max-width:100%; }
+    #qr-placeholder { color:var(--text-muted); font-size:.9rem; padding:20px 10px; }
+    .qr-type-btns { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .qr-type-btn { padding:8px 14px; border:2px solid var(--border); border-radius:var(--radius); background:#fff; cursor:pointer; font-size:.85rem; transition:all .15s; }
+    .qr-type-btn.active { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .qr-type-fields { display:none; }
+    .qr-type-fields.active { display:block; }
+    .qr-option-row { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; }
+    .qr-option-row label { display:flex; align-items:center; gap:6px; font-size:.88rem; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#generator-tools">Generators</a> › QR Code Generator</div>
+      <h1>QR Code Generator</h1>
+      <p>Create QR codes for URLs, text, phone numbers, email, or WiFi. Download as a PNG image.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="qr-type-btns">
+        <button class="qr-type-btn active" onclick="setType('url',this)">URL</button>
+        <button class="qr-type-btn" onclick="setType('text',this)">Text</button>
+        <button class="qr-type-btn" onclick="setType('email',this)">Email</button>
+        <button class="qr-type-btn" onclick="setType('phone',this)">Phone</button>
+        <button class="qr-type-btn" onclick="setType('wifi',this)">WiFi</button>
+      </div>
+
+      <div class="qr-layout">
+        <div>
+          <!-- URL -->
+          <div class="qr-type-fields active" id="fields-url">
+            <div class="form-group" style="margin:0;">
+              <label for="qr-url">Website URL</label>
+              <input type="url" class="tool-input" id="qr-url" placeholder="https://example.com" oninput="buildQR()" />
+            </div>
+          </div>
+          <!-- Text -->
+          <div class="qr-type-fields" id="fields-text">
+            <div class="form-group" style="margin:0;">
+              <label for="qr-text">Text Content</label>
+              <textarea class="tool-input" id="qr-text" rows="3" placeholder="Enter text..." oninput="buildQR()"></textarea>
+            </div>
+          </div>
+          <!-- Email -->
+          <div class="qr-type-fields" id="fields-email">
+            <div class="form-group"><label for="qr-email-to">To (email address)</label><input type="email" class="tool-input" id="qr-email-to" placeholder="name@example.com" oninput="buildQR()" /></div>
+            <div class="form-group"><label for="qr-email-sub">Subject</label><input type="text" class="tool-input" id="qr-email-sub" placeholder="Subject" oninput="buildQR()" /></div>
+            <div class="form-group"><label for="qr-email-body">Body</label><textarea class="tool-input" id="qr-email-body" rows="2" placeholder="Message body..." oninput="buildQR()"></textarea></div>
+          </div>
+          <!-- Phone -->
+          <div class="qr-type-fields" id="fields-phone">
+            <div class="form-group" style="margin:0;">
+              <label for="qr-phone">Phone Number</label>
+              <input type="tel" class="tool-input" id="qr-phone" placeholder="+1 555 123 4567" oninput="buildQR()" />
+            </div>
+          </div>
+          <!-- WiFi -->
+          <div class="qr-type-fields" id="fields-wifi">
+            <div class="form-group"><label for="qr-wifi-ssid">Network Name (SSID)</label><input type="text" class="tool-input" id="qr-wifi-ssid" placeholder="MyNetwork" oninput="buildQR()" /></div>
+            <div class="form-group"><label for="qr-wifi-pass">Password</label><input type="text" class="tool-input" id="qr-wifi-pass" placeholder="password" oninput="buildQR()" /></div>
+            <div class="form-group">
+              <label for="qr-wifi-enc">Encryption</label>
+              <select class="tool-input" id="qr-wifi-enc" onchange="buildQR()">
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">None (open)</option>
+              </select>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.88rem;cursor:pointer;margin-bottom:8px;">
+              <input type="checkbox" id="qr-wifi-hidden" onchange="buildQR()" style="accent-color:var(--primary);" /> Hidden network
+            </label>
+          </div>
+
+          <div class="qr-option-row">
+            <label>
+              Size:
+              <select class="tool-input" id="qr-size" onchange="buildQR()" style="width:auto;padding:6px 10px;margin-left:4px;">
+                <option value="128">Small (128px)</option>
+                <option value="200" selected>Medium (200px)</option>
+                <option value="256">Large (256px)</option>
+                <option value="400">XL (400px)</option>
+              </select>
+            </label>
+            <label>
+              Error Correction:
+              <select class="tool-input" id="qr-ecc" onchange="buildQR()" style="width:auto;padding:6px 10px;margin-left:4px;">
+                <option value="L">Low (L)</option>
+                <option value="M" selected>Medium (M)</option>
+                <option value="Q">Quartile (Q)</option>
+                <option value="H">High (H)</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="btn-group" style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="buildQR()">&#9889; Generate QR</button>
+            <button class="btn btn-secondary" id="download-btn" onclick="downloadQR()" disabled>&#11015; Download PNG</button>
+          </div>
+        </div>
+
+        <div id="qr-canvas-wrap">
+          <div id="qr-placeholder">QR code will appear here</div>
+          <div id="qr-canvas-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>How to Use QR Codes</h2>
+      <p>QR codes (Quick Response codes) are two-dimensional barcodes that can be scanned by any smartphone camera. They are commonly used to share website links, contact cards, and WiFi credentials.</p>
+      <h3>QR Code Types</h3>
+      <ul>
+        <li><strong>URL</strong> — opens a website when scanned</li>
+        <li><strong>Text</strong> — displays plain text</li>
+        <li><strong>Email</strong> — opens a pre-filled email compose window</li>
+        <li><strong>Phone</strong> — prompts the user to call the number</li>
+        <li><strong>WiFi</strong> — connects automatically to a WiFi network</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('qr-generator');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('qr-generator', 'generator');
+  });
+
+  let currentType = 'url';
+  let qrInstance   = null;
+
+  function setType(type, btn) {
+    currentType = type;
+    document.querySelectorAll('.qr-type-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.qr-type-fields').forEach(f => f.classList.remove('active'));
+    document.getElementById('fields-' + type).classList.add('active');
+    buildQR();
+  }
+
+  function getContent() {
+    switch(currentType) {
+      case 'url':   return document.getElementById('qr-url').value.trim();
+      case 'text':  return document.getElementById('qr-text').value.trim();
+      case 'email': {
+        const to  = document.getElementById('qr-email-to').value.trim();
+        const sub = encodeURIComponent(document.getElementById('qr-email-sub').value.trim());
+        const bd  = encodeURIComponent(document.getElementById('qr-email-body').value.trim());
+        if(!to) return '';
+        let uri = `mailto:${to}`;
+        const params = [];
+        if(sub) params.push(`subject=${sub}`);
+        if(bd)  params.push(`body=${bd}`);
+        if(params.length) uri += '?' + params.join('&');
+        return uri;
+      }
+      case 'phone': {
+        const ph = document.getElementById('qr-phone').value.trim().replace(/\s/g,'');
+        return ph ? `tel:${ph}` : '';
+      }
+      case 'wifi': {
+        const ssid = document.getElementById('qr-wifi-ssid').value.trim();
+        if(!ssid) return '';
+        const pass   = document.getElementById('qr-wifi-pass').value;
+        const enc    = document.getElementById('qr-wifi-enc').value;
+        const hidden = document.getElementById('qr-wifi-hidden').checked ? 'true' : 'false';
+        return `WIFI:T:${enc};S:${ssid};P:${pass};H:${hidden};;`;
+      }
+    }
+    return '';
+  }
+
+  function buildQR() {
+    const content = getContent();
+    const container = document.getElementById('qr-canvas-container');
+    const placeholder = document.getElementById('qr-placeholder');
+    const dlBtn = document.getElementById('download-btn');
+
+    if(!content) {
+      container.innerHTML = '';
+      if(qrInstance) { qrInstance = null; }
+      placeholder.style.display = '';
+      dlBtn.disabled = true;
+      return;
+    }
+
+    const size = parseInt(document.getElementById('qr-size').value);
+    const ecc  = document.getElementById('qr-ecc').value;
+    const eccMap = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
+
+    placeholder.style.display = 'none';
+    container.innerHTML = '';
+
+    try {
+      qrInstance = new QRCode(container, {
+        text: content,
+        width: size,
+        height: size,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: eccMap[ecc] || QRCode.CorrectLevel.M
+      });
+      dlBtn.disabled = false;
+    } catch(e) {
+      container.innerHTML = '<p style="color:#e53935;font-size:.85rem;">Could not generate QR. Content may be too long.</p>';
+      dlBtn.disabled = true;
+    }
+  }
+
+  function downloadQR() {
+    const canvas = document.querySelector('#qr-canvas-container canvas');
+    if(!canvas) { showToast('No QR code to download', 'error'); return; }
+    const a = document.createElement('a');
+    a.download = 'qrcode.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  }
+</script>
+</body>
+</html>

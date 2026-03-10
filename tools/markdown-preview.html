@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Markdown Previewer — Live Markdown Editor Online | ToolNook</title>
+  <meta name="description" content="Free online markdown previewer. Write markdown and see a live rendered preview side-by-side. Supports headers, bold, italic, code blocks, tables, and more." />
+  <meta name="keywords" content="markdown previewer, markdown editor online, live markdown preview, markdown to html, render markdown online" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/markdown-preview.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .md-layout { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media(max-width:700px){ .md-layout { grid-template-columns:1fr; } }
+    .md-editor { font-family:monospace; resize:vertical; min-height:420px; }
+    .md-preview {
+      min-height:420px; padding:18px; border:1px solid var(--border);
+      border-radius:var(--radius); background:#fff; overflow-y:auto;
+      font-family:'Segoe UI',sans-serif; line-height:1.7; color:#222;
+    }
+    .md-preview h1,.md-preview h2,.md-preview h3,.md-preview h4 { margin:.6em 0 .3em; line-height:1.3; }
+    .md-preview h1 { font-size:1.8em; border-bottom:2px solid #eee; padding-bottom:.2em; }
+    .md-preview h2 { font-size:1.4em; border-bottom:1px solid #eee; padding-bottom:.15em; }
+    .md-preview code { background:#f4f4f4; padding:2px 6px; border-radius:4px; font-size:.9em; }
+    .md-preview pre { background:#1e1e1e; color:#d4d4d4; border-radius:8px; padding:16px; overflow-x:auto; }
+    .md-preview pre code { background:none; color:inherit; padding:0; }
+    .md-preview blockquote { border-left:4px solid var(--primary); margin:0; padding:8px 16px; background:#f8f5ff; border-radius:0 4px 4px 0; }
+    .md-preview table { border-collapse:collapse; width:100%; margin:12px 0; }
+    .md-preview th,.md-preview td { border:1px solid #ddd; padding:8px 12px; text-align:left; }
+    .md-preview th { background:#f5f5f5; font-weight:600; }
+    .md-preview a { color:var(--primary); }
+    .md-preview img { max-width:100%; border-radius:4px; }
+    .md-preview ul,.md-preview ol { padding-left:1.5em; }
+    .md-preview p { margin:.5em 0; }
+    .panel-label { font-size:.8rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#text-tools">Text Tools</a> › Markdown Previewer</div>
+      <h1>Markdown Previewer</h1>
+      <p>Write Markdown on the left and see the rendered HTML preview live on the right.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="btn-group" style="margin-bottom:12px;">
+        <button class="btn btn-secondary btn-sm" onclick="insertSample()">&#128196; Load Sample</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyMarkdown()">&#128203; Copy Markdown</button>
+        <button class="btn btn-secondary btn-sm" onclick="copyHtml()">&#128203; Copy HTML</button>
+        <button class="btn btn-secondary btn-sm" onclick="downloadText('document.md', document.getElementById('md-input').value)">&#11015; Download .md</button>
+        <button class="btn btn-secondary btn-sm" onclick="clearAll()">&#10005; Clear</button>
+      </div>
+
+      <div class="md-layout">
+        <div>
+          <div class="panel-label">Markdown Input</div>
+          <textarea class="tool-input md-editor" id="md-input" placeholder="# Hello World&#10;&#10;Type your **Markdown** here..."></textarea>
+        </div>
+        <div>
+          <div class="panel-label">Preview</div>
+          <div class="md-preview" id="md-preview"></div>
+        </div>
+      </div>
+
+      <div style="font-size:.82rem;color:var(--text-muted);margin-top:8px;" id="md-stats"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About Markdown</h2>
+      <p>Markdown is a lightweight markup language with plain text formatting syntax. Created by John Gruber in 2004, it is widely used for README files, documentation, blog posts, and online comments.</p>
+      <h3>Common Markdown Syntax</h3>
+      <ul>
+        <li><strong># Heading 1</strong>, <strong>## Heading 2</strong> — headings</li>
+        <li><strong>**bold**</strong> and <strong>*italic*</strong> — text formatting</li>
+        <li><strong>`code`</strong> — inline code; triple backticks for code blocks</li>
+        <li><strong>[link](url)</strong> — hyperlinks; <strong>![alt](url)</strong> — images</li>
+        <li><strong>- item</strong> or <strong>1. item</strong> — lists</li>
+        <li><strong>&gt; text</strong> — block quotes</li>
+        <li><strong>---</strong> — horizontal rule</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('markdown-preview');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('markdown-preview', 'text');
+    if(window.marked) {
+      marked.setOptions({ breaks:true, gfm:true });
+    }
+    document.getElementById('md-input').addEventListener('input', render);
+    insertSample();
+  });
+
+  function render() {
+    const src  = document.getElementById('md-input').value;
+    const prev = document.getElementById('md-preview');
+    if(window.marked) {
+      prev.innerHTML = marked.parse(src);
+    } else {
+      prev.textContent = 'Marked.js failed to load. Check your internet connection.';
+    }
+    const wc = src.trim() ? src.trim().split(/\s+/).length : 0;
+    document.getElementById('md-stats').textContent = `${wc.toLocaleString()} words · ${src.length.toLocaleString()} chars`;
+  }
+
+  function copyMarkdown() {
+    copyToClipboard(document.getElementById('md-input').value);
+  }
+
+  function copyHtml() {
+    const src = document.getElementById('md-input').value;
+    if(window.marked) copyToClipboard(marked.parse(src));
+    else showToast('Marked.js not loaded', 'error');
+  }
+
+  function clearAll() {
+    document.getElementById('md-input').value = '';
+    document.getElementById('md-preview').innerHTML = '';
+    document.getElementById('md-stats').textContent = '';
+  }
+
+  const SAMPLE = `# Welcome to ToolNook's Markdown Previewer
+
+## Getting Started
+
+This is a **live** Markdown editor. Edit the text on the left and see the *rendered preview* on the right.
+
+## Features
+
+- Real-time rendering
+- GitHub Flavored Markdown support
+- Code syntax highlighting
+- Tables, blockquotes, and more
+
+## Code Example
+
+\`\`\`javascript
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+console.log(greet("World"));
+\`\`\`
+
+## Table Example
+
+| Name       | Role       | Location   |
+|------------|------------|------------|
+| Alice      | Developer  | New York   |
+| Bob        | Designer   | London     |
+
+## Blockquote
+
+> "The best tool is the one you actually use." — Unknown
+
+---
+
+Visit [ToolNook](https://toolnook.net) for more free tools!
+`;
+
+  function insertSample() {
+    document.getElementById('md-input').value = SAMPLE;
+    render();
+  }
+</script>
+</body>
+</html>

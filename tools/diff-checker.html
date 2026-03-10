@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Diff Checker — Compare Two Texts Online | ToolNook</title>
+  <meta name="description" content="Free online text diff checker. Paste two versions of text to highlight additions, deletions, and changes side by side. No signup required." />
+  <meta name="keywords" content="text diff, diff checker, compare text online, find differences, text comparison tool, diff tool" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/diff-checker.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#developer-tools">Developer Tools</a> › Text Diff Checker</div>
+      <h1>Text Diff Checker</h1>
+      <p>Compare two blocks of text and highlight the differences line by line.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="two-col">
+        <div class="form-group">
+          <label for="text-a">Original Text</label>
+          <textarea class="tool-input" id="text-a" rows="12" placeholder="Paste original text here..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="text-b">Modified Text</label>
+          <textarea class="tool-input" id="text-b" rows="12" placeholder="Paste modified text here..."></textarea>
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="runDiff()">&#128260; Compare Texts</button>
+        <button class="btn btn-secondary" onclick="clearDiff()">Clear</button>
+        <button class="btn btn-secondary btn-sm" onclick="loadSample()">Load Sample</button>
+      </div>
+
+      <div id="diff-stats" style="margin-top:16px;"></div>
+      <div id="diff-output" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>About the Text Diff Checker</h2>
+      <p>The ToolNook Text Diff Checker compares two versions of text line by line and highlights what has been added, removed, or changed. It's useful for comparing document versions, reviewing code changes, or spotting edits between two drafts.</p>
+      <h3>Color Key</h3>
+      <ul>
+        <li><span style="background:#dcfce7;padding:2px 8px;border-radius:4px;color:#166534;">Green lines</span> — Added in the modified text</li>
+        <li><span style="background:#fee2e2;padding:2px 8px;border-radius:4px;color:#991b1b;">Red lines</span> — Removed from the original text</li>
+        <li><span style="color:#64748b;">Grey lines</span> — Unchanged lines</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('diff-checker');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('diff-checker', 'developer');
+  });
+
+  // Simple LCS-based diff
+  function computeDiff(a, b) {
+    const linesA = a.split('\n'), linesB = b.split('\n');
+    const m = linesA.length, n = linesB.length;
+    const dp = Array.from({length: m+1}, () => new Array(n+1).fill(0));
+    for(let i=m-1;i>=0;i--) for(let j=n-1;j>=0;j--)
+      dp[i][j] = linesA[i]===linesB[j] ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
+    const result = [];
+    let i=0, j=0;
+    while(i<m||j<n) {
+      if(i<m&&j<n&&linesA[i]===linesB[j]) { result.push({type:'same',line:linesA[i]}); i++;j++; }
+      else if(j<n&&(i>=m||dp[i+1][j]>=dp[i][j+1])) { result.push({type:'add',line:linesB[j]}); j++; }
+      else { result.push({type:'remove',line:linesA[i]}); i++; }
+    }
+    return result;
+  }
+
+  function runDiff() {
+    const a = document.getElementById('text-a').value;
+    const b = document.getElementById('text-b').value;
+    if(!a && !b) { showToast('Please enter text in both fields'); return; }
+    const diff = computeDiff(a, b);
+    const added = diff.filter(d=>d.type==='add').length;
+    const removed = diff.filter(d=>d.type==='remove').length;
+    const same = diff.filter(d=>d.type==='same').length;
+
+    document.getElementById('diff-stats').innerHTML =
+      `<div class="stats-grid" style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="stat-item"><div class="stat-value" style="color:var(--success);">+${added}</div><div class="stat-label">Added</div></div>
+        <div class="stat-item"><div class="stat-value" style="color:var(--error);">-${removed}</div><div class="stat-label">Removed</div></div>
+        <div class="stat-item"><div class="stat-value">${same}</div><div class="stat-label">Unchanged</div></div>
+      </div>`;
+
+    const html = diff.map(d => {
+      const cls = d.type==='add'?'diff-added':d.type==='remove'?'diff-removed':'diff-unchanged';
+      const prefix = d.type==='add'?'+ ':d.type==='remove'?'- ':'  ';
+      return `<div class="diff-line ${cls}">${prefix}${escapeHtml(d.line)}</div>`;
+    }).join('');
+    document.getElementById('diff-output').innerHTML = `<div class="diff-container">${html}</div>`;
+    showToast('Diff complete!', 'success');
+  }
+
+  function clearDiff() {
+    document.getElementById('text-a').value = '';
+    document.getElementById('text-b').value = '';
+    document.getElementById('diff-output').innerHTML = '';
+    document.getElementById('diff-stats').innerHTML = '';
+  }
+
+  function loadSample() {
+    document.getElementById('text-a').value = `The quick brown fox jumps over the lazy dog.
+This is the original line.
+Nothing changed here.
+This line will be removed.
+Last original line.`;
+    document.getElementById('text-b').value = `The quick brown fox jumps over the lazy dog.
+This is the modified line!
+Nothing changed here.
+A brand new line was inserted.
+Last original line.`;
+    runDiff();
+  }
+</script>
+</body>
+</html>

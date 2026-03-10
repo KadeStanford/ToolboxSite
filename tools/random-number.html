@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Number Generator — Generate Random Numbers Online | ToolNook</title>
+  <meta name="description" content="Free online random number generator. Generate single or multiple random numbers in any range. Roll dice (d4, d6, d8, d10, d12, d20). Lottery number picker." />
+  <meta name="keywords" content="random number generator, dice roller, random number picker, lottery number generator, generate random numbers, d20 dice roll" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/random-number.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>" />
+  <style>
+    .big-result { font-size:5rem; font-weight:800; text-align:center; color:var(--primary); line-height:1; padding:24px 0; font-variant-numeric:tabular-nums; }
+    .multi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:10px; margin-top:12px; }
+    .rn-badge { text-align:center; background:var(--primary); color:#fff; font-size:1.3rem; font-weight:700; border-radius:var(--radius); padding:14px 8px; }
+    .dice-btns { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .dice-btn { padding:10px 18px; border:2px solid var(--border); border-radius:8px; background:#fff; cursor:pointer; font-size:1.1rem; font-weight:700; transition:all .15s; min-width:64px; text-align:center; }
+    .dice-btn:hover { border-color:var(--primary); background:var(--primary); color:#fff; }
+    .dice-result-wrap { text-align:center; }
+    .dice-face { font-size:4rem; line-height:1; }
+    .dice-roll-val { font-size:1.5rem; font-weight:700; color:var(--primary); }
+    .history-list { list-style:none; padding:0; margin:0; max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius); }
+    .history-list li { padding:6px 12px; border-bottom:1px solid var(--border); font-size:.9rem; display:flex; justify-content:space-between; }
+    .history-list li:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#generator-tools">Generators</a> › Random Number Generator</div>
+      <h1>Random Number Generator</h1>
+      <p>Generate truly random numbers in any range, roll dice, or pick lottery numbers.</p>
+    </div>
+
+    <div class="tool-container">
+      <div class="tabs">
+        <button class="tab active" onclick="switchMode('single',this)">Single Number</button>
+        <button class="tab" onclick="switchMode('multiple',this)">Multiple Numbers</button>
+        <button class="tab" onclick="switchMode('dice',this)">Dice Roller</button>
+        <button class="tab" onclick="switchMode('lottery',this)">Lottery Picker</button>
+      </div>
+
+      <!-- Single Number -->
+      <div id="mode-single">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="rn-grid">
+          <div class="form-group" style="margin:0;"><label for="s-min">Min</label><input type="number" class="tool-input" id="s-min" value="1" /></div>
+          <div class="form-group" style="margin:0;"><label for="s-max">Max</label><input type="number" class="tool-input" id="s-max" value="100" /></div>
+        </div>
+        <div class="big-result" id="single-result">–</div>
+        <div style="text-align:center;">
+          <button class="btn btn-primary" style="font-size:1rem;padding:12px 32px;" onclick="genSingle()">&#9889; Generate</button>
+          <button class="btn btn-secondary" onclick="copyToClipboard(document.getElementById('single-result').textContent)">Copy</button>
+        </div>
+      </div>
+
+      <!-- Multiple Numbers -->
+      <div id="mode-multiple" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;" class="rn-grid3">
+          <div class="form-group" style="margin:0;"><label for="m-min">Min</label><input type="number" class="tool-input" id="m-min" value="1" /></div>
+          <div class="form-group" style="margin:0;"><label for="m-max">Max</label><input type="number" class="tool-input" id="m-max" value="100" /></div>
+          <div class="form-group" style="margin:0;"><label for="m-count">Count</label><input type="number" class="tool-input" id="m-count" value="10" min="1" max="1000" /></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin:12px 0 4px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;">
+            <input type="checkbox" id="m-unique" style="accent-color:var(--primary);" /> No duplicates
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:.9rem;cursor:pointer;">
+            <input type="checkbox" id="m-sort" style="accent-color:var(--primary);" /> Sort results
+          </label>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="genMultiple()">&#9889; Generate</button>
+          <button class="btn btn-secondary btn-sm" onclick="copyMulti()">&#128203; Copy All</button>
+        </div>
+        <div class="multi-grid" id="multi-grid"></div>
+      </div>
+
+      <!-- Dice Roller -->
+      <div id="mode-dice" style="display:none;">
+        <p style="margin:0 0 4px;font-size:.9rem;color:var(--text-muted);">Select a die to roll:</p>
+        <div class="dice-btns">
+          <button class="dice-btn" onclick="rollDice(4)">d4</button>
+          <button class="dice-btn" onclick="rollDice(6)">d6</button>
+          <button class="dice-btn" onclick="rollDice(8)">d8</button>
+          <button class="dice-btn" onclick="rollDice(10)">d10</button>
+          <button class="dice-btn" onclick="rollDice(12)">d12</button>
+          <button class="dice-btn" onclick="rollDice(20)">d20</button>
+          <button class="dice-btn" onclick="rollDice(100)">d100</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:.88rem;">
+          <label>Roll</label>
+          <input type="number" class="tool-input" id="dice-count" value="1" min="1" max="100" style="width:70px;padding:6px;" />
+          <label>dice at once</label>
+        </div>
+        <div class="dice-result-wrap">
+          <div class="dice-face" id="dice-face">🎲</div>
+          <div class="dice-roll-val" id="dice-val"></div>
+          <div style="font-size:.85rem;color:var(--text-muted);margin-top:4px;" id="dice-breakdown"></div>
+        </div>
+      </div>
+
+      <!-- Lottery Picker -->
+      <div id="mode-lottery" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;" class="rn-grid3">
+          <div class="form-group" style="margin:0;"><label for="l-min">Min</label><input type="number" class="tool-input" id="l-min" value="1" /></div>
+          <div class="form-group" style="margin:0;"><label for="l-max">Max</label><input type="number" class="tool-input" id="l-max" value="49" /></div>
+          <div class="form-group" style="margin:0;"><label for="l-count">Pick</label><input type="number" class="tool-input" id="l-count" value="6" min="1" max="50" /></div>
+        </div>
+        <div class="btn-group" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="genLottery()">&#127922; Pick Numbers</button>
+        </div>
+        <div class="multi-grid" id="lottery-grid" style="margin-top:12px;"></div>
+      </div>
+
+      <!-- History -->
+      <div style="margin-top:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <h3 style="margin:0;font-size:.95rem;">History</h3>
+          <button class="btn btn-secondary btn-sm" onclick="clearHistory()">Clear</button>
+        </div>
+        <ul class="history-list" id="history-list"><li style="padding:8px 12px;color:var(--text-muted);font-size:.88rem;">No history yet.</li></ul>
+      </div>
+    </div>
+
+    <div class="ad-banner ad-inline">Advertisement</div>
+
+    <div class="related-tools">
+      <h2>Related Tools</h2>
+      <div class="related-grid" id="related-grid"></div>
+    </div>
+
+    <div class="seo-content">
+      <h2>True Randomness in the Browser</h2>
+      <p>This tool uses the browser's <code>crypto.getRandomValues()</code> API to generate cryptographically secure random numbers — far better than <code>Math.random()</code> which uses a pseudorandom algorithm.</p>
+      <h3>Common Uses for Random Numbers</h3>
+      <ul>
+        <li>Lottery and raffle number picking</li>
+        <li>Tabletop RPG dice rolling (d4, d6, d8, d10, d12, d20)</li>
+        <li>Random sampling and statistical studies</li>
+        <li>Decision making and random selection</li>
+      </ul>
+    </div>
+
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget">
+      <h3>Other Tools</h3>
+      <div id="sidebar-tools"></div>
+    </div>
+  </aside>
+</div>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/components.js"></script>
+<style>
+  .rn-grid{grid-template-columns:1fr 1fr;}
+  .rn-grid3{grid-template-columns:1fr 1fr 1fr;}
+  @media(max-width:480px){.rn-grid,.rn-grid3{grid-template-columns:1fr;}}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('random-number');
+    document.getElementById('related-grid').innerHTML = renderRelatedTools('random-number', 'generator');
+  });
+
+  const history = [];
+
+  function switchMode(mode, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    ['single','multiple','dice','lottery'].forEach(m => {
+      document.getElementById('mode-'+m).style.display = m===mode?'':'none';
+    });
+  }
+
+  function randInt(min, max) {
+    const range = max - min + 1;
+    const arr = new Uint32Array(1);
+    crypto.getRandomValues(arr);
+    return min + (arr[0] % range);
+  }
+
+  function addHistory(desc) {
+    const ts = new Date().toLocaleTimeString();
+    history.unshift({desc, ts});
+    if(history.length > 20) history.pop();
+    const ul = document.getElementById('history-list');
+    ul.innerHTML = history.map(h=>
+      `<li><span>${h.desc}</span><span style="color:var(--text-muted);font-size:.78rem;">${h.ts}</span></li>`
+    ).join('');
+  }
+
+  function genSingle() {
+    const min = parseInt(document.getElementById('s-min').value);
+    const max = parseInt(document.getElementById('s-max').value);
+    if(isNaN(min)||isNaN(max)||min>max){showToast('Invalid range','error');return;}
+    const n = randInt(min,max);
+    document.getElementById('single-result').textContent = n.toLocaleString();
+    addHistory(`Single: ${n} (${min}–${max})`);
+  }
+
+  function genMultiple() {
+    const min   = parseInt(document.getElementById('m-min').value);
+    const max   = parseInt(document.getElementById('m-max').value);
+    const count = Math.min(1000, parseInt(document.getElementById('m-count').value)||10);
+    const unique = document.getElementById('m-unique').checked;
+    const sort  = document.getElementById('m-sort').checked;
+    if(isNaN(min)||isNaN(max)||min>max){showToast('Invalid range','error');return;}
+    if(unique && count > max-min+1){showToast('Range too small for unique count','error');return;}
+
+    const nums = [];
+    const used = new Set();
+    while(nums.length < count) {
+      const n = randInt(min, max);
+      if(unique && used.has(n)) continue;
+      used.add(n); nums.push(n);
+    }
+    if(sort) nums.sort((a,b)=>a-b);
+
+    const grid = document.getElementById('multi-grid');
+    grid.innerHTML = nums.map(n => `<div class="rn-badge">${n}</div>`).join('');
+    addHistory(`${count} numbers (${min}–${max})`);
+  }
+
+  function copyMulti() {
+    const vals = [...document.querySelectorAll('#multi-grid .rn-badge')].map(e=>e.textContent).join(', ');
+    if(vals) copyToClipboard(vals);
+  }
+
+  function rollDice(sides) {
+    const count = Math.min(100, parseInt(document.getElementById('dice-count').value)||1);
+    const rolls = Array.from({length:count}, () => randInt(1,sides));
+    const total = rolls.reduce((a,b)=>a+b,0);
+    const diceIcons = {4:'🔺',6:'🎲',8:'🎱',10:'🔟',12:'🔷',20:'🎯',100:'💯'};
+    document.getElementById('dice-face').textContent = diceIcons[sides] || '🎲';
+    document.getElementById('dice-val').textContent = `Total: ${total}`;
+    document.getElementById('dice-breakdown').textContent = count>1 ? `Rolls: [${rolls.join(', ')}]` : '';
+    addHistory(`${count}d${sides} → ${total}${count>1?' ('+rolls.join(',')+')':''}`);
+  }
+
+  function genLottery() {
+    const min   = parseInt(document.getElementById('l-min').value);
+    const max   = parseInt(document.getElementById('l-max').value);
+    const count = parseInt(document.getElementById('l-count').value)||6;
+    if(isNaN(min)||isNaN(max)||min>max||count>max-min+1){showToast('Invalid range or pick count','error');return;}
+    const nums = [];
+    const used = new Set();
+    while(nums.length < count) { const n=randInt(min,max); if(!used.has(n)){used.add(n);nums.push(n);} }
+    nums.sort((a,b)=>a-b);
+    document.getElementById('lottery-grid').innerHTML = nums.map(n=>
+      `<div class="rn-badge" style="border-radius:50%;aspect-ratio:1;">${n}</div>`).join('');
+    addHistory(`Lottery: ${nums.join(', ')}`);
+  }
+
+  function clearHistory() {
+    history.length = 0;
+    document.getElementById('history-list').innerHTML = '<li style="padding:8px 12px;color:var(--text-muted);font-size:.88rem;">No history yet.</li>';
+  }
+</script>
+</body>
+</html>
