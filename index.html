@@ -1036,7 +1036,6 @@
       } else {
         const digit = document.createElement('div');
         digit.className = 'flip-digit';
-        digit.style.perspective = '300px';
         digit.innerHTML =
           '<div class="top"><span>' + ch + '</span></div>' +
           '<div class="bottom"><span>' + ch + '</span></div>';
@@ -1072,16 +1071,19 @@
     el.appendChild(flapFront);
     el.appendChild(flapBack);
 
-    // Force reflow so the class triggers animation
-    void el.offsetWidth;
-    el.classList.add('flipping');
+    // Double rAF ensures browser has painted before triggering animation
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.add('flipping');
+      });
+    });
 
     // Cleanup after animation completes
     setTimeout(() => {
       el.classList.remove('flipping');
       flapFront.remove();
       flapBack.remove();
-    }, 600);
+    }, 800);
   }
 
   function flipTo(newNum) {

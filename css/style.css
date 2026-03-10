@@ -180,6 +180,8 @@ body {
   border-radius: 8px;
   background: #1e293b;
   box-shadow: 0 4px 16px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+  perspective: 300px;
+  transform-style: preserve-3d;
 }
 .flip-digit .top,
 .flip-digit .bottom {
@@ -249,10 +251,10 @@ body {
   100% { transform: rotateX(0deg); }
 }
 .flip-digit.flipping .flap-front {
-  animation: flapDown 0.25s ease-in forwards;
+  animation: flapDown 0.35s ease-in forwards;
 }
 .flip-digit.flipping .flap-back {
-  animation: flapUp 0.25s 0.25s ease-out forwards;
+  animation: flapUp 0.35s 0.35s ease-out forwards;
 }
 .flip-comma {
   display: flex;
