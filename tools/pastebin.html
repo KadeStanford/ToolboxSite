@@ -117,8 +117,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (typeof TN_FIREBASE_ENABLED !== 'undefined' && TN_FIREBASE_ENABLED) {
     try {
+      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js');
       const { getFirestore } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-      db = getFirestore(window._tnApp);
+      const app = getApps().length ? getApps()[0] : initializeApp(TN_FIREBASE_CONFIG);
+      db = getFirestore(app);
     } catch(e) { document.getElementById('setup-banner').style.display = 'block'; }
   } else {
     document.getElementById('setup-banner').style.display = 'block';

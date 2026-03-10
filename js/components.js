@@ -171,7 +171,7 @@ function renderFooter() {
         </nav>
       </div>
       <div class="footer-bottom">
-        <span>&copy; ${new Date().getFullYear()} ToolNook.net &mdash; All tools run in your browser. No data is stored or sent to any server (except Connected Tools).</span>
+        <span>&copy; ${new Date().getFullYear()} <a href="/admin/login.html" style="color:inherit;text-decoration:none;cursor:default;" title="">ToolNook.net</a> &mdash; All tools run in your browser. No data is stored or sent to any server (except Connected Tools).</span>
         <span>Built with <span aria-hidden="true">&#10084;</span><span class="sr-only">love</span> for productivity</span>
       </div>
     </div>

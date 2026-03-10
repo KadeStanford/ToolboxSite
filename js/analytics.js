@@ -23,7 +23,8 @@
       const app = getApps().length ? getApps()[0] : initializeApp(TN_FIREBASE_CONFIG);
       const db  = getFirestore(app);
 
-      // Make DB accessible to other modules (e.g. url-shortener, pastebin)
+      // Make app & DB accessible to other modules (e.g. url-shortener, pastebin)
+      window._tnApp = app;
       window._tnDb = db;
 
       // Determine the slug for the current page
