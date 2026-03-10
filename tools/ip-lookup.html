@@ -135,53 +135,57 @@ async function lookup() {
   results.innerHTML = '<div class="loading"><div class="spinner"></div><p>Looking up IP information...</p></div>';
 
   try {
-    const res = await fetch(`https://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,message,continent,country,countryCode,region,regionName,city,zip,lat,lon,timezone,offset,isp,org,as,asname,mobile,proxy,hosting,query`);
+    // ipwho.is — free, HTTPS, no API key required
+    const res = await fetch(`https://ipwho.is/${encodeURIComponent(ip)}`);
     const d = await res.json();
     
-    if (d.status === 'fail') {
+    if (!d.success) {
       results.innerHTML = `<div class="error-box"><i class="fa-solid fa-triangle-exclamation"></i> ${escapeHtml(d.message || 'Lookup failed')}</div>`;
       return;
     }
 
-    const flag = d.countryCode ? String.fromCodePoint(...[...d.countryCode.toUpperCase()].map(c => c.charCodeAt(0) + 127397)) : '';
-    const utcOffset = d.offset ? `UTC${d.offset >= 0 ? '+' : ''}${Math.floor(d.offset/3600)}:${String(Math.abs(d.offset%3600)/60).padStart(2,'0')}` : '';
+    const flag = d.flag?.emoji || (d.country_code ? String.fromCodePoint(...[...d.country_code.toUpperCase()].map(c => c.charCodeAt(0) + 127397)) : '');
+    const utcOffset = d.timezone?.utc || '';
 
     results.innerHTML = `
       <div class="info-grid">
         <div class="info-card">
           <div class="info-head"><div class="info-icon ico-loc"><i class="fa-solid fa-location-dot"></i></div><span class="info-title">Location</span></div>
           <div class="info-body">
-            <div class="info-row"><span class="info-key">IP Address</span><span class="info-val">${escapeHtml(d.query)}</span></div>
+            <div class="info-row"><span class="info-key">IP Address</span><span class="info-val">${escapeHtml(d.ip)}</span></div>
             <div class="info-row"><span class="info-key">Country</span><span class="info-val">${flag} ${escapeHtml(d.country||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">Region</span><span class="info-val">${escapeHtml(d.regionName||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Region</span><span class="info-val">${escapeHtml(d.region||'N/A')}</span></div>
             <div class="info-row"><span class="info-key">City</span><span class="info-val">${escapeHtml(d.city||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">ZIP Code</span><span class="info-val">${escapeHtml(d.zip||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">Coordinates</span><span class="info-val">${d.lat}, ${d.lon}</span></div>
+            <div class="info-row"><span class="info-key">Postal</span><span class="info-val">${escapeHtml(d.postal||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Coordinates</span><span class="info-val">${d.latitude}, ${d.longitude}</span></div>
             <div class="info-row"><span class="info-key">Continent</span><span class="info-val">${escapeHtml(d.continent||'N/A')}</span></div>
           </div>
         </div>
         <div class="info-card">
           <div class="info-head"><div class="info-icon ico-net"><i class="fa-solid fa-plug"></i></div><span class="info-title">Network</span></div>
           <div class="info-body">
-            <div class="info-row"><span class="info-key">ISP</span><span class="info-val">${escapeHtml(d.isp||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">Organization</span><span class="info-val">${escapeHtml(d.org||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">AS Number</span><span class="info-val">${escapeHtml(d.as||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">AS Name</span><span class="info-val">${escapeHtml(d.asname||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">ISP</span><span class="info-val">${escapeHtml(d.connection?.isp||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">Organization</span><span class="info-val">${escapeHtml(d.connection?.org||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">AS Number</span><span class="info-val">${escapeHtml(String(d.connection?.asn||'N/A'))}</span></div>
+            <div class="info-row"><span class="info-key">Domain</span><span class="info-val">${escapeHtml(d.connection?.domain||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">IP Type</span><span class="info-val">${escapeHtml(d.type||'N/A')}</span></div>
           </div>
         </div>
         <div class="info-card">
           <div class="info-head"><div class="info-icon ico-time"><i class="fa-solid fa-clock"></i></div><span class="info-title">Timezone</span></div>
           <div class="info-body">
-            <div class="info-row"><span class="info-key">Timezone</span><span class="info-val">${escapeHtml(d.timezone||'N/A')}</span></div>
-            <div class="info-row"><span class="info-key">UTC Offset</span><span class="info-val">${utcOffset}</span></div>
+            <div class="info-row"><span class="info-key">Timezone</span><span class="info-val">${escapeHtml(d.timezone?.id||'N/A')}</span></div>
+            <div class="info-row"><span class="info-key">UTC Offset</span><span class="info-val">${escapeHtml(utcOffset)}</span></div>
+            <div class="info-row"><span class="info-key">Current Time</span><span class="info-val">${escapeHtml(d.timezone?.current_time?.slice(0,19)||'N/A')}</span></div>
           </div>
         </div>
         <div class="info-card">
-          <div class="info-head"><div class="info-icon ico-misc"><i class="fa-solid fa-lock"></i></div><span class="info-title">Connection Type</span></div>
+          <div class="info-head"><div class="info-icon ico-misc"><i class="fa-solid fa-lock"></i></div><span class="info-title">Security</span></div>
           <div class="info-body">
-            <div class="info-row"><span class="info-key">Mobile</span><span class="info-val">${d.mobile?'Yes':'No'}</span></div>
-            <div class="info-row"><span class="info-key">Proxy/VPN</span><span class="info-val">${d.proxy?'Yes':'No'}</span></div>
-            <div class="info-row"><span class="info-key">Hosting/DC</span><span class="info-val">${d.hosting?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">Proxy</span><span class="info-val">${d.security?.proxy?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">VPN</span><span class="info-val">${d.security?.vpn?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">Tor</span><span class="info-val">${d.security?.tor?'Yes':'No'}</span></div>
+            <div class="info-row"><span class="info-key">Hosting/DC</span><span class="info-val">${d.security?.hosting?'Yes':'No'}</span></div>
           </div>
         </div>
       </div>`;

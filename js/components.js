@@ -181,6 +181,8 @@ const TN_TOOLS = [
   { name: 'Audio Format Converter',   slug: 'audio-converter',       category: 'converter',  icon: '<i class="fa-solid fa-music"></i>', desc: 'Convert audio between WAV & WebM' },
   { name: 'Epoch Timestamp Converter',slug: 'epoch-converter',       category: 'converter',  icon: '<i class="fa-solid fa-clock"></i>', desc: 'Convert Unix timestamps to human dates' },
   { name: 'Document to PDF',          slug: 'document-to-pdf',       category: 'converter',  icon: '<i class="fa-solid fa-file-export"></i>', desc: 'Convert HTML/Markdown to PDF' },
+  { name: 'PDF to Word',              slug: 'pdf-to-word',           category: 'converter',  icon: '<i class="fa-solid fa-file-word"></i>', desc: 'Convert PDF to editable Word DOCX' },
+  { name: 'PDF to PowerPoint',        slug: 'pdf-to-pptx',           category: 'converter',  icon: '<i class="fa-solid fa-file-powerpoint"></i>', desc: 'Convert PDF pages to PPTX slides' },
   // ── New Design Tools ──
   { name: 'Font Pairing Tool',        slug: 'font-pairing',          category: 'design',     icon: '<i class="fa-solid fa-font"></i>', desc: 'Preview Google Font combinations' },
   { name: 'SVG Editor',               slug: 'svg-editor',            category: 'design',     icon: '<i class="fa-solid fa-bezier-curve"></i>', desc: 'Draw & edit SVG shapes in browser' },

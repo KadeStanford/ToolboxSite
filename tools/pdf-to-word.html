@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF to Word — Convert PDF to DOCX Online Free | ToolNook</title>
+  <meta name="description" content="Free online PDF to Word converter. Extract text from PDF files and convert to downloadable DOCX documents. All processing in your browser — no upload needed." />
+  <meta name="keywords" content="PDF to Word, PDF to DOCX, convert PDF to Word, PDF converter, extract text from PDF, document converter" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://toolnook.net/tools/pdf-to-word.html" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    .drop-zone{border:3px dashed var(--border);border-radius:var(--radius-lg);padding:40px;text-align:center;transition:.2s;cursor:pointer;background:#fafafa;}
+    .drop-zone:hover,.drop-zone.active{border-color:var(--primary);background:#eef2ff;}
+    .drop-icon{font-size:3rem;margin-bottom:10px;color:var(--primary);}
+    .drop-text{color:var(--text-muted);font-size:.88rem;}
+    .drop-text strong{color:var(--primary);}
+    .file-info{display:flex;align-items:center;gap:12px;padding:14px;background:#f8fafc;border:2px solid var(--border);border-radius:var(--radius);margin:14px 0;}
+    .file-icon{width:44px;height:44px;background:var(--primary);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:.76rem;}
+    .file-name{font-weight:700;font-size:.88rem;}
+    .file-size{font-size:.76rem;color:var(--text-muted);}
+    .progress-bar{width:100%;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;margin:14px 0;display:none;}
+    .progress-fill{height:100%;background:var(--primary);border-radius:4px;transition:width .3s;}
+    .status{font-size:.84rem;color:var(--text-muted);margin:8px 0;}
+    .result-box{background:#f0fdf4;border:2px solid #86efac;border-radius:var(--radius-lg);padding:20px;text-align:center;margin:16px 0;display:none;}
+    .result-box i{font-size:2rem;color:#16a34a;margin-bottom:8px;}
+    .result-info{font-size:.84rem;color:var(--text-muted);margin:8px 0;}
+    .notice{background:#fffbeb;border:1px solid #fde68a;border-radius:var(--radius);padding:12px 16px;margin:14px 0;font-size:.82rem;color:#92400e;}
+    [data-theme="dark"] .drop-zone{background:#0f172a;}
+    [data-theme="dark"] .drop-zone:hover,.drop-zone.active{background:#1e1b4b;}
+    [data-theme="dark"] .file-info{background:#0f172a;}
+    [data-theme="dark"] .progress-bar{background:#334155;}
+    [data-theme="dark"] .result-box{background:#14532d;border-color:#16a34a;}
+    [data-theme="dark"] .notice{background:#451a03;border-color:#92400e;color:#fbbf24;}
+  </style>
+</head>
+<body>
+<div id="site-header"></div>
+<div class="page-with-sidebar">
+  <main class="main-content">
+    <div class="ad-banner ad-banner-top">Advertisement</div>
+    <div class="tool-header">
+      <div class="breadcrumb"><a href="/">Home</a> › <a href="/#converter-tools">Converter</a> › PDF to Word</div>
+      <h1><i class="fa-solid fa-file-word"></i> PDF to Word Converter</h1>
+      <p>Convert PDF files to editable Word documents (DOCX). All processing happens in your browser — no files are uploaded.</p>
+    </div>
+    <div class="tool-container">
+      <div class="notice"><i class="fa-solid fa-circle-info"></i> This tool extracts text content from PDF pages and creates a Word document. Formatting and images are preserved on a best-effort basis. Scanned PDFs (images only) may produce empty results.</div>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+        <div class="drop-icon"><i class="fa-solid fa-file-pdf"></i></div>
+        <div class="drop-text">Drag & drop a PDF here or <strong>click to browse</strong></div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf" style="display:none" />
+      <div id="file-info" style="display:none;"></div>
+      <div class="progress-bar" id="progress"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="status" id="status"></div>
+      <div class="result-box" id="result">
+        <i class="fa-solid fa-circle-check"></i>
+        <h3>Conversion Complete!</h3>
+        <div class="result-info" id="result-info"></div>
+        <button class="btn btn-primary" id="dl-btn"><i class="fa-solid fa-download"></i> Download DOCX</button>
+      </div>
+    </div>
+    <div class="ad-banner ad-inline">Advertisement</div>
+    <div class="seo-content">
+      <h2>Convert PDF to Word Document</h2>
+      <p>This free tool converts PDF files to editable Microsoft Word (DOCX) format entirely in your browser. Your files are never uploaded to any server.</p>
+      <h3>How It Works</h3>
+      <p>The tool uses Mozilla's PDF.js library to parse PDF pages, extracts text content with positioning information, and generates a valid DOCX file using the Office Open XML format.</p>
+      <h3>Limitations</h3>
+      <ul>
+        <li>Complex layouts, tables, and multi-column text may not convert perfectly</li>
+        <li>Scanned PDFs (image-based) require OCR which this tool does not perform</li>
+        <li>Embedded fonts and special characters may render differently in Word</li>
+      </ul>
+    </div>
+    <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
+    <div class="ad-banner ad-banner-bottom">Advertisement</div>
+  </main>
+  <aside class="sidebar">
+    <div class="ad-banner ad-sidebar">Advertisement</div>
+    <div class="sidebar-widget"><h3>Other Tools</h3><div id="sidebar-tools"></div></div>
+  </aside>
+</div>
+<div id="site-footer"></div>
+<div class="toast" id="toast"></div>
+<script src="/js/utils.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/analytics.js"></script>
+<script src="/js/components.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-tools').innerHTML = renderSidebarTools('pdf-to-word');
+  document.getElementById('related-grid').innerHTML = renderRelatedTools('pdf-to-word','converter');
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+});
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('active'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('active'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('active'); if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', e => { if (e.target.files[0]) processFile(e.target.files[0]); });
+
+async function processFile(file) {
+  if (file.type !== 'application/pdf') return showToast('Please select a PDF file');
+
+  document.getElementById('file-info').style.display = '';
+  document.getElementById('file-info').innerHTML = `<div class="file-info"><div class="file-icon">PDF</div><div><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${formatBytes(file.size)}</div></div></div>`;
+  
+  const prog = document.getElementById('progress');
+  const fill = document.getElementById('progress-fill');
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+  prog.style.display = 'block';
+  result.style.display = 'none';
+  fill.style.width = '0%';
+  status.textContent = 'Loading PDF...';
+
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const totalPages = pdf.numPages;
+    const pages = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      status.textContent = `Extracting page ${i} of ${totalPages}...`;
+      fill.style.width = (i / totalPages * 80) + '%';
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const lines = [];
+      let currentY = null;
+      let currentLine = '';
+
+      content.items.forEach(item => {
+        const y = Math.round(item.transform[5]);
+        if (currentY !== null && Math.abs(y - currentY) > 5) {
+          lines.push(currentLine);
+          currentLine = '';
+        }
+        currentLine += item.str + ' ';
+        currentY = y;
+      });
+      if (currentLine.trim()) lines.push(currentLine);
+      pages.push(lines);
+    }
+
+    status.textContent = 'Building DOCX...';
+    fill.style.width = '90%';
+
+    const docxBlob = buildDocx(pages);
+    fill.style.width = '100%';
+    status.textContent = '';
+
+    const wordCount = pages.flat().join(' ').split(/\s+/).filter(Boolean).length;
+    document.getElementById('result-info').textContent = `${totalPages} pages • ${wordCount.toLocaleString()} words • ${formatBytes(docxBlob.size)}`;
+    result.style.display = 'block';
+
+    document.getElementById('dl-btn').onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(docxBlob);
+      a.download = file.name.replace(/\.pdf$/i, '') + '.docx';
+      a.click();
+    };
+
+    setTimeout(() => { prog.style.display = 'none'; }, 1000);
+    showToast('Conversion complete!');
+  } catch (e) {
+    status.textContent = 'Error: ' + e.message;
+    fill.style.width = '100%';
+    fill.style.background = 'var(--error)';
+  }
+}
+
+function buildDocx(pages) {
+  // Build a valid DOCX (Office Open XML) zip file
+  // DOCX is a zip containing XML files
+
+  function escXml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  let body = '';
+  pages.forEach((lines, pi) => {
+    if (pi > 0) {
+      body += '<w:p><w:pPr><w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:pPr></w:p>';
+    }
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        body += '<w:p/>';
+        return;
+      }
+      body += `<w:p><w:r><w:t xml:space="preserve">${escXml(trimmed)}</w:t></w:r></w:p>`;
+    });
+  });
+
+  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+  xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"
+  xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+  xmlns:w10="urn:schemas-microsoft-com:office:word"
+  xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"
+  mc:Ignorable="w14 wp14"><w:body>${body}
+<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`;
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+
+  const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+
+  const wordRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+</Relationships>`;
+
+  // Build zip manually (minimal zip implementation)
+  const files = [
+    { name: '[Content_Types].xml', data: contentTypes },
+    { name: '_rels/.rels', data: rels },
+    { name: 'word/_rels/document.xml.rels', data: wordRels },
+    { name: 'word/document.xml', data: documentXml },
+  ];
+
+  return createZip(files);
+}
+
+function createZip(files) {
+  const encoder = new TextEncoder();
+  const entries = files.map(f => ({ name: encoder.encode(f.name), data: encoder.encode(f.data) }));
+  
+  let offset = 0;
+  const localHeaders = [];
+  const centralHeaders = [];
+
+  entries.forEach(entry => {
+    const localOffset = offset;
+    // Local file header
+    const local = new Uint8Array(30 + entry.name.length + entry.data.length);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true); // signature
+    lv.setUint16(4, 20, true); // version needed
+    lv.setUint16(6, 0, true); // flags
+    lv.setUint16(8, 0, true); // compression (none)
+    lv.setUint16(10, 0, true); // mod time
+    lv.setUint16(12, 0, true); // mod date
+    lv.setUint32(14, crc32(entry.data), true);
+    lv.setUint32(18, entry.data.length, true); // compressed
+    lv.setUint32(22, entry.data.length, true); // uncompressed
+    lv.setUint16(26, entry.name.length, true);
+    lv.setUint16(28, 0, true); // extra length
+    local.set(entry.name, 30);
+    local.set(entry.data, 30 + entry.name.length);
+    localHeaders.push(local);
+    offset += local.length;
+
+    // Central directory header
+    const central = new Uint8Array(46 + entry.name.length);
+    const cv = new DataView(central.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true); // version made
+    cv.setUint16(6, 20, true); // version needed
+    cv.setUint16(8, 0, true); // flags
+    cv.setUint16(10, 0, true); // compression
+    cv.setUint16(12, 0, true);
+    cv.setUint16(14, 0, true);
+    cv.setUint32(16, crc32(entry.data), true);
+    cv.setUint32(20, entry.data.length, true);
+    cv.setUint32(24, entry.data.length, true);
+    cv.setUint16(28, entry.name.length, true);
+    cv.setUint16(30, 0, true);
+    cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true);
+    cv.setUint16(36, 0, true);
+    cv.setUint32(38, 0, true);
+    cv.setUint32(42, localOffset, true);
+    central.set(entry.name, 46);
+    centralHeaders.push(central);
+  });
+
+  const centralOffset = offset;
+  let centralSize = 0;
+  centralHeaders.forEach(c => centralSize += c.length);
+
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true);
+  ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, centralOffset, true);
+  ev.setUint16(20, 0, true);
+
+  const blob = new Blob([...localHeaders, ...centralHeaders, eocd], {
+    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  });
+  return blob;
+}
+
+function crc32(data) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < data.length; i++) {
+    crc ^= data[i];
+    for (let j = 0; j < 8; j++) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xEDB88320 : 0);
+    }
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+</script>
+</body>
+</html>

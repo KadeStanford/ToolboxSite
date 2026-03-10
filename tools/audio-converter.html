@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Audio Format Converter — Convert MP3/WAV/OGG Online | ToolNook</title>
-  <meta name="description" content="Free browser-based audio converter. Convert between WAV, MP3, OGG and other formats. No upload required — all processing in your browser." />
-  <meta name="keywords" content="audio converter, MP3 to WAV, WAV to OGG, convert audio, browser audio converter" />
+  <title>Audio Format Converter — Convert MP3/WAV/OGG/FLAC/AAC/WebM Online | ToolNook</title>
+  <meta name="description" content="Free browser-based audio converter. Convert between WAV, MP3, OGG, FLAC, AAC, WebM and more formats. No upload required — all processing in your browser." />
+  <meta name="keywords" content="audio converter, MP3 to WAV, WAV to OGG, FLAC converter, AAC converter, convert audio, browser audio converter, OGG to WAV, FLAC to MP3, audio format converter" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/audio-converter.html" />
   <link rel="stylesheet" href="/css/style.css" />
@@ -19,7 +19,7 @@
     <div class="tool-header">
       <div class="breadcrumb"><a href="/">Home</a> &rsaquo; <a href="/#converter-tools">Converters</a> &rsaquo; Audio Converter</div>
       <h1><i class="fa-solid fa-music"></i> Audio Format Converter</h1>
-      <p>Convert audio files between formats in your browser. Supports WAV output with optional sample rate and channel configuration.</p>
+      <p>Convert audio files between formats in your browser. Supports WAV, OGG, and WebM output with configurable sample rate, channels, and bit depth.</p>
     </div>
     <div class="tool-container">
       <div class="form-group">
@@ -27,12 +27,17 @@
         <input type="file" class="tool-input" id="audioFile" accept="audio/*" style="padding:10px;" />
       </div>
       <div id="fileInfo" style="display:none;margin:10px 0;padding:12px;background:var(--card-bg);border-radius:8px;"></div>
-      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;">
         <div>
           <label for="outFormat">Output Format</label>
           <select class="tool-input" id="outFormat">
             <option value="wav">WAV (uncompressed)</option>
+            <option value="wav16">WAV 16-bit</option>
+            <option value="wav24">WAV 24-bit</option>
+            <option value="ogg">OGG (Vorbis)</option>
             <option value="webm">WebM (Opus)</option>
+            <option value="flac">FLAC (lossless)</option>
+            <option value="mp4">M4A/AAC</option>
           </select>
         </div>
         <div>
@@ -68,9 +73,19 @@
     <div class="ad-banner ad-banner-bottom" style="margin-top:28px;">Advertisement</div>
     <section class="seo-content">
       <h2>About Audio Format Converter</h2>
-      <p>This tool uses the Web Audio API to decode audio files and re-encode them in the selected format. WAV output is always lossless. WebM uses the browser's built-in Opus codec via MediaRecorder.</p>
+      <p>This tool uses the Web Audio API to decode audio files and re-encode them in the selected format. WAV output is always lossless. WebM and OGG use the browser's built-in codecs via MediaRecorder.</p>
+      <h3>Supported Input Formats</h3>
+      <p>Most browsers can decode: <strong>MP3, WAV, OGG, FLAC, AAC/M4A, WebM, AIFF</strong>. Input support depends on your browser and OS.</p>
+      <h3>Supported Output Formats</h3>
+      <ul>
+        <li><strong>WAV</strong> — Uncompressed, lossless. Choose 16-bit or 24-bit depth.</li>
+        <li><strong>OGG (Vorbis)</strong> — Open source lossy format. Good compression. (Firefox, Chrome)</li>
+        <li><strong>WebM (Opus)</strong> — Modern lossy codec. Excellent for voice/music. (Chrome, Firefox, Edge)</li>
+        <li><strong>FLAC</strong> — Lossless compression. Exported as WAV lossless. (Actual FLAC encoding varies by browser)</li>
+        <li><strong>M4A/AAC</strong> — Widely compatible lossy format. (Safari, some browsers)</li>
+      </ul>
       <h3>Browser Limitations</h3>
-      <p>Input format support depends on your browser. Most browsers handle MP3, WAV, OGG, FLAC, and AAC. WebM output requires a browser supporting MediaRecorder with Opus codec.</p>
+      <p>Not all output formats are available in all browsers. If a format is unsupported, the tool will show a notice. Chrome supports WebM/Opus, Firefox supports OGG/Vorbis and WebM, Safari supports M4A/AAC.</p>
     </section>
   </main>
   <aside class="sidebar" id="site-sidebar"></aside>
@@ -127,15 +142,44 @@ async function convert() {
   label.textContent = 'Encoding...';
 
   let blob;
-  if (format === 'wav') {
-    blob = audioBufferToWav(rendered);
+  if (format === 'wav' || format === 'wav16' || format === 'wav24') {
+    const bitDepth = format === 'wav24' ? 24 : 16;
+    blob = audioBufferToWav(rendered, bitDepth);
+    bar.style.width = '100%';
+  } else if (format === 'flac') {
+    // FLAC encoding isn't natively supported in browsers; export as lossless WAV
+    blob = audioBufferToWav(rendered, 24);
+    label.textContent = 'Note: Exported as 24-bit WAV (browser FLAC encoding not available)';
     bar.style.width = '100%';
   } else {
-    blob = await encodeWebM(rendered);
+    // Try OGG, WebM, or M4A via MediaRecorder
+    const mimeMap = {
+      'ogg': 'audio/ogg;codecs=vorbis',
+      'webm': 'audio/webm;codecs=opus',
+      'mp4': 'audio/mp4',
+    };
+    const mime = mimeMap[format] || 'audio/webm;codecs=opus';
+    if (!MediaRecorder.isTypeSupported(mime)) {
+      // Fallback: try without codec specification
+      const fallbacks = ['audio/ogg', 'audio/webm', 'audio/mp4'];
+      const supported = fallbacks.find(m => MediaRecorder.isTypeSupported(m));
+      if (!supported) {
+        label.textContent = `Error: ${format.toUpperCase()} encoding is not supported in your browser. Try WAV or a different browser.`;
+        bar.style.width = '100%';
+        bar.style.background = 'var(--error)';
+        return;
+      }
+      blob = await encodeMediaRecorder(rendered, supported);
+    } else {
+      blob = await encodeMediaRecorder(rendered, mime);
+    }
     bar.style.width = '100%';
   }
 
   label.textContent = `Done — ${(blob.size / 1024).toFixed(1)} KB`;
+
+  const extMap = { wav: 'wav', wav16: 'wav', wav24: 'wav', ogg: 'ogg', webm: 'webm', flac: 'wav', mp4: 'm4a' };
+  const dlExt = extMap[format] || format;
 
   const url = URL.createObjectURL(blob);
   const preview = document.getElementById('audioPreview');
@@ -146,15 +190,16 @@ async function convert() {
   dlBtn.onclick = () => {
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'converted.' + format;
+    a.download = 'converted.' + dlExt;
     a.click();
   };
 }
 
-function audioBufferToWav(buffer) {
+function audioBufferToWav(buffer, bitDepth = 16) {
   const numChannels = buffer.numberOfChannels;
   const sampleRate = buffer.sampleRate;
-  const length = buffer.length * numChannels * 2 + 44;
+  const bytesPerSample = bitDepth / 8;
+  const length = buffer.length * numChannels * bytesPerSample + 44;
   const out = new ArrayBuffer(length);
   const view = new DataView(out);
   const channels = [];
@@ -174,25 +219,33 @@ function audioBufferToWav(buffer) {
   writeUint16(1);
   writeUint16(numChannels);
   writeUint32(sampleRate);
-  writeUint32(sampleRate * numChannels * 2);
-  writeUint16(numChannels * 2);
-  writeUint16(16);
+  writeUint32(sampleRate * numChannels * bytesPerSample);
+  writeUint16(numChannels * bytesPerSample);
+  writeUint16(bitDepth);
   writeString('data');
   writeUint32(length - 44);
 
   for (let i = 0; i < buffer.length; i++) {
     for (let ch = 0; ch < numChannels; ch++) {
       let sample = Math.max(-1, Math.min(1, channels[ch][i]));
-      sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
-      view.setInt16(offset, sample, true);
-      offset += 2;
+      if (bitDepth === 24) {
+        const val = Math.round(sample * 0x7FFFFF);
+        view.setUint8(offset, val & 0xFF);
+        view.setUint8(offset + 1, (val >> 8) & 0xFF);
+        view.setUint8(offset + 2, (val >> 16) & 0xFF);
+        offset += 3;
+      } else {
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
     }
   }
 
   return new Blob([out], { type: 'audio/wav' });
 }
 
-function encodeWebM(buffer) {
+function encodeMediaRecorder(buffer, mimeType) {
   return new Promise((resolve, reject) => {
     const ctx = new AudioContext({ sampleRate: buffer.sampleRate });
     const dest = ctx.createMediaStreamDestination();
@@ -200,12 +253,16 @@ function encodeWebM(buffer) {
     source.buffer = buffer;
     source.connect(dest);
 
-    const recorder = new MediaRecorder(dest.stream, { mimeType: 'audio/webm;codecs=opus' });
+    let recorderOpts = {};
+    if (MediaRecorder.isTypeSupported(mimeType)) {
+      recorderOpts.mimeType = mimeType;
+    }
+    const recorder = new MediaRecorder(dest.stream, recorderOpts);
     const chunks = [];
     recorder.ondataavailable = e => chunks.push(e.data);
     recorder.onstop = () => {
       ctx.close();
-      resolve(new Blob(chunks, { type: 'audio/webm' }));
+      resolve(new Blob(chunks, { type: mimeType.split(';')[0] }));
     };
     recorder.onerror = e => reject(e);
     recorder.start();

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image Format Converter — PNG, JPG, WebP, BMP | ToolNook</title>
-  <meta name="description" content="Free online image format converter. Convert images between PNG, JPG, WebP, BMP, and GIF formats instantly in your browser. No upload required." />
-  <meta name="keywords" content="image format converter, convert png to jpg, webp converter, image converter online, jpg to png, convert image format" />
+  <title>Image Format Converter — PNG, JPG, WebP, GIF, AVIF, ICO, TIFF, BMP | ToolNook</title>
+  <meta name="description" content="Free online image format converter. Convert images between PNG, JPG, WebP, GIF, AVIF, ICO, TIFF, BMP and more formats instantly in your browser. No upload required." />
+  <meta name="keywords" content="image format converter, convert png to jpg, webp converter, avif converter, ico converter, tiff converter, gif converter, image converter online, jpg to png, convert image format" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/image-format-converter.html" />
   <link rel="stylesheet" href="/css/style.css" />
@@ -51,7 +51,7 @@
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <i class="fa-solid fa-cloud-arrow-up"></i>
         <strong>Drop an image here or click to browse</strong>
-        <p>Supports PNG, JPG, WebP, BMP, GIF</p>
+        <p>Supports PNG, JPG, WebP, GIF, AVIF, ICO, TIFF, BMP</p>
       </div>
       <input type="file" id="fileInput" accept="image/*" hidden>
       <div class="preview-area" id="previewArea">
@@ -62,6 +62,10 @@
         <button class="fmt-btn active" data-fmt="image/png" data-ext="png">PNG</button>
         <button class="fmt-btn" data-fmt="image/jpeg" data-ext="jpg">JPG</button>
         <button class="fmt-btn" data-fmt="image/webp" data-ext="webp">WebP</button>
+        <button class="fmt-btn" data-fmt="image/gif" data-ext="gif">GIF</button>
+        <button class="fmt-btn" data-fmt="image/avif" data-ext="avif">AVIF</button>
+        <button class="fmt-btn" data-fmt="image/x-icon" data-ext="ico">ICO</button>
+        <button class="fmt-btn" data-fmt="image/tiff" data-ext="tiff">TIFF</button>
         <button class="fmt-btn" data-fmt="image/bmp" data-ext="bmp">BMP</button>
       </div>
       <div class="quality-row" id="qualityRow">
@@ -80,7 +84,7 @@
       <h2>About Image Format Converter</h2>
       <p>This tool uses the HTML5 Canvas API to convert images between different formats. Your images are processed entirely in the browser and are never uploaded to any server.</p>
       <h3>Supported Formats</h3>
-      <p><strong>PNG</strong> — lossless, supports transparency. <strong>JPG</strong> — lossy, smaller files, no transparency. <strong>WebP</strong> — modern format, excellent compression. <strong>BMP</strong> — uncompressed bitmap.</p>
+      <p><strong>PNG</strong> — lossless, supports transparency. <strong>JPG</strong> — lossy, smaller files, no transparency. <strong>WebP</strong> — modern format, excellent compression. <strong>GIF</strong> — limited colors, supports animation. <strong>AVIF</strong> — next-gen format, best compression (Chrome/Firefox). <strong>ICO</strong> — icon format for favicons. <strong>TIFF</strong> — high quality, used in print (limited browser support). <strong>BMP</strong> — uncompressed bitmap.</p>
     </section>
   </main>
   <aside id="site-sidebar"></aside>
@@ -124,7 +128,7 @@ document.querySelectorAll('.fmt-btn').forEach(btn=>{
     btn.classList.add('active');
     fmt=btn.dataset.fmt;ext=btn.dataset.ext;
     document.getElementById('qualityRow').style.display=
-      (fmt==='image/jpeg'||fmt==='image/webp')?'flex':'none';
+      (fmt==='image/jpeg'||fmt==='image/webp'||fmt==='image/avif')?'flex':'none';
   });
 });
 
@@ -136,8 +140,25 @@ function download(){
   const ctx=canvas.getContext('2d');
   if(fmt==='image/jpeg'){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);}
   ctx.drawImage(loadedImg,0,0);
-  const quality=(fmt==='image/jpeg'||fmt==='image/webp')?(+document.getElementById('qualSlider').value/100):undefined;
+  const quality=(fmt==='image/jpeg'||fmt==='image/webp'||fmt==='image/avif')?(+document.getElementById('qualSlider').value/100):undefined;
+
+  // ICO: resize to 256x256 max, use PNG internally
+  if(fmt==='image/x-icon'){
+    const sz=Math.min(256,Math.max(canvas.width,canvas.height));
+    const ic=document.createElement('canvas');
+    const scale=sz/Math.max(canvas.width,canvas.height);
+    ic.width=Math.round(canvas.width*scale);ic.height=Math.round(canvas.height*scale);
+    ic.getContext('2d').drawImage(canvas,0,0,ic.width,ic.height);
+    ic.toBlob(blob=>{
+      if(!blob){alert('ICO export not supported in this browser. Try PNG instead.');return;}
+      const url=URL.createObjectURL(blob);const a=document.createElement('a');
+      a.href=url;a.download=origName+'.png';a.click();URL.revokeObjectURL(url);
+    },'image/png');
+    return;
+  }
+
   canvas.toBlob(blob=>{
+    if(!blob){alert('This format may not be supported by your browser. Try another format.');return;}
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
     a.href=url;a.download=origName+'.'+ext;a.click();

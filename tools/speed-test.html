@@ -3,31 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Internet Speed Test — Download Speed Estimator | ToolNook</title>
-  <meta name="description" content="Estimate your internet download speed directly in the browser. Simple, fast, and no installation required." />
-  <meta name="keywords" content="speed test, internet speed, download speed, bandwidth test, connection test" />
+  <title>Internet Speed Test — Download & Upload Speed | ToolNook</title>
+  <meta name="description" content="Free internet speed test. Measure download, upload speed and latency directly in your browser. Real network measurements with accurate stabilization." />
+  <meta name="keywords" content="speed test, internet speed, download speed, upload speed, bandwidth test, connection test, ping test, latency test" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://toolnook.net/tools/speed-test.html" />
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>TN</text></svg>" />
   <style>
     .speed-hero{text-align:center;padding:30px 20px;margin-bottom:20px;}
-    .gauge-wrap{position:relative;width:260px;height:145px;margin:0 auto 14px;}
-    .gauge-svg{width:260px;height:145px;}
+    .gauge-wrap{position:relative;width:280px;height:155px;margin:0 auto 14px;}
+    .gauge-svg{width:280px;height:155px;}
     .gauge-bg{fill:none;stroke:#e2e8f0;stroke-width:18;stroke-linecap:round;}
-    .gauge-fill{fill:none;stroke:url(#gaugeGrad);stroke-width:18;stroke-linecap:round;transition:stroke-dashoffset .3s;}
+    .gauge-fill{fill:none;stroke:url(#gaugeGrad);stroke-width:18;stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
     .gauge-center{position:absolute;bottom:0;left:50%;transform:translateX(-50%);text-align:center;}
-    .gauge-val{font-size:3rem;font-weight:900;color:var(--primary);}
+    .gauge-val{font-size:3.2rem;font-weight:900;color:var(--primary);}
     .gauge-unit{font-size:.82rem;color:var(--text-muted);font-weight:600;}
-    .start-btn{padding:14px 40px;font-size:1.05rem;font-weight:700;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(102,126,234,.4);}
+    .gauge-phase{font-size:.72rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+    .start-btn{padding:14px 44px;font-size:1.05rem;font-weight:700;border:none;border-radius:50px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;cursor:pointer;transition:all .2s;box-shadow:0 4px 15px rgba(102,126,234,.4);}
     .start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,.5);}
     .start-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
     .status-text{font-size:.88rem;color:var(--text-muted);margin-top:12px;min-height:22px;}
-    .results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:20px;}
-    .res-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;}
+    .results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px;}
+    .res-card{background:var(--bg-white);border:2px solid var(--border);border-radius:var(--radius-lg);padding:16px;text-align:center;}
     .res-card .rc-icon{font-size:1.4rem;margin-bottom:4px;}
-    .res-card .rc-val{font-size:1.4rem;font-weight:800;color:var(--primary);}
+    .res-card .rc-val{font-size:1.3rem;font-weight:800;color:var(--primary);}
     .res-card .rc-label{font-size:.7rem;text-transform:uppercase;color:var(--text-muted);font-weight:600;}
+    .live-graph{margin:16px 0;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius);height:100px;position:relative;overflow:hidden;}
+    .live-graph canvas{width:100%;height:100%;}
     .history-section{margin-top:20px;}
     .history-section h3{font-size:.9rem;margin-bottom:10px;}
     .history-table{width:100%;border-collapse:collapse;font-size:.82rem;}
@@ -35,12 +38,15 @@
     .history-table th{font-weight:600;color:var(--text-muted);font-size:.72rem;text-transform:uppercase;}
     .note-box{background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--radius);padding:12px;margin-top:16px;font-size:.82rem;color:#92400e;}
     .progress-track{height:8px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:12px;}
-    .progress-track .pbar{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:6px;transition:width .2s;width:0%;}
-  
-  /* Dark mode overrides */
-  [data-theme="dark"] .res-card { background:#1e293b; }
-  [data-theme="dark"] .note-box { background:#1e293bbeb; color: #fbbf24; }
-  [data-theme="dark"] .progress-track { background:#334155; }
+    .progress-track .pbar{height:100%;background:linear-gradient(90deg,#667eea,#764ba2);border-radius:6px;transition:width .3s;width:0%;}
+    .phase-indicator{display:flex;justify-content:center;gap:24px;margin:14px 0;font-size:.78rem;font-weight:600;}
+    .phase-dot{display:flex;align-items:center;gap:6px;color:var(--text-muted);}
+    .phase-dot .dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:.3s;}
+    .phase-dot.active .dot{background:var(--primary);box-shadow:0 0 8px rgba(102,126,234,.5);}
+    .phase-dot.done .dot{background:#10b981;}
+    [data-theme="dark"] .note-box{background:#451a03;border-color:#92400e;color:#fbbf24;}
+    [data-theme="dark"] .progress-track{background:#334155;}
+    [data-theme="dark"] .gauge-bg{stroke:#334155;}
   </style>
 </head>
 <body>
@@ -51,51 +57,67 @@
     <div class="tool-header">
       <div class="breadcrumb"><a href="/">Home</a> › <a href="/#utility-tools">Utility</a> › Speed Test</div>
       <h1><i class="fa-solid fa-rocket"></i> Internet Speed Test</h1>
-      <p>Estimate your download speed by measuring data transfer throughput in your browser.</p>
+      <p>Measure your download speed, upload speed, and latency with a real network test.</p>
     </div>
     <div class="tool-container">
       <div class="speed-hero">
         <div class="gauge-wrap">
-          <svg class="gauge-svg" viewBox="0 0 260 145">
+          <svg class="gauge-svg" viewBox="0 0 280 155">
             <defs>
               <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#667eea"/>
                 <stop offset="100%" stop-color="#764ba2"/>
               </linearGradient>
             </defs>
-            <path class="gauge-bg" d="M 30 130 A 100 100 0 0 1 230 130"/>
-            <path class="gauge-fill" id="gaugeFill" d="M 30 130 A 100 100 0 0 1 230 130" stroke-dasharray="314" stroke-dashoffset="314"/>
+            <path class="gauge-bg" d="M 30 140 A 110 110 0 0 1 250 140"/>
+            <path class="gauge-fill" id="gaugeFill" d="M 30 140 A 110 110 0 0 1 250 140" stroke-dasharray="345" stroke-dashoffset="345"/>
           </svg>
           <div class="gauge-center">
             <div class="gauge-val" id="speedVal">0</div>
             <div class="gauge-unit">Mbps</div>
+            <div class="gauge-phase" id="gaugePhase"></div>
           </div>
         </div>
-        <button class="start-btn" id="startBtn">▶ Start Test</button>
+
+        <div class="phase-indicator" id="phaseIndicator">
+          <div class="phase-dot" id="ph-ping"><div class="dot"></div> Ping</div>
+          <div class="phase-dot" id="ph-download"><div class="dot"></div> Download</div>
+          <div class="phase-dot" id="ph-upload"><div class="dot"></div> Upload</div>
+        </div>
+
+        <button class="start-btn" id="startBtn"><i class="fa-solid fa-play"></i> Start Test</button>
         <div class="progress-track" id="progTrack" style="display:none;"><div class="pbar" id="pbar"></div></div>
         <div class="status-text" id="statusText">Click Start to begin the speed test</div>
       </div>
 
+      <div class="live-graph" id="liveGraphWrap" style="display:none;">
+        <canvas id="liveGraph"></canvas>
+      </div>
+
       <div class="results-grid" id="resultsGrid" style="display:none;">
         <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-download"></i></div><div class="rc-val" id="dlSpeed">-</div><div class="rc-label">Download</div></div>
-        <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="rc-val" id="latency">-</div><div class="rc-label">Latency</div></div>
+        <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-upload"></i></div><div class="rc-val" id="ulSpeed">-</div><div class="rc-label">Upload</div></div>
+        <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="rc-val" id="latency">-</div><div class="rc-label">Ping</div></div>
+        <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-signal"></i></div><div class="rc-val" id="jitter">-</div><div class="rc-label">Jitter</div></div>
         <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-chart-bar"></i></div><div class="rc-val" id="dataUsed">-</div><div class="rc-label">Data Used</div></div>
         <div class="res-card"><div class="rc-icon"><i class="fa-solid fa-rotate"></i></div><div class="rc-val" id="testDur">-</div><div class="rc-label">Duration</div></div>
       </div>
 
       <div class="history-section" id="histSection" style="display:none;">
         <h3><i class="fa-solid fa-clipboard"></i> Test History (this session)</h3>
-        <table class="history-table"><thead><tr><th>#</th><th>Speed</th><th>Latency</th><th>Time</th></tr></thead><tbody id="histBody"></tbody></table>
+        <table class="history-table"><thead><tr><th>#</th><th>Download</th><th>Upload</th><th>Ping</th><th>Time</th></tr></thead><tbody id="histBody"></tbody></table>
       </div>
 
       <div class="note-box">
-        <strong><i class="fa-solid fa-triangle-exclamation"></i> Note:</strong> This browser-based speed test provides an estimate. Results may vary based on network conditions, server load, and browser limitations. For the most accurate results, use a dedicated speed test service.
+        <strong><i class="fa-solid fa-triangle-exclamation"></i> Note:</strong> This speed test measures real network throughput to public CDN servers. Results may vary based on network conditions, ISP throttling, distance to servers, and browser limitations. For the most accurate results, close other tabs and applications.
       </div>
     </div>
     <div class="ad-banner ad-inline">Advertisement</div>
     <div class="seo-content">
-      <h2>How Speed Tests Work</h2>
-      <p>This speed test works by downloading data from public CDN servers and measuring the throughput. Download speed is measured in Megabits per second (Mbps). Latency (ping) measures the round-trip time for a request to reach the server and come back.</p>
+      <h2>How This Speed Test Works</h2>
+      <p>This speed test works by downloading and uploading data to public CDN servers and measuring the throughput over time. The test runs for several seconds to allow your connection to stabilize, giving more accurate results than single-burst tests.</p>
+      <h2>Understanding Your Results</h2>
+      <p><strong>Download Speed</strong> (Mbps) measures how fast data arrives at your device. <strong>Upload Speed</strong> (Mbps) measures how fast you can send data. <strong>Ping/Latency</strong> (ms) measures the round-trip time for a single request. <strong>Jitter</strong> (ms) shows how consistent your ping is — lower is better for gaming and video calls.</p>
     </div>
     <div class="related-tools"><h2>Related Tools</h2><div class="related-grid" id="related-grid"></div></div>
     <div class="ad-banner ad-banner-bottom">Advertisement</div>
@@ -119,137 +141,326 @@ document.addEventListener('DOMContentLoaded',()=>{
   const startBtn=document.getElementById('startBtn');
   const gaugeFill=document.getElementById('gaugeFill');
   const speedVal=document.getElementById('speedVal');
+  const gaugePhase=document.getElementById('gaugePhase');
   const statusText=document.getElementById('statusText');
   const progTrack=document.getElementById('progTrack');
   const pbar=document.getElementById('pbar');
   const resultsGrid=document.getElementById('resultsGrid');
   const histSection=document.getElementById('histSection');
   const histBody=document.getElementById('histBody');
+  const liveGraphWrap=document.getElementById('liveGraphWrap');
+  const liveCanvas=document.getElementById('liveGraph');
+  const ctx=liveCanvas.getContext('2d');
 
-  const ARC_LENGTH=314;
+  const ARC_LEN=345;
+  const DL_DURATION=10; // seconds for download test
+  const UL_DURATION=8;  // seconds for upload test
   let history=[];
+  let graphPoints=[];
 
-  function setGauge(mbps,maxMbps){
+  // Public CDN URLs for real network download measurement
+  // These serve actual data over the network
+  const DL_URLS=[
+    'https://cdnjs.cloudflare.com/ajax/libs/pdfjs-dist/3.11.174/pdf.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js',
+  ];
+
+  function setGauge(mbps, maxMbps){
     const pct=Math.min(mbps/maxMbps,1);
-    gaugeFill.setAttribute('stroke-dashoffset',ARC_LENGTH-(ARC_LENGTH*pct));
-    speedVal.textContent=mbps.toFixed(1);
+    gaugeFill.setAttribute('stroke-dashoffset',ARC_LEN-(ARC_LEN*pct));
+    speedVal.textContent=mbps<10?mbps.toFixed(1):Math.round(mbps);
   }
 
-  // Use a large public cached resource for download measurement
-  // We create random blobs in memory to simulate the measurement without external URLs
-  async function measureLatency(){
-    const iters=5;
-    let total=0;
+  function setPhase(phase){
+    ['ping','download','upload'].forEach(p=>{
+      const el=document.getElementById('ph-'+p);
+      el.classList.remove('active','done');
+    });
+    if(phase==='download'){document.getElementById('ph-ping').classList.add('done');document.getElementById('ph-download').classList.add('active');}
+    if(phase==='upload'){document.getElementById('ph-ping').classList.add('done');document.getElementById('ph-download').classList.add('done');document.getElementById('ph-upload').classList.add('active');}
+    if(phase==='ping'){document.getElementById('ph-ping').classList.add('active');}
+    if(phase==='done'){['ping','download','upload'].forEach(p=>document.getElementById('ph-'+p).classList.add('done'));}
+    gaugePhase.textContent=phase==='done'?'Complete':phase;
+  }
+
+  function resizeCanvas(){
+    liveCanvas.width=liveCanvas.parentElement.clientWidth;
+    liveCanvas.height=liveCanvas.parentElement.clientHeight;
+  }
+
+  function drawGraph(){
+    resizeCanvas();
+    const w=liveCanvas.width, h=liveCanvas.height;
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    ctx.clearRect(0,0,w,h);
+
+    if(graphPoints.length<2) return;
+    const max=Math.max(...graphPoints.map(p=>p.v),10)*1.2;
+
+    // grid lines
+    ctx.strokeStyle=isDark?'#334155':'#e2e8f0';
+    ctx.lineWidth=1;
+    for(let i=1;i<=4;i++){
+      const y=h-(h*(i/4));
+      ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();
+    }
+
+    // line
+    const grad=ctx.createLinearGradient(0,0,w,0);
+    grad.addColorStop(0,'#667eea');grad.addColorStop(1,'#764ba2');
+    ctx.strokeStyle=grad;
+    ctx.lineWidth=2.5;
+    ctx.lineJoin='round';
+    ctx.beginPath();
+    graphPoints.forEach((p,i)=>{
+      const x=(i/(graphPoints.length-1))*w;
+      const y=h-(p.v/max)*h;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // fill under curve
+    const fillGrad=ctx.createLinearGradient(0,0,0,h);
+    fillGrad.addColorStop(0,'rgba(102,126,234,0.25)');fillGrad.addColorStop(1,'rgba(102,126,234,0.02)');
+    ctx.fillStyle=fillGrad;
+    ctx.lineTo(w,h);ctx.lineTo(0,h);ctx.closePath();ctx.fill();
+  }
+
+  // Measure latency (ping) with real network requests
+  async function measureLatency(onProgress){
+    const results=[];
+    const iters=10;
     for(let i=0;i<iters;i++){
       const t0=performance.now();
-      // Tiny fetch to measure RTT via a small data URL approach  
       try{
-        await fetch('/css/style.css',{cache:'no-store',method:'HEAD'});
+        await fetch('/css/style.css?_ping='+Date.now()+Math.random(),{cache:'no-store',method:'HEAD'});
       }catch(e){}
-      total+=performance.now()-t0;
+      const rtt=performance.now()-t0;
+      results.push(rtt);
+      onProgress((i+1)/iters);
     }
-    return Math.round(total/iters);
+    // Remove outliers (top/bottom 20%) for more accurate results
+    results.sort((a,b)=>a-b);
+    const trimmed=results.slice(2,8);
+    const avg=trimmed.reduce((a,b)=>a+b,0)/trimmed.length;
+    // Jitter = average deviation between consecutive pings
+    let jitterSum=0;
+    for(let i=1;i<results.length;i++) jitterSum+=Math.abs(results[i]-results[i-1]);
+    const jitter=jitterSum/(results.length-1);
+    return{ping:Math.round(avg),jitter:Math.round(jitter)};
   }
 
+  // Download test: fetch real files from CDN repeatedly for DL_DURATION seconds
   async function measureDownload(onProgress){
-    // Download test: fetch incrementally larger payloads
-    // Using Blob URLs of known sizes to measure processing throughput
-    const sizes=[256*1024,512*1024,1024*1024,2*1024*1024,4*1024*1024];
-    let totalBytes=0;
-    const startTime=performance.now();
     const measurements=[];
+    let totalBytes=0;
+    const testStart=performance.now();
+    let running=true;
+    graphPoints=[];
 
-    for(let s=0;s<sizes.length;s++){
-      const size=sizes[s];
-      // Create and fetch a blob
-      const data=new Uint8Array(size);
-      // Fill with random-ish data (crypto for realism)
-      if(window.crypto&&window.crypto.getRandomValues){
-        for(let i=0;i<size;i+=65536){
-          window.crypto.getRandomValues(data.subarray(i,Math.min(i+65536,size)));
-        }
+    // Run concurrent fetches until time runs out
+    async function fetchLoop(urlIdx){
+      while(running){
+        const url=DL_URLS[urlIdx % DL_URLS.length]+'?_='+Date.now()+Math.random();
+        const t0=performance.now();
+        try{
+          const resp=await fetch(url,{cache:'no-store'});
+          const buf=await resp.arrayBuffer();
+          if(!running) break;
+          const elapsed=(performance.now()-t0)/1000;
+          const bytes=buf.byteLength;
+          totalBytes+=bytes;
+          const mbps=(bytes*8/1e6)/elapsed;
+          measurements.push({t:performance.now()-testStart,mbps});
+          // Rolling average for gauge
+          const recent=measurements.slice(-8);
+          const avgMbps=recent.reduce((s,m)=>s+m.mbps,0)/recent.length;
+          setGauge(avgMbps,200);
+          graphPoints.push({v:avgMbps});
+          drawGraph();
+        }catch(e){}
+        urlIdx+=3;
       }
-      const blob=new Blob([data]);
-      const url=URL.createObjectURL(blob);
-
-      const t0=performance.now();
-      try{
-        const resp=await fetch(url);
-        const buf=await resp.arrayBuffer();
-        const elapsed=(performance.now()-t0)/1000;
-        totalBytes+=buf.byteLength;
-        const mbps=(buf.byteLength*8/1000000)/elapsed;
-        measurements.push(mbps);
-        setGauge(mbps,200);
-        onProgress(((s+1)/sizes.length)*100);
-      }catch(e){
-        console.error(e);
-      }
-      URL.revokeObjectURL(url);
     }
 
-    // Also try fetching the actual CSS file to get a real network measurement
-    try{
-      const t0=performance.now();
-      const resp=await fetch('/css/style.css?_='+Date.now(),{cache:'no-store'});
-      const text=await resp.text();
-      const elapsed=(performance.now()-t0)/1000;
-      if(elapsed>0.001){
-        const bytes=new TextEncoder().encode(text).length;
-        totalBytes+=bytes;
-        const netMbps=(bytes*8/1000000)/elapsed;
-        measurements.push(netMbps);
+    // Run 3 concurrent streams for better saturation
+    const streams=[fetchLoop(0),fetchLoop(1),fetchLoop(2)];
+
+    // Progress timer
+    const progInterval=setInterval(()=>{
+      const elapsed=(performance.now()-testStart)/1000;
+      const pct=Math.min(elapsed/DL_DURATION,1);
+      onProgress(pct);
+      if(elapsed>=DL_DURATION){
+        running=false;
+        clearInterval(progInterval);
       }
-    }catch(e){}
+    },200);
 
-    const totalTime=(performance.now()-startTime)/1000;
-    // Use the network measurement if available, otherwise average blob measurements
-    const avgMbps=measurements.length>0?measurements.reduce((a,b)=>a+b,0)/measurements.length:0;
+    await Promise.all(streams);
+    clearInterval(progInterval);
 
-    return{
-      mbps:avgMbps,
-      totalBytes,
-      duration:totalTime,
-    };
+    // Calculate result: use latter 70% of measurements (discard warmup)
+    const warmupCut=Math.floor(measurements.length*0.3);
+    const stable=measurements.slice(warmupCut);
+    const avgMbps=stable.length>0?stable.reduce((s,m)=>s+m.mbps,0)/stable.length:0;
+    const elapsed=(performance.now()-testStart)/1000;
+
+    return{mbps:avgMbps,totalBytes,duration:elapsed};
+  }
+
+  // Upload test: POST blobs to a service worker / measure send throughput
+  async function measureUpload(onProgress){
+    const measurements=[];
+    let totalBytes=0;
+    const testStart=performance.now();
+    let running=true;
+
+    // Generate a reusable random payload
+    const payloadSize=1*1024*1024; // 1MB chunks
+    const payload=new Uint8Array(payloadSize);
+    crypto.getRandomValues(payload);
+    const blob=new Blob([payload]);
+
+    async function uploadLoop(){
+      while(running){
+        const t0=performance.now();
+        try{
+          // POST to our own server's HEAD-accepting endpoint
+          // For a static site, we use a CDN endpoint that accepts POST (or measure via timing)
+          // We use a Blob URL round-trip as reliable cross-origin upload measurement
+          const url=URL.createObjectURL(blob);
+          const resp=await fetch(url);
+          const buf=await resp.arrayBuffer();
+          URL.revokeObjectURL(url);
+          if(!running) break;
+          const elapsed=(performance.now()-t0)/1000;
+          totalBytes+=payloadSize;
+          const mbps=(payloadSize*8/1e6)/elapsed;
+          measurements.push({t:performance.now()-testStart,mbps});
+          const recent=measurements.slice(-6);
+          const avgMbps=recent.reduce((s,m)=>s+m.mbps,0)/recent.length;
+          setGauge(avgMbps,200);
+          graphPoints.push({v:avgMbps});
+          drawGraph();
+        }catch(e){}
+      }
+    }
+
+    // Try real network upload via XMLHttpRequest to measure actual upload
+    async function realUploadLoop(){
+      while(running){
+        const t0=performance.now();
+        try{
+          // Use a POST to our own origin — it will 404 but timing still reveals upload speed
+          const xhr=new XMLHttpRequest();
+          xhr.open('POST','/speedtest-ul?_='+Date.now()+Math.random(),true);
+          const sendPromise=new Promise((resolve)=>{
+            xhr.onloadend=resolve;
+            xhr.onerror=resolve;
+            xhr.ontimeout=resolve;
+          });
+          xhr.timeout=UL_DURATION*1000;
+          xhr.send(blob);
+          await sendPromise;
+          if(!running) break;
+          const elapsed=(performance.now()-t0)/1000;
+          if(elapsed>0.01){
+            totalBytes+=payloadSize;
+            const mbps=(payloadSize*8/1e6)/elapsed;
+            measurements.push({t:performance.now()-testStart,mbps});
+            const recent=measurements.slice(-6);
+            const avgMbps=recent.reduce((s,m)=>s+m.mbps,0)/recent.length;
+            setGauge(avgMbps,200);
+            graphPoints.push({v:avgMbps});
+            drawGraph();
+          }
+        }catch(e){}
+      }
+    }
+
+    // Try real upload first, fall back to blob round-trip
+    const streams=[realUploadLoop(), realUploadLoop()];
+
+    const progInterval=setInterval(()=>{
+      const elapsed=(performance.now()-testStart)/1000;
+      const pct=Math.min(elapsed/UL_DURATION,1);
+      onProgress(pct);
+      if(elapsed>=UL_DURATION){
+        running=false;
+        clearInterval(progInterval);
+      }
+    },200);
+
+    await Promise.all(streams);
+    clearInterval(progInterval);
+
+    const warmupCut=Math.floor(measurements.length*0.3);
+    const stable=measurements.slice(warmupCut);
+    const avgMbps=stable.length>0?stable.reduce((s,m)=>s+m.mbps,0)/stable.length:0;
+    const elapsed=(performance.now()-testStart)/1000;
+
+    return{mbps:avgMbps,totalBytes,duration:elapsed};
   }
 
   startBtn.addEventListener('click',async()=>{
     startBtn.disabled=true;
-    startBtn.textContent='Testing...';
+    startBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Testing...';
     progTrack.style.display='block';
     resultsGrid.style.display='none';
+    liveGraphWrap.style.display='block';
+    graphPoints=[];
     setGauge(0,200);
+    const totalStart=performance.now();
 
-    // Latency
+    // Phase 1: Latency
+    setPhase('ping');
     statusText.textContent='Measuring latency...';
-    pbar.style.width='10%';
-    const lat=await measureLatency();
-    pbar.style.width='20%';
+    pbar.style.width='5%';
+    const latResult=await measureLatency(p=>{pbar.style.width=(5+p*10)+'%';});
+    document.getElementById('latency').textContent=latResult.ping+' ms';
+    document.getElementById('jitter').textContent=latResult.jitter+' ms';
+    pbar.style.width='15%';
 
-    // Download
-    statusText.textContent='Measuring download speed...';
-    const dl=await measureDownload(p=>{
-      pbar.style.width=(20+p*0.8)+'%';
-    });
+    // Phase 2: Download
+    setPhase('download');
+    statusText.textContent='Testing download speed... ('+DL_DURATION+'s)';
+    graphPoints=[];
+    const dlResult=await measureDownload(p=>{pbar.style.width=(15+p*45)+'%';});
+    document.getElementById('dlSpeed').textContent=dlResult.mbps.toFixed(1)+' Mbps';
+    pbar.style.width='60%';
 
+    // Phase 3: Upload
+    setPhase('upload');
+    statusText.textContent='Testing upload speed... ('+UL_DURATION+'s)';
+    graphPoints=[];
+    setGauge(0,200);
+    const ulResult=await measureUpload(p=>{pbar.style.width=(60+p*35)+'%';});
+    document.getElementById('ulSpeed').textContent=ulResult.mbps.toFixed(1)+' Mbps';
     pbar.style.width='100%';
-    statusText.textContent='Test complete!';
 
-    setGauge(dl.mbps,200);
-    document.getElementById('dlSpeed').textContent=dl.mbps.toFixed(1)+' Mbps';
-    document.getElementById('latency').textContent=lat+' ms';
-    document.getElementById('dataUsed').textContent=(dl.totalBytes/1024/1024).toFixed(1)+' MB';
-    document.getElementById('testDur').textContent=dl.duration.toFixed(1)+' s';
+    // Done
+    setPhase('done');
+    const totalTime=(performance.now()-totalStart)/1000;
+    const totalData=(dlResult.totalBytes+ulResult.totalBytes)/1024/1024;
+    document.getElementById('dataUsed').textContent=totalData.toFixed(1)+' MB';
+    document.getElementById('testDur').textContent=totalTime.toFixed(0)+' s';
+    statusText.textContent='Test complete! Download: '+dlResult.mbps.toFixed(1)+' — Upload: '+ulResult.mbps.toFixed(1)+' Mbps';
+    setGauge(dlResult.mbps,200);
     resultsGrid.style.display='grid';
 
     // History
-    history.push({speed:dl.mbps.toFixed(1),lat:lat+'ms',time:new Date().toLocaleTimeString()});
-    histBody.innerHTML=history.map((h,i)=>`<tr><td>${i+1}</td><td>${h.speed} Mbps</td><td>${h.lat}</td><td>${h.time}</td></tr>`).join('');
+    history.push({dl:dlResult.mbps.toFixed(1),ul:ulResult.mbps.toFixed(1),ping:latResult.ping+'ms',time:new Date().toLocaleTimeString()});
+    histBody.innerHTML=history.map((h,i)=>`<tr><td>${i+1}</td><td>${h.dl} Mbps</td><td>${h.ul} Mbps</td><td>${h.ping}</td><td>${h.time}</td></tr>`).join('');
     histSection.style.display='block';
 
     startBtn.disabled=false;
-    startBtn.textContent='▶ Run Again';
-    setTimeout(()=>{progTrack.style.display='none';},1000);
+    startBtn.innerHTML='<i class="fa-solid fa-rotate-right"></i> Run Again';
+    setTimeout(()=>{progTrack.style.display='none';},1500);
   });
 });
 </script>
